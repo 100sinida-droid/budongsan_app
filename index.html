@@ -687,6 +687,7 @@ body::after{
 .nf-similar-title{font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--g3);
   text-transform:uppercase;text-align:left;margin-bottom:10px;}
 .nf-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+@media(max-width:700px){.nf-cards{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:480px){.nf-cards{grid-template-columns:1fr;}}
 .nf-card{padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);
   border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;
@@ -1393,6 +1394,163 @@ const APT_DB=[
   {k:['청주가경아이파크'],n:'청주가경아이파크',city:'충청북도',gu:'청주시',dong:'가경동',a:'충청북도 청주시 흥덕구 가경동',la:36.6222,lo:127.4383,yr:2012,st:'청주역',sd:2000,price:2000},
   {k:['청주센트럴자이'],n:'청주센트럴자이',city:'충청북도',gu:'청주시',dong:'율량동',a:'충청북도 청주시 청원구 율량동',la:36.6607,lo:127.5147,yr:2021,st:'오창역',sd:3000,price:2200},
   {k:['청주지웰시티'],n:'청주지웰시티',city:'충청북도',gu:'청주시',dong:'복대동',a:'충청북도 청주시 흥덕구 복대동',la:36.641,lo:127.4436,yr:2019,st:'서청주역',sd:1500,price:2100},
+  /* ── 확장 DB ── */
+  {k:['검단','검단호반써밋','호반써밋'],n:'검단호반써밋',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.5941,lo:126.6979,yr:2021,st:'완정역',sd:800,price:2600},
+  {k:['검단','검단호반써밋1차','검단호반써밋차','호반써밋'],n:'검단호반써밋1차',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.592,lo:126.699,yr:2021,st:'완정역',sd:900,price:2500},
+  {k:['검단','검단호반써밋2차','검단호반써밋차','호반써밋'],n:'검단호반써밋2차',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.5935,lo:126.701,yr:2022,st:'완정역',sd:750,price:2600},
+  {k:['검단','검단호반써밋3차','검단호반써밋차','호반써밋'],n:'검단호반써밋3차',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.595,lo:126.697,yr:2023,st:'완정역',sd:700,price:2700},
+  {k:['검단호수공원역','검단호수공원역호반써밋','호반써밋'],n:'검단호수공원역호반써밋',city:'인천',gu:'서구',dong:'불로동',a:'인천 서구 불로동',la:37.5962,lo:126.7055,yr:2026,st:'검단역',sd:400,price:2800},
+  {k:['검단AB13블록','검단AB13블록호반써밋3차','검단블록호반써밋','검단블록호반써밋차','호반써밋'],n:'검단AB13블록호반써밋3차',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.593,lo:126.695,yr:2026,st:'완정역',sd:850,price:2700},
+  {k:['힐스테이트','힐스테이트검단'],n:'힐스테이트검단',city:'인천',gu:'서구',dong:'당하동',a:'인천 서구 당하동',la:37.5892,lo:126.7005,yr:2021,st:'검단역',sd:500,price:2800},
+  {k:['검단신도시','검단신도시푸르지오','푸르지오'],n:'검단신도시푸르지오',city:'인천',gu:'서구',dong:'당하동',a:'인천 서구 당하동',la:37.591,lo:126.702,yr:2020,st:'검단역',sd:600,price:2700},
+  {k:['검단라프리체','검단라프리체자이1단지','검단라프리체자이단지','자이'],n:'검단라프리체자이1단지',city:'인천',gu:'서구',dong:'마전동',a:'인천 서구 마전동',la:37.587,lo:126.682,yr:2025,st:'검단역',sd:1200,price:2900},
+  {k:['검단라프리체','검단라프리체자이2단지','검단라프리체자이단지','자이'],n:'검단라프리체자이2단지',city:'인천',gu:'서구',dong:'마전동',a:'인천 서구 마전동',la:37.5875,lo:126.684,yr:2028,st:'검단역',sd:1400,price:2900},
+  {k:['원당','원당호반써밋','호반써밋'],n:'원당호반써밋',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.5895,lo:126.6985,yr:2021,st:'완정역',sd:600,price:2500},
+  {k:['검단원당','검단원당푸르지오','푸르지오'],n:'검단원당푸르지오',city:'인천',gu:'서구',dong:'원당동',a:'인천 서구 원당동',la:37.5905,lo:126.696,yr:2021,st:'완정역',sd:800,price:2500},
+  {k:['검단','검단호반써밋프라임뷰','호반써밋'],n:'검단호반써밋프라임뷰',city:'인천',gu:'서구',dong:'당하동',a:'인천 서구 당하동',la:37.588,lo:126.706,yr:2022,st:'검단역',sd:700,price:2600},
+  {k:['SK뷰','루원시티','루원시티SK뷰','루원시티뷰'],n:'루원시티SK뷰',city:'인천',gu:'서구',dong:'가정동',a:'인천 서구 가정동',la:37.5456,lo:126.6773,yr:2022,st:'가정역',sd:300,price:3200},
+  {k:['SK뷰','루원시티2차','루원시티2차SK뷰','루원시티차','루원시티차뷰'],n:'루원시티2차SK뷰',city:'인천',gu:'서구',dong:'가정동',a:'인천 서구 가정동',la:37.5465,lo:126.678,yr:2023,st:'가정역',sd:350,price:3100},
+  {k:['검단신도시','검단신도시호반써밋더포레','호반써밋'],n:'검단신도시호반써밋더포레',city:'인천',gu:'서구',dong:'마전동',a:'인천 서구 마전동',la:37.5848,lo:126.685,yr:2024,st:'검단역',sd:1500,price:2800},
+  {k:['e편한세상','e편한세상검단어반센트로'],n:'e편한세상검단어반센트로',city:'인천',gu:'서구',dong:'당하동',a:'인천 서구 당하동',la:37.589,lo:126.704,yr:2021,st:'완정역',sd:500,price:2750},
+  {k:['더샵','청라','청라더샵퍼스트뷰'],n:'청라더샵퍼스트뷰',city:'인천',gu:'서구',dong:'청라동',a:'인천 서구 청라동',la:37.5404,lo:126.6485,yr:2023,st:'청라국제도시역',sd:300,price:3100},
+  {k:['청라한양수자인레이크블루'],n:'청라한양수자인레이크블루',city:'인천',gu:'서구',dong:'청라동',a:'인천 서구 청라동',la:37.541,lo:126.65,yr:2022,st:'청라국제도시역',sd:350,price:3000},
+  {k:['왕길역더리브엘'],n:'왕길역더리브엘',city:'인천',gu:'서구',dong:'왕길동',a:'인천 서구 왕길동',la:37.5902,lo:126.701,yr:2024,st:'왕길역',sd:200,price:3000},
+  {k:['계양테크노밸리','계양테크노밸리자이','자이'],n:'계양테크노밸리자이',city:'인천',gu:'계양구',dong:'귤현동',a:'인천 계양구 귤현동',la:37.5709,lo:126.7249,yr:2026,st:'귤현역',sd:600,price:3200},
+  {k:['계양','계양힐스테이트','힐스테이트'],n:'계양힐스테이트',city:'인천',gu:'계양구',dong:'계산동',a:'인천 계양구 계산동',la:37.5397,lo:126.7384,yr:2019,st:'계양역',sd:300,price:2400},
+  {k:['검단','검단호반써밋더숲','호반써밋'],n:'검단호반써밋더숲',city:'경기',gu:'김포시',dong:'양촌읍',a:'경기 김포시 양촌읍',la:37.605,lo:126.693,yr:2020,st:'양촌역',sd:800,price:2300},
+  {k:['김포한강','김포한강자이더파크','자이'],n:'김포한강자이더파크',city:'경기',gu:'김포시',dong:'장기동',a:'경기 김포시 장기동',la:37.6387,lo:126.7175,yr:2022,st:'장기역',sd:500,price:3200},
+  {k:['김포한강','김포한강힐스테이트','힐스테이트'],n:'김포한강힐스테이트',city:'경기',gu:'김포시',dong:'마산동',a:'경기 김포시 마산동',la:37.6404,lo:126.71,yr:2022,st:'양촌역',sd:600,price:3000},
+  {k:['e편한세상','김포감정','김포감정e편한세상','김포감정편한세상'],n:'김포감정e편한세상',city:'경기',gu:'김포시',dong:'감정동',a:'경기 김포시 감정동',la:37.605,lo:126.743,yr:2021,st:'걸포북변역',sd:300,price:2900},
+  {k:['자이','한강메트로','한강메트로자이'],n:'한강메트로자이',city:'경기',gu:'김포시',dong:'장기동',a:'경기 김포시 장기동',la:37.6355,lo:126.719,yr:2019,st:'장기역',sd:400,price:2900},
+  {k:['e편한세상','김포골드밸리','김포골드밸리e편한세상','김포골드밸리편한세상'],n:'김포골드밸리e편한세상',city:'경기',gu:'김포시',dong:'풍무동',a:'경기 김포시 풍무동',la:37.62,lo:126.755,yr:2018,st:'풍무역',sd:400,price:2500},
+  {k:['김포한강듀클래스'],n:'김포한강듀클래스',city:'경기',gu:'김포시',dong:'구래동',a:'경기 김포시 구래동',la:37.619,lo:126.736,yr:2020,st:'구래역',sd:300,price:2700},
+  {k:['김포양촌','김포양촌호반써밋','호반써밋'],n:'김포양촌호반써밋',city:'경기',gu:'김포시',dong:'양촌읍',a:'경기 김포시 양촌읍',la:37.6025,lo:126.696,yr:2021,st:'양촌역',sd:700,price:2300},
+  {k:['걸포북변역','걸포북변역호반써밋','호반써밋'],n:'걸포북변역호반써밋',city:'경기',gu:'김포시',dong:'북변동',a:'경기 김포시 북변동',la:37.6073,lo:126.7495,yr:2022,st:'걸포북변역',sd:400,price:2700},
+  {k:['뉴고려병원역','뉴고려병원역호반써밋','호반써밋'],n:'뉴고려병원역호반써밋',city:'경기',gu:'김포시',dong:'사우동',a:'경기 김포시 사우동',la:37.6173,lo:126.726,yr:2019,st:'사우역',sd:500,price:2500},
+  {k:['운정','운정호반써밋','호반써밋'],n:'운정호반써밋',city:'경기',gu:'파주시',dong:'야당동',a:'경기 파주시 야당동',la:37.7105,lo:126.752,yr:2022,st:'야당역',sd:600,price:2400},
+  {k:['운정','운정힐스테이트2차','운정힐스테이트차','힐스테이트'],n:'운정힐스테이트2차',city:'경기',gu:'파주시',dong:'동패동',a:'경기 파주시 동패동',la:37.712,lo:126.748,yr:2021,st:'운정역',sd:700,price:2300},
+  {k:['운정신도시','운정신도시자이','자이'],n:'운정신도시자이',city:'경기',gu:'파주시',dong:'목동동',a:'경기 파주시 목동동',la:37.715,lo:126.755,yr:2021,st:'운정역',sd:800,price:2200},
+  {k:['동탄','동탄호반써밋','호반써밋'],n:'동탄호반써밋',city:'경기',gu:'화성시',dong:'영천동',a:'경기 화성시 영천동',la:37.215,lo:127.082,yr:2019,st:'동탄역',sd:800,price:2800},
+  {k:['동탄2신도시','동탄2신도시호반써밋모델하우스','동탄신도시호반써밋모델하우스','호반써밋'],n:'동탄2신도시호반써밋모델하우스',city:'경기',gu:'화성시',dong:'청계동',a:'경기 화성시 청계동',la:37.209,lo:127.08,yr:2020,st:'동탄역',sd:900,price:2700},
+  {k:['동탄레이크꼬르디움'],n:'동탄레이크꼬르디움',city:'경기',gu:'화성시',dong:'영천동',a:'경기 화성시 영천동',la:37.218,lo:127.076,yr:2022,st:'동탄역',sd:500,price:3000},
+  {k:['동탄파크릭스'],n:'동탄파크릭스',city:'경기',gu:'화성시',dong:'능동',a:'경기 화성시 능동',la:37.2052,lo:127.072,yr:2018,st:'동탄역',sd:400,price:2900},
+  {k:['동탄숲속마을','동탄숲속마을호반써밋','호반써밋'],n:'동탄숲속마을호반써밋',city:'경기',gu:'화성시',dong:'청계동',a:'경기 화성시 청계동',la:37.21,lo:127.081,yr:2018,st:'동탄역',sd:1000,price:2700},
+  {k:['봉담','봉담호반써밋','호반써밋'],n:'봉담호반써밋',city:'경기',gu:'화성시',dong:'봉담읍',a:'경기 화성시 봉담읍',la:37.199,lo:126.976,yr:2020,st:'봉담역',sd:500,price:2600},
+  {k:['동탄헤리엇'],n:'동탄헤리엇',city:'경기',gu:'화성시',dong:'반송동',a:'경기 화성시 반송동',la:37.208,lo:127.07,yr:2019,st:'동탄역',sd:600,price:2900},
+  {k:['향동지구','향동지구호반써밋','호반써밋'],n:'향동지구호반써밋',city:'경기',gu:'고양시',dong:'향동동',a:'경기 고양시 향동동',la:37.631,lo:126.849,yr:2021,st:'향동역',sd:600,price:2600},
+  {k:['자이','창릉','창릉자이'],n:'창릉자이',city:'경기',gu:'고양시',dong:'창릉동',a:'경기 고양시 창릉동',la:37.641,lo:126.854,yr:2024,st:'창릉역',sd:500,price:3200},
+  {k:['고양향동호반베르디움'],n:'고양향동호반베르디움',city:'경기',gu:'고양시',dong:'향동동',a:'경기 고양시 향동동',la:37.629,lo:126.851,yr:2020,st:'향동역',sd:700,price:2500},
+  {k:['더샵','일산','일산더샵그라시엘'],n:'일산더샵그라시엘',city:'경기',gu:'고양시',dong:'대화동',a:'경기 고양시 대화동',la:37.672,lo:126.756,yr:2022,st:'대화역',sd:400,price:3000},
+  {k:['수원호매실','수원호매실호반써밋','호반써밋'],n:'수원호매실호반써밋',city:'경기',gu:'수원시',dong:'호매실동',a:'경기 수원시 호매실동',la:37.249,lo:126.971,yr:2019,st:'화서역',sd:1500,price:2700},
+  {k:['광교자연앤','광교자연앤힐스테이트','힐스테이트'],n:'광교자연앤힐스테이트',city:'경기',gu:'수원시',dong:'이의동',a:'경기 수원시 이의동',la:37.291,lo:127.048,yr:2015,st:'광교역',sd:500,price:3600},
+  {k:['수원망포','수원망포힐스테이트','힐스테이트'],n:'수원망포힐스테이트',city:'경기',gu:'수원시',dong:'망포동',a:'경기 수원시 망포동',la:37.2605,lo:127.0484,yr:2020,st:'망포역',sd:400,price:3000},
+  {k:['수원광교','수원광교호반써밋','호반써밋'],n:'수원광교호반써밋',city:'경기',gu:'수원시',dong:'원천동',a:'경기 수원시 원천동',la:37.2875,lo:127.053,yr:2021,st:'광교중앙역',sd:600,price:3200},
+  {k:['용인플랫폼시티','용인플랫폼시티자이','자이'],n:'용인플랫폼시티자이',city:'경기',gu:'용인시',dong:'역삼동',a:'경기 용인시 역삼동',la:37.2369,lo:127.1984,yr:2025,st:'용인역',sd:1000,price:3200},
+  {k:['용인','용인힐스테이트기흥','힐스테이트'],n:'용인힐스테이트기흥',city:'경기',gu:'용인시',dong:'지곡동',a:'경기 용인시 지곡동',la:37.2984,lo:127.11,yr:2022,st:'기흥역',sd:400,price:3100},
+  {k:['광교산','광교산자이','자이'],n:'광교산자이',city:'경기',gu:'용인시',dong:'고기동',a:'경기 용인시 고기동',la:37.3078,lo:127.0598,yr:2021,st:'광교역',sd:800,price:3300},
+  {k:['고덕신도시','고덕신도시호반써밋','호반써밋'],n:'고덕신도시호반써밋',city:'경기',gu:'평택시',dong:'고덕동',a:'경기 평택시 고덕동',la:37.0453,lo:127.0983,yr:2022,st:'지제역',sd:2500,price:2200},
+  {k:['힐스테이트','힐스테이트고덕'],n:'힐스테이트고덕',city:'경기',gu:'평택시',dong:'고덕동',a:'경기 평택시 고덕동',la:37.047,lo:127.096,yr:2022,st:'지제역',sd:2800,price:2300},
+  {k:['자이','평택고덕','평택고덕자이'],n:'평택고덕자이',city:'경기',gu:'평택시',dong:'고덕동',a:'경기 평택시 고덕동',la:37.049,lo:127.101,yr:2023,st:'지제역',sd:2300,price:2400},
+  {k:['고덕국제화도시','고덕국제화도시푸르지오','푸르지오'],n:'고덕국제화도시푸르지오',city:'경기',gu:'평택시',dong:'고덕동',a:'경기 평택시 고덕동',la:37.043,lo:127.102,yr:2024,st:'지제역',sd:2600,price:2300},
+  {k:['고덕','고덕아이파크','아이파크'],n:'고덕아이파크',city:'경기',gu:'평택시',dong:'고덕동',a:'경기 평택시 고덕동',la:37.0415,lo:127.099,yr:2022,st:'지제역',sd:2400,price:2200},
+  {k:['오포','오포힐스테이트','힐스테이트'],n:'오포힐스테이트',city:'경기',gu:'광주시',dong:'오포읍',a:'경기 광주시 오포읍',la:37.408,lo:127.244,yr:2020,st:'경강선역',sd:2000,price:2400},
+  {k:['태전역','태전역호반써밋','호반써밋'],n:'태전역호반써밋',city:'경기',gu:'광주시',dong:'태전동',a:'경기 광주시 태전동',la:37.365,lo:127.21,yr:2021,st:'태전역',sd:1500,price:2500},
+  {k:['왕숙','왕숙자이','자이'],n:'왕숙자이',city:'경기',gu:'남양주시',dong:'진건읍',a:'경기 남양주시 진건읍',la:37.658,lo:127.2,yr:2025,st:'진건역',sd:1000,price:2700},
+  {k:['e편한세상','다산','다산e편한세상센트럴포레','다산편한세상센트럴포레'],n:'다산e편한세상센트럴포레',city:'경기',gu:'남양주시',dong:'다산동',a:'경기 남양주시 다산동',la:37.606,lo:127.215,yr:2021,st:'다산역',sd:500,price:2900},
+  {k:['별내','별내자이더스타','자이'],n:'별내자이더스타',city:'경기',gu:'남양주시',dong:'별내동',a:'경기 남양주시 별내동',la:37.642,lo:127.14,yr:2023,st:'별내역',sd:500,price:3100},
+  {k:['시화','시화호반써밋','호반써밋'],n:'시화호반써밋',city:'경기',gu:'안산시',dong:'선부동',a:'경기 안산시 선부동',la:37.3171,lo:126.801,yr:2021,st:'초지역',sd:700,price:2200},
+  {k:['e편한세상','안산','안산e편한세상','안산편한세상'],n:'안산e편한세상',city:'경기',gu:'안산시',dong:'고잔동',a:'경기 안산시 고잔동',la:37.322,lo:126.823,yr:2020,st:'중앙역',sd:300,price:2500},
+  {k:['오산세교','오산세교호반써밋','호반써밋'],n:'오산세교호반써밋',city:'경기',gu:'오산시',dong:'세교동',a:'경기 오산시 세교동',la:37.168,lo:127.069,yr:2021,st:'오산역',sd:700,price:2100},
+  {k:['시흥거모지구','시흥거모지구호반써밋','호반써밋'],n:'시흥거모지구호반써밋',city:'경기',gu:'시흥시',dong:'거모동',a:'경기 시흥시 거모동',la:37.3984,lo:126.8,yr:2022,st:'시흥능곡역',sd:1200,price:2400},
+  {k:['부산에코델타시티','부산에코델타시티호반써밋','호반써밋'],n:'부산에코델타시티호반써밋',city:'부산',gu:'강서구',dong:'명지동',a:'부산 강서구 명지동',la:35.105,lo:128.935,yr:2025,st:'명지역',sd:1200,price:2400},
+  {k:['해운대두산위브2차','해운대두산위브차'],n:'해운대두산위브2차',city:'부산',gu:'해운대구',dong:'중동',a:'부산 해운대구 중동',la:35.162,lo:129.161,yr:2015,st:'해운대역',sd:500,price:4500},
+  {k:['센텀리버파크','센텀리버파크자이','자이'],n:'센텀리버파크자이',city:'부산',gu:'해운대구',dong:'재반동',a:'부산 해운대구 재반동',la:35.17,lo:129.132,yr:2021,st:'센텀시티역',sd:500,price:4200},
+  {k:['동래','동래롯데캐슬더퍼스트','롯데캐슬'],n:'동래롯데캐슬더퍼스트',city:'부산',gu:'동래구',dong:'온천동',a:'부산 동래구 온천동',la:35.205,lo:129.087,yr:2022,st:'온천장역',sd:200,price:3200},
+  {k:['부산진','부산진힐스테이트','힐스테이트'],n:'부산진힐스테이트',city:'부산',gu:'부산진구',dong:'범천동',a:'부산 부산진구 범천동',la:35.1645,lo:129.054,yr:2022,st:'범내골역',sd:400,price:3300},
+  {k:['남구경성대','남구경성대자이','자이'],n:'남구경성대자이',city:'부산',gu:'남구',dong:'대연동',a:'부산 남구 대연동',la:35.14,lo:129.084,yr:2022,st:'경성대부경대역',sd:300,price:3000},
+  {k:['기장일광','기장일광자이','자이'],n:'기장일광자이',city:'부산',gu:'기장군',dong:'일광면',a:'부산 기장군 일광면',la:35.268,lo:129.22,yr:2021,st:'일광역',sd:600,price:2200},
+  {k:['수성4가','수성4가호반써밋','수성가호반써밋','호반써밋'],n:'수성4가호반써밋',city:'대구',gu:'수성구',dong:'수성동',a:'대구 수성구 수성동',la:35.855,lo:128.628,yr:2021,st:'수성구민운동장역',sd:300,price:3500},
+  {k:['대구황금','대구황금자이','자이'],n:'대구황금자이',city:'대구',gu:'수성구',dong:'황금동',a:'대구 수성구 황금동',la:35.868,lo:128.636,yr:2022,st:'황금역',sd:300,price:3400},
+  {k:['대구범물','대구범물호반써밋','호반써밋'],n:'대구범물호반써밋',city:'대구',gu:'수성구',dong:'범물동',a:'대구 수성구 범물동',la:35.826,lo:128.654,yr:2021,st:'범물역',sd:500,price:3100},
+  {k:['대구동호반','대구동호반자이','자이'],n:'대구동호반자이',city:'대구',gu:'동구',dong:'신천동',a:'대구 동구 신천동',la:35.8795,lo:128.629,yr:2020,st:'동대구역',sd:350,price:3000},
+  {k:['칠곡','칠곡호반써밋','호반써밋'],n:'칠곡호반써밋',city:'대구',gu:'북구',dong:'학정동',a:'대구 북구 학정동',la:35.932,lo:128.573,yr:2020,st:'칠곡경대병원역',sd:800,price:2400},
+  {k:['대구용산','대구용산호반써밋','호반써밋'],n:'대구용산호반써밋',city:'대구',gu:'달서구',dong:'용산동',a:'대구 달서구 용산동',la:35.849,lo:128.57,yr:2021,st:'죽전역',sd:500,price:2600},
+  {k:['광주','광주호반써밋','호반써밋'],n:'광주호반써밋',city:'광주',gu:'광산구',dong:'수완동',a:'광주 광산구 수완동',la:35.176,lo:126.827,yr:2020,st:'수완역',sd:600,price:2200},
+  {k:['빛고을','빛고을호반써밋','호반써밋'],n:'빛고을호반써밋',city:'광주',gu:'서구',dong:'화정동',a:'광주 서구 화정동',la:35.1497,lo:126.8726,yr:2021,st:'화정역',sd:400,price:2400},
+  {k:['광주첨단','광주첨단호반써밋','호반써밋'],n:'광주첨단호반써밋',city:'광주',gu:'광산구',dong:'쌍암동',a:'광주 광산구 쌍암동',la:35.188,lo:126.834,yr:2021,st:'첨단역',sd:700,price:2300},
+  {k:['상무','상무호반써밋','호반써밋'],n:'상무호반써밋',city:'광주',gu:'서구',dong:'치평동',a:'광주 서구 치평동',la:35.151,lo:126.851,yr:2020,st:'상무역',sd:300,price:2600},
+  {k:['봉선','봉선호반써밋','호반써밋'],n:'봉선호반써밋',city:'광주',gu:'남구',dong:'봉선동',a:'광주 남구 봉선동',la:35.128,lo:126.912,yr:2022,st:'남구청역',sd:500,price:2400},
+  {k:['대전도안','대전도안호반써밋','호반써밋'],n:'대전도안호반써밋',city:'대전',gu:'서구',dong:'도안동',a:'대전 서구 도안동',la:36.37,lo:127.34,yr:2020,st:'정부청사역',sd:1000,price:2700},
+  {k:['세종시','세종시호반써밋','호반써밋'],n:'세종시호반써밋',city:'세종',gu:'세종시',dong:'나성동',a:'세종 세종시 나성동',la:36.504,lo:127.271,yr:2021,st:'BRT나성',sd:700,price:3100},
+  {k:['세종한솔','세종한솔호반써밋','호반써밋'],n:'세종한솔호반써밋',city:'세종',gu:'세종시',dong:'한솔동',a:'세종 세종시 한솔동',la:36.508,lo:127.266,yr:2019,st:'BRT한솔',sd:600,price:2900},
+  {k:['대전죽동','대전죽동호반써밋','호반써밋'],n:'대전죽동호반써밋',city:'대전',gu:'유성구',dong:'죽동',a:'대전 유성구 죽동',la:36.389,lo:127.332,yr:2022,st:'유성온천역',sd:1500,price:2800},
+  {k:['울산남구','울산남구호반써밋','호반써밋'],n:'울산남구호반써밋',city:'울산',gu:'남구',dong:'달동',a:'울산 남구 달동',la:35.535,lo:129.329,yr:2021,st:'삼산역',sd:500,price:2200},
+  {k:['울산문수로','울산문수로호반써밋','호반써밋'],n:'울산문수로호반써밋',city:'울산',gu:'남구',dong:'무거동',a:'울산 남구 무거동',la:35.51,lo:129.296,yr:2020,st:'문수로역',sd:800,price:2400},
+  {k:['천안불당','천안불당호반써밋','호반써밋'],n:'천안불당호반써밋',city:'충청남도',gu:'천안시',dong:'불당동',a:'충청남도 천안시 불당동',la:36.827,lo:127.121,yr:2021,st:'천안역',sd:3800,price:2400},
+  {k:['아산탕정','아산탕정호반써밋','호반써밋'],n:'아산탕정호반써밋',city:'충청남도',gu:'아산시',dong:'탕정면',a:'충청남도 아산시 탕정면',la:36.795,lo:127.02,yr:2022,st:'아산역',sd:700,price:2200},
+  {k:['청주','청주호반써밋','호반써밋'],n:'청주호반써밋',city:'충청북도',gu:'청주시',dong:'가경동',a:'충청북도 청주시 가경동',la:36.623,lo:127.438,yr:2021,st:'청주역',sd:1800,price:2000},
+  {k:['세종조치원','세종조치원호반써밋','호반써밋'],n:'세종조치원호반써밋',city:'세종',gu:'세종시',dong:'조치원읍',a:'세종 세종시 조치원읍',la:36.61,lo:127.299,yr:2021,st:'조치원역',sd:1500,price:2100},
+  {k:['전주송천','전주송천호반써밋','호반써밋'],n:'전주송천호반써밋',city:'전라북도',gu:'전주시',dong:'송천동',a:'전라북도 전주시 송천동',la:35.857,lo:127.096,yr:2020,st:'전주역',sd:2500,price:1900},
+  {k:['광양','광양호반써밋','호반써밋'],n:'광양호반써밋',city:'전라남도',gu:'광양시',dong:'중동',a:'전라남도 광양시 중동',la:34.94,lo:127.695,yr:2021,st:'광양역',sd:1500,price:1800},
+  {k:['목포옥암','목포옥암호반써밋','호반써밋'],n:'목포옥암호반써밋',city:'전라남도',gu:'목포시',dong:'옥암동',a:'전라남도 목포시 옥암동',la:34.815,lo:126.448,yr:2020,st:'목포역',sd:2000,price:1700},
+  {k:['구미','구미호반써밋','호반써밋'],n:'구미호반써밋',city:'경상북도',gu:'구미시',dong:'임은동',a:'경상북도 구미시 임은동',la:36.155,lo:128.396,yr:2021,st:'구미역',sd:2000,price:1800},
+  {k:['포항','포항호반써밋','호반써밋'],n:'포항호반써밋',city:'경상북도',gu:'포항시',dong:'북구',a:'경상북도 포항시 북구',la:36.035,lo:129.364,yr:2022,st:'포항역',sd:2500,price:1800},
+  {k:['경주','경주호반써밋','호반써밋'],n:'경주호반써밋',city:'경상북도',gu:'경주시',dong:'현곡면',a:'경상북도 경주시 현곡면',la:35.873,lo:129.185,yr:2021,st:'경주역',sd:2000,price:1700},
+  {k:['창원','창원호반써밋','호반써밋'],n:'창원호반써밋',city:'경상남도',gu:'창원시',dong:'팔용동',a:'경상남도 창원시 팔용동',la:35.237,lo:128.69,yr:2022,st:'창원역',sd:1800,price:2200},
+  {k:['진주충무공동','진주충무공동호반써밋','호반써밋'],n:'진주충무공동호반써밋',city:'경상남도',gu:'진주시',dong:'충무공동',a:'경상남도 진주시 충무공동',la:35.18,lo:128.091,yr:2020,st:'진주역',sd:2800,price:1800},
+  {k:['김해율하','김해율하호반써밋','호반써밋'],n:'김해율하호반써밋',city:'경상남도',gu:'김해시',dong:'율하동',a:'경상남도 김해시 율하동',la:35.217,lo:128.882,yr:2021,st:'장유역',sd:1500,price:2100},
+  {k:['자이','춘천파크','춘천파크자이'],n:'춘천파크자이',city:'강원도',gu:'춘천시',dong:'퇴계동',a:'강원도 춘천시 퇴계동',la:37.867,lo:127.758,yr:2022,st:'남춘천역',sd:1500,price:1900},
+  {k:['원주무실','원주무실호반써밋','호반써밋'],n:'원주무실호반써밋',city:'강원도',gu:'원주시',dong:'무실동',a:'강원도 원주시 무실동',la:37.352,lo:127.947,yr:2021,st:'원주역',sd:1500,price:1900},
+  {k:['강릉유천','강릉유천호반써밋','호반써밋'],n:'강릉유천호반써밋',city:'강원도',gu:'강릉시',dong:'유천동',a:'강원도 강릉시 유천동',la:37.736,lo:128.89,yr:2021,st:'강릉역',sd:2000,price:2000},
+  {k:['제주아라','제주아라호반써밋','호반써밋'],n:'제주아라호반써밋',city:'제주',gu:'제주시',dong:'아라동',a:'제주 제주시 아라동',la:33.501,lo:126.532,yr:2022,st:'제주버스터미널',sd:1800,price:2700},
+  {k:['DMC파인시티','DMC파인시티자이','자이'],n:'DMC파인시티자이',city:'서울',gu:'마포구',dong:'상암동',a:'서울 마포구 상암동',la:37.573,lo:126.891,yr:2019,st:'디지털미디어시티역',sd:500,price:4500},
+  {k:['마포프레스티지','마포프레스티지자이','자이'],n:'마포프레스티지자이',city:'서울',gu:'마포구',dong:'도화동',a:'서울 마포구 도화동',la:37.5391,lo:126.9534,yr:2020,st:'마포역',sd:300,price:5500},
+  {k:['래미안','래미안원베일리'],n:'래미안원베일리',city:'서울',gu:'서초구',dong:'반포동',a:'서울 서초구 반포동',la:37.5066,lo:127.0028,yr:2023,st:'신반포역',sd:300,price:12000},
+  {k:['디에이치','디에이치자이개포','자이'],n:'디에이치자이개포',city:'서울',gu:'강남구',dong:'개포동',a:'서울 강남구 개포동',la:37.4818,lo:127.0569,yr:2020,st:'대모산입구역',sd:500,price:9500},
+  {k:['삼성','삼성힐스테이트','힐스테이트'],n:'삼성힐스테이트',city:'서울',gu:'강남구',dong:'삼성동',a:'서울 강남구 삼성동',la:37.511,lo:127.062,yr:2021,st:'선릉역',sd:400,price:8500},
+  {k:['아이파크','잠실올림픽','잠실올림픽아이파크'],n:'잠실올림픽아이파크',city:'서울',gu:'송파구',dong:'방이동',a:'서울 송파구 방이동',la:37.521,lo:127.102,yr:2008,st:'잠실역',sd:800,price:5200},
+  {k:['거여역','거여역롯데캐슬','롯데캐슬'],n:'거여역롯데캐슬',city:'서울',gu:'송파구',dong:'거여동',a:'서울 송파구 거여동',la:37.4883,lo:127.147,yr:2014,st:'거여역',sd:300,price:3800},
+  {k:['고덕강일리엔파크'],n:'고덕강일리엔파크',city:'서울',gu:'강동구',dong:'강일동',a:'서울 강동구 강일동',la:37.568,lo:127.1888,yr:2020,st:'강일역',sd:600,price:3500},
+  {k:['강일리버파크'],n:'강일리버파크',city:'서울',gu:'강동구',dong:'강일동',a:'서울 강동구 강일동',la:37.5717,lo:127.185,yr:2014,st:'강일역',sd:500,price:3400},
+  {k:['서울아레나','서울아레나자이','자이'],n:'서울아레나자이',city:'서울',gu:'도봉구',dong:'창동',a:'서울 도봉구 창동',la:37.656,lo:127.048,yr:2025,st:'창동역',sd:200,price:3500},
+  {k:['은평뉴타운','은평뉴타운자이','자이'],n:'은평뉴타운자이',city:'서울',gu:'은평구',dong:'진관동',a:'서울 은평구 진관동',la:37.638,lo:126.9195,yr:2013,st:'구파발역',sd:800,price:3200},
+  {k:['서대문','서대문힐스테이트','힐스테이트'],n:'서대문힐스테이트',city:'서울',gu:'서대문구',dong:'홍제동',a:'서울 서대문구 홍제동',la:37.584,lo:126.944,yr:2021,st:'홍제역',sd:300,price:4800},
+  {k:['성동구청역','성동구청역힐스테이트','힐스테이트'],n:'성동구청역힐스테이트',city:'서울',gu:'성동구',dong:'마장동',a:'서울 성동구 마장동',la:37.5612,lo:127.049,yr:2022,st:'마장역',sd:200,price:5500},
+  {k:['자양하늘채더퍼스트'],n:'자양하늘채더퍼스트',city:'서울',gu:'광진구',dong:'자양동',a:'서울 광진구 자양동',la:37.5368,lo:127.078,yr:2022,st:'자양역',sd:400,price:4800},
+  {k:['노원','노원롯데캐슬시그니처','롯데캐슬'],n:'노원롯데캐슬시그니처',city:'서울',gu:'노원구',dong:'월계동',a:'서울 노원구 월계동',la:37.6227,lo:127.062,yr:2024,st:'석계역',sd:400,price:3200},
+  {k:['강북미아삼성','강북미아삼성래미안','래미안'],n:'강북미아삼성래미안',city:'서울',gu:'강북구',dong:'미아동',a:'서울 강북구 미아동',la:37.632,lo:127.027,yr:2003,st:'미아사거리역',sd:400,price:2600},
+  {k:['장안동한양'],n:'장안동한양',city:'서울',gu:'동대문구',dong:'장안동',a:'서울 동대문구 장안동',la:37.5716,lo:127.066,yr:1986,st:'장한평역',sd:600,price:3000},
+  {k:['분당','분당힐스테이트에코','힐스테이트'],n:'분당힐스테이트에코',city:'경기',gu:'성남시',dong:'야탑동',a:'경기 성남시 야탑동',la:37.4101,lo:127.1288,yr:2021,st:'야탑역',sd:400,price:4500},
+  {k:['e편한세상','판교대장','판교대장e편한세상','판교대장편한세상'],n:'판교대장e편한세상',city:'경기',gu:'성남시',dong:'대장동',a:'경기 성남시 대장동',la:37.3905,lo:127.0874,yr:2022,st:'판교역',sd:1200,price:5200},
+  {k:['롯데캐슬','위례신도시','위례신도시롯데캐슬'],n:'위례신도시롯데캐슬',city:'경기',gu:'성남시',dong:'창곡동',a:'경기 성남시 창곡동',la:37.4765,lo:127.132,yr:2018,st:'남위례역',sd:600,price:4300},
+  {k:['의정부민락','의정부민락호반써밋','호반써밋'],n:'의정부민락호반써밋',city:'경기',gu:'의정부시',dong:'민락동',a:'경기 의정부시 민락동',la:37.752,lo:127.09,yr:2021,st:'민락역',sd:600,price:2200},
+  {k:['양주회천','양주회천호반써밋','호반써밋'],n:'양주회천호반써밋',city:'경기',gu:'양주시',dong:'회천동',a:'경기 양주시 회천동',la:37.785,lo:127.046,yr:2022,st:'양주역',sd:700,price:2000},
+  {k:['시흥배곧','시흥배곧호반써밋','호반써밋'],n:'시흥배곧호반써밋',city:'경기',gu:'시흥시',dong:'정왕동',a:'경기 시흥시 정왕동',la:37.349,lo:126.736,yr:2021,st:'정왕역',sd:800,price:2200},
+  {k:['광명철산','광명철산래미안','광명철산래미안자이','래미안','자이'],n:'광명철산래미안자이',city:'경기',gu:'광명시',dong:'철산동',a:'경기 광명시 철산동',la:37.479,lo:126.8667,yr:2024,st:'철산역',sd:200,price:4500},
+  {k:['광명소하','광명소하호반써밋','호반써밋'],n:'광명소하호반써밋',city:'경기',gu:'광명시',dong:'소하동',a:'경기 광명시 소하동',la:37.435,lo:126.872,yr:2021,st:'광명역',sd:600,price:3000},
+  {k:['이천','이천호반써밋','호반써밋'],n:'이천호반써밋',city:'경기',gu:'이천시',dong:'증포동',a:'경기 이천시 증포동',la:37.274,lo:127.444,yr:2021,st:'이천역',sd:1500,price:1900},
+  {k:['여주','여주자이','자이'],n:'여주자이',city:'경기',gu:'여주시',dong:'교동',a:'경기 여주시 교동',la:37.298,lo:127.637,yr:2022,st:'여주역',sd:2000,price:1800},
+  {k:['안양','안양호반써밋','호반써밋'],n:'안양호반써밋',city:'경기',gu:'안양시',dong:'비산동',a:'경기 안양시 비산동',la:37.393,lo:126.936,yr:2022,st:'범계역',sd:400,price:2900},
+  {k:['군포산본','군포산본호반써밋','호반써밋'],n:'군포산본호반써밋',city:'경기',gu:'군포시',dong:'산본동',a:'경기 군포시 산본동',la:37.3615,lo:126.925,yr:2021,st:'산본역',sd:450,price:2400},
+  {k:['하남미사','하남미사호반써밋','호반써밋'],n:'하남미사호반써밋',city:'경기',gu:'하남시',dong:'망월동',a:'경기 하남시 망월동',la:37.552,lo:127.209,yr:2020,st:'미사역',sd:500,price:3700},
+  {k:['교산지구','교산지구자이','자이'],n:'교산지구자이',city:'경기',gu:'하남시',dong:'초이동',a:'경기 하남시 초이동',la:37.499,lo:127.198,yr:2025,st:'교산역',sd:1500,price:3500},
+  {k:['부천','부천호반써밋','호반써밋'],n:'부천호반써밋',city:'경기',gu:'부천시',dong:'원미동',a:'경기 부천시 원미동',la:37.503,lo:126.768,yr:2021,st:'부천역',sd:400,price:2700},
+  {k:['부천상동','부천상동호반써밋','호반써밋'],n:'부천상동호반써밋',city:'경기',gu:'부천시',dong:'상동',a:'경기 부천시 상동',la:37.509,lo:126.781,yr:2022,st:'상동역',sd:300,price:2800},
+  {k:['공주신관','공주신관호반써밋','호반써밋'],n:'공주신관호반써밋',city:'충청남도',gu:'공주시',dong:'신관동',a:'충청남도 공주시 신관동',la:36.452,lo:127.128,yr:2020,st:'공주역',sd:1500,price:1800},
+  {k:['충주','충주호반써밋','호반써밋'],n:'충주호반써밋',city:'충청북도',gu:'충주시',dong:'연수동',a:'충청북도 충주시 연수동',la:36.97,lo:127.92,yr:2021,st:'충주역',sd:1800,price:1700},
+  {k:['제천','제천호반써밋','호반써밋'],n:'제천호반써밋',city:'충청북도',gu:'제천시',dong:'화산동',a:'충청북도 제천시 화산동',la:37.135,lo:128.19,yr:2021,st:'제천역',sd:2000,price:1700},
+  {k:['안동','안동호반써밋','호반써밋'],n:'안동호반써밋',city:'경상북도',gu:'안동시',dong:'태화동',a:'경상북도 안동시 태화동',la:36.569,lo:128.729,yr:2021,st:'안동역',sd:2000,price:1700},
+  {k:['영천','영천호반써밋','호반써밋'],n:'영천호반써밋',city:'경상북도',gu:'영천시',dong:'과전동',a:'경상북도 영천시 과전동',la:35.975,lo:128.938,yr:2020,st:'영천역',sd:2500,price:1600},
+  {k:['양산','양산호반써밋','호반써밋'],n:'양산호반써밋',city:'경상남도',gu:'양산시',dong:'물금읍',a:'경상남도 양산시 물금읍',la:35.296,lo:129.002,yr:2021,st:'물금역',sd:800,price:2300},
+  {k:['거제','거제호반써밋','호반써밋'],n:'거제호반써밋',city:'경상남도',gu:'거제시',dong:'고현동',a:'경상남도 거제시 고현동',la:34.875,lo:128.621,yr:2021,st:'고현버스터미널',sd:1000,price:1800},
+  {k:['통영','통영호반써밋','호반써밋'],n:'통영호반써밋',city:'경상남도',gu:'통영시',dong:'무전동',a:'경상남도 통영시 무전동',la:34.854,lo:128.434,yr:2021,st:'통영버스터미널',sd:1500,price:1700},
+  {k:['밀양','밀양호반써밋','호반써밋'],n:'밀양호반써밋',city:'경상남도',gu:'밀양시',dong:'삼문동',a:'경상남도 밀양시 삼문동',la:35.492,lo:128.745,yr:2021,st:'밀양역',sd:2000,price:1700},
+  {k:['동탄','동탄롯데캐슬','롯데캐슬'],n:'동탄롯데캐슬',city:'경기',gu:'화성시',dong:'반송동',a:'경기 화성시 반송동',la:37.206,lo:127.0698,yr:2022,st:'동탄역',sd:500,price:3000},
+  {k:['더샵','동탄','동탄더샵프라임뷰'],n:'동탄더샵프라임뷰',city:'경기',gu:'화성시',dong:'영천동',a:'경기 화성시 영천동',la:37.216,lo:127.078,yr:2021,st:'동탄역',sd:600,price:3100},
+  {k:['롯데캐슬','아산배방','아산배방롯데캐슬'],n:'아산배방롯데캐슬',city:'충청남도',gu:'아산시',dong:'배방읍',a:'충청남도 아산시 배방읍',la:36.807,lo:127.071,yr:2022,st:'배방역',sd:400,price:2300},
+  {k:['충남아산','충남아산힐스테이트','힐스테이트'],n:'충남아산힐스테이트',city:'충청남도',gu:'아산시',dong:'탕정면',a:'충청남도 아산시 탕정면',la:36.795,lo:127.019,yr:2021,st:'아산역',sd:600,price:2200},
+  {k:['세종보람','세종보람자이','자이'],n:'세종보람자이',city:'세종',gu:'세종시',dong:'보람동',a:'세종 세종시 보람동',la:36.499,lo:127.268,yr:2022,st:'BRT보람',sd:600,price:3100},
+  {k:['세종새뜸','세종새뜸자이','자이'],n:'세종새뜸자이',city:'세종',gu:'세종시',dong:'새롬동',a:'세종 세종시 새롬동',la:36.5,lo:127.265,yr:2020,st:'BRT새롬',sd:700,price:3000},
 ];
 
 /* ══════════════════════════════════════════
@@ -1453,51 +1611,68 @@ function highlight(text,q){
    DB 검색 — DB에 없으면 반드시 null 반환
 ══════════════════════════════════════════ */
 function findApt(q){
-  q=q.trim().replace(/\s+/g,'');
   if(!q) return null;
-  // 1. 완전 일치
-  for(const a of APT_DB){
-    const keys=[...a.k,a.n].map(s=>s.replace(/\s+/g,''));
-    if(keys.some(k=>k===q)) return a;
+  const qn=q.replace(/\s+/g,'');
+  const tokens=q.trim().split(/\s+/).map(t=>t.replace(/\s/g,''));
+
+  // 1) 정확한 이름 일치
+  let found=APT_DB.find(a=>a.n.replace(/\s+/g,'')=== qn);
+  if(found) return found;
+
+  // 2) 키워드 완전 일치
+  found=APT_DB.find(a=>(a.k||[]).some(k=>k.replace(/\s+/g,'')=== qn));
+  if(found) return found;
+
+  // 3) 단일 토큰: 이름 포함
+  if(tokens.length===1){
+    found=APT_DB.find(a=>a.n.replace(/\s+/g,'').includes(qn));
+    if(found) return found;
   }
-  // 2. 포함 — 검색어가 키워드를 포함하거나, 키워드가 검색어를 포함
-  const cand=[];
-  for(const a of APT_DB){
-    const keys=[...a.k,a.n].map(s=>s.replace(/\s+/g,''));
-    for(const k of keys){
-      if(q.includes(k)&&k.length>=3) cand.push({a,sc:k.length*2});
-      else if(k.includes(q)&&q.length>=3) cand.push({a,sc:q.length});
-    }
+
+  // 4) 멀티 토큰: 모든 토큰이 아파트 정보에 포함
+  if(tokens.length>=2){
+    found=APT_DB.find(a=>{
+      const all=(a.n+a.gu+a.dong+a.city+(a.k||[]).join('')).replace(/\s+/g,'');
+      return tokens.every(t=>all.includes(t));
+    });
+    if(found) return found;
   }
-  if(cand.length){
-    cand.sort((x,y)=>y.sc-x.sc);
-    // 점수가 충분히 높을 때만 매칭 (2글자 이하 오매칭 방지)
-    if(cand[0].sc>=4) return cand[0].a;
-  }
+
   return null;
 }
 
 /* 유사 아파트 찾기 (없음 패널용) */
 function findSimilar(q){
-  q=q.replace(/\s+/g,'');
+  const qn=q.replace(/\s+/g,'');
+  const tokens=q.trim().split(/\s+/).map(t=>t.replace(/\s/g,''));
   const scored=[];
+
   for(const a of APT_DB){
-    let best=0;
-    const keys=[...a.k,a.n,a.gu,a.dong,a.city].map(s=>s.replace(/\s+/g,''));
-    for(const k of keys){
-      // 공통 문자 수
-      let common=0;
-      for(const ch of q) if(k.includes(ch)) common++;
-      const sc=common/Math.max(q.length,k.length);
-      if(sc>best) best=sc;
-      // 지역명 포함 보너스
-      if(q.includes(a.dong)||a.dong.includes(q)) best=Math.max(best,.7);
-      if(q.includes(a.gu.replace(/시$|구$/,''))||a.gu.includes(q)) best=Math.max(best,.5);
+    const name=a.n.replace(/\s+/g,'');
+    const all=(a.n+a.gu+a.dong+a.city+(a.k||[]).join('')).replace(/\s+/g,'');
+    let score=0;
+
+    // 모든 토큰 포함
+    const matchCount=tokens.filter(t=>all.includes(t)).length;
+    if(matchCount===tokens.length) score+=80;
+    else if(matchCount>0) score+=matchCount*20;
+
+    // 브랜드 매칭
+    const brands=['호반써밋','래미안','자이','아이파크','힐스테이트','푸르지오','e편한세상','롯데캐슬','더샵','SK뷰'];
+    for(const b of brands){
+      if(qn.includes(b)&&name.includes(b)) score+=30;
     }
-    if(best>0) scored.push({a,sc:best});
+
+    // 지역 매칭
+    tokens.forEach(t=>{
+      if(a.gu.includes(t)||a.dong.includes(t)||a.city.includes(t)) score+=15;
+    });
+
+    if(score>0) scored.push({a,score});
   }
-  scored.sort((x,y)=>y.sc-x.sc);
-  return scored.slice(0,6).filter(x=>x.sc>.2).map(x=>x.a);
+
+  scored.sort((a,b)=>b.score-a.score);
+  return scored.slice(0,8).map(x=>x.a);
 }
 
 /* 자동완성 검색 */
@@ -1505,18 +1680,55 @@ function searchAC(q){
   if(!q||q.length<1) return[];
   const qn=q.replace(/\s+/g,'');
   const seen=new Set(), res=[];
+
+  // 토큰 분리: "검단 호반써밋" → ["검단","호반써밋"]
+  const tokens=q.trim().split(/\s+/).map(t=>t.replace(/\s/g,''));
+
   for(const a of APT_DB){
     if(seen.has(a.n)) continue;
-    const keys=[...a.k,a.n,a.dong,a.gu].map(s=>s.replace(/\s+/g,''));
-    const match=keys.some(k=>k.includes(qn)||qn.includes(k));
-    if(match){seen.add(a.n);res.push(a);}
+    const name=a.n.replace(/\s+/g,'');
+    const gu  =a.gu.replace(/\s+/g,'');
+    const dong=a.dong.replace(/\s+/g,'');
+    const city=a.city.replace(/\s+/g,'');
+    const keys=(a.k||[]).map(s=>s.replace(/\s+/g,''));
+    const allText=[name,gu,dong,city,...keys].join(' ');
+
+    // 1) 완전 일치
+    if(name===qn||keys.some(k=>k===qn)){seen.add(a.n);a._score=100;res.push(a);continue;}
+    // 2) 이름 시작 일치
+    if(name.startsWith(qn)){seen.add(a.n);a._score=90;res.push(a);continue;}
+    // 3) 이름 포함
+    if(name.includes(qn)){seen.add(a.n);a._score=80;res.push(a);continue;}
+    // 4) 쿼리가 이름에 포함
+    if(qn.includes(name)&&name.length>=2){seen.add(a.n);a._score=70;res.push(a);continue;}
+    // 5) 모든 토큰이 name/gu/dong에 포함 (호갱노노식: "검단 호반써밋" → 검단이 gu/dong, 호반써밋이 name에)
+    if(tokens.length>=2){
+      const allMatch=tokens.every(t=>allText.replace(/\s/g,'').includes(t));
+      if(allMatch){seen.add(a.n);a._score=75;res.push(a);continue;}
+      // 지역 토큰 + 브랜드 토큰 분리 매칭
+      const locTokens=tokens.filter(t=>gu.includes(t)||dong.includes(t)||city.includes(t));
+      const nameTokens=tokens.filter(t=>name.includes(t)||keys.some(k=>k.includes(t)));
+      if(locTokens.length>0&&nameTokens.length>0){seen.add(a.n);a._score=72;res.push(a);continue;}
+    }
+    // 6) keywords 포함
+    if(keys.some(k=>k.includes(qn)||qn.includes(k))){seen.add(a.n);a._score=60;res.push(a);continue;}
+    // 7) 동/구 + 이름 부분 일치
+    if((dong.includes(qn)||gu.includes(qn))&&tokens.some(t=>name.includes(t))){
+      seen.add(a.n);a._score=55;res.push(a);continue;
+    }
+    // 8) 지역명 단독 검색 (강남, 동탄, 판교 등 지역으로 찾기)
+    if(tokens.length===1&&(dong.includes(qn)||gu.includes(qn)||city.includes(qn))){
+      seen.add(a.n);a._score=40;res.push(a);continue;
+    }
+    // 9) 이름의 2글자 이상 부분 포함 (오타/부분검색 관대하게)
+    if(qn.length>=2){
+      const sub2=name.length>=3?name.slice(0,name.length-1):'';
+      if(sub2&&qn.includes(sub2)){seen.add(a.n);a._score=35;res.push(a);continue;}
+    }
   }
-  // 정렬: 이름 시작 일치 우선
-  res.sort((a,b)=>{
-    const an=a.n.replace(/\s+/g,''),bn=b.n.replace(/\s+/g,'');
-    const as=an.startsWith(qn)?1:0, bs=bn.startsWith(qn)?1:0;
-    return bs-as;
-  });
+
+  // 점수 + 이름 길이 정렬 (짧을수록 더 정확한 매칭)
+  res.sort((a,b)=>(b._score||0)-(a._score||0)||(a.n.length-b.n.length));
   return res.slice(0,12);
 }
 
@@ -2101,12 +2313,12 @@ function showNotFound(query){
   const simEl=document.getElementById('nf-similar');
   if(similar.length){
     simEl.innerHTML=`<div style="font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--g3);text-transform:uppercase;margin-bottom:10px">🔗 비슷한 아파트 (클릭하여 분석)</div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
     ${similar.map(a=>`
-      <div onclick="pickApt(APT_DB.find(x=>x.n==='${a.n}'))" style="padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;" onmouseover="this.style.borderColor='rgba(201,168,76,.4)';this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(13,17,23,.9)'">
+      <div onclick="pickApt(APT_DB.find(x=>x.n===${JSON.stringify(a.n)}))" style="padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;" onmouseover="this.style.borderColor='rgba(201,168,76,.4)';this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(13,17,23,.9)'">
         <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:3px">${a.n}</div>
-        <div style="font-size:11px;color:var(--g3)">${a.a}</div>
-        <div style="font-size:10px;font-weight:700;color:var(--gold);margin-top:4px">${a.yr}년 건축 · ${a.st}</div>
+        <div style="font-size:11px;color:var(--g3)">${a.city} ${a.gu} ${a.dong}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gold);margin-top:4px">${a.yr>1900?a.yr+'년 건축 · ':' '}${a.st&&a.sd<9000?a.st+' '+fd(a.sd):''}</div>
       </div>`).join('')}
     </div>`;
   } else {
@@ -2252,17 +2464,23 @@ document.getElementById('si').addEventListener('input',e=>{
   if(!v.trim()){ac.classList.remove('open');return;}
   const results=searchAC(v);
   if(!results.length){
-    ac.innerHTML='<div class="ac-empty">검색 결과 없음 — 지역명(풍무동, 김포)으로 시도해 보세요</div>';
+    ac.innerHTML='<div class="ac-empty">DB에 없습니다 — 분석 시작 버튼을 누르면 전국 검색합니다 🔍</div>';
     ac.classList.add('open');return;
   }
-  ac.innerHTML=results.map((a,i)=>`
-    <div class="ac-item" data-idx="${i}" onclick="pickApt(APT_DB.find(x=>x.n==='${a.n}'))">
+  // 결과 수 헤더
+  const hdr=results.length>=10?`<div class="ac-section">${results.length}개 검색결과 · 최대 12개 표시</div>`:'';
+  ac.innerHTML=hdr+results.map((a,i)=>{
+    const yr=a.yr>1900?`${a.yr}년`:'';
+    const dist=a.sd<9000?`${a.st} ${fd(a.sd)}`:'';
+    const sub=[a.gu,a.dong,yr,dist].filter(Boolean).join(' · ');
+    return `<div class="ac-item" data-idx="${i}" onclick="pickApt(APT_DB.find(x=>x.n===${JSON.stringify(a.n)}))">
       <div class="ac-item-left">
         <div class="ac-name">${highlight(a.n,v)}</div>
-        <div class="ac-sub">${a.a} · ${a.yr}년 · ${a.st} ${fd(a.sd)}</div>
+        <div class="ac-sub">${sub}</div>
       </div>
       <div class="ac-tag">${a.city}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   ac.classList.add('open');
 });
 
@@ -2458,10 +2676,11 @@ function newSearch(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('molit-in').value=CFG.molit;
+  // molit-in은 모달 제거로 없음 — 안전하게 처리
+  const mi=document.getElementById('molit-in');
+  if(mi) mi.value=CFG.molit;
   initRegionSection();
 });
 </script>
--e 
 </body>
 </html>
