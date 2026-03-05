@@ -631,20 +631,99 @@ body::after{
     </button>
   </div>
 </nav>
+<style>
+/* ── 자동완성 개선 ── */
+.ac{position:absolute;top:calc(100% + 8px);left:0;right:0;
+  background:rgba(10,14,22,.98);border:1px solid var(--border-gold);
+  border-radius:var(--r2);overflow:hidden;display:none;z-index:300;
+  box-shadow:0 24px 64px rgba(0,0,0,.7);backdrop-filter:blur(20px);
+  max-height:420px;overflow-y:auto;}
+.ac.open{display:block;animation:drop .15s ease-out;}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.ac-section{padding:8px 16px 4px;font-size:10px;font-weight:800;letter-spacing:1.2px;
+  color:var(--g3);text-transform:uppercase;border-top:1px solid var(--border);}
+.ac-section:first-child{border-top:none;}
+.ac-item{padding:11px 18px;font-size:13px;color:var(--g2);cursor:pointer;
+  display:flex;align-items:center;gap:12px;transition:all .12s;
+  border-bottom:1px solid rgba(255,255,255,.03);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item.focused{background:rgba(201,168,76,.1);color:var(--white);}
+.ac-item-left{flex:1;min-width:0;}
+.ac-name{font-weight:700;color:rgba(255,255,255,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ac-name mark{background:transparent;color:var(--gold);font-weight:900;}
+.ac-sub{font-size:11px;color:var(--g3);margin-top:2px;}
+.ac-tag{flex-shrink:0;padding:3px 9px;border-radius:12px;font-size:10px;font-weight:700;
+  background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.2);color:var(--gold);}
+.ac-empty{padding:20px 18px;font-size:13px;color:var(--g3);text-align:center;}
 
+/* ── 지역 브라우저 ── */
+.region-browser{
+  width:100%;max-width:720px;margin-top:36px;
+  background:rgba(13,17,23,.75);border:1px solid var(--border);
+  border-radius:var(--r2);overflow:hidden;backdrop-filter:blur(10px);}
+.rb-header{display:flex;align-items:center;gap:12px;padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.018);}
+.rb-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);}
+.rb-bread{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--g3);flex:1;}
+.rb-bread span{cursor:pointer;color:var(--gold);transition:opacity .15s;}
+.rb-bread span:hover{opacity:.7;}
+.rb-bread i{color:var(--g3);}
+.rb-reset{margin-left:auto;font-size:11px;color:var(--g3);cursor:pointer;
+  padding:3px 10px;border:1px solid var(--border);border-radius:20px;transition:all .15s;
+  background:none;font-family:var(--sans);}
+.rb-reset:hover{border-color:var(--border-gold);color:var(--gold);}
+.rb-chips{display:flex;flex-wrap:wrap;gap:7px;padding:14px 16px;}
+.rb-chip{padding:7px 16px;border-radius:20px;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.5);
+  transition:all .18s;font-family:var(--sans);}
+.rb-chip:hover{background:var(--gold3);border-color:var(--border-gold);color:var(--gold);}
+.rb-chip.active{background:var(--gold3);border-color:rgba(201,168,76,.5);color:var(--gold);}
+.rb-apt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:12px 14px 16px;}
+@media(max-width:540px){.rb-apt-grid{grid-template-columns:1fr;}}
+.rb-apt-card{display:flex;flex-direction:column;gap:3px;padding:12px 14px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r);
+  cursor:pointer;transition:all .18s;}
+.rb-apt-card:hover{background:rgba(201,168,76,.1);border-color:var(--border-gold);}
+.rb-apt-name{font-size:13px;font-weight:700;color:rgba(255,255,255,.85);}
+.rb-apt-meta{font-size:11px;color:var(--g3);}
+.rb-empty{padding:24px;text-align:center;font-size:13px;color:var(--g3);}
+
+/* ── "없음" 패널 ── */
+#not-found-panel{position:relative;z-index:1;min-height:60vh;
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;padding:60px 24px;}
+.nf-box{max-width:640px;width:100%;text-align:center;}
+.nf-icon{font-size:52px;margin-bottom:16px;}
+.nf-title{font-family:var(--serif);font-size:24px;font-weight:700;margin-bottom:10px;}
+.nf-desc{font-size:14px;color:var(--g2);line-height:1.85;margin-bottom:28px;}
+.nf-similar-title{font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--g3);
+  text-transform:uppercase;text-align:left;margin-bottom:10px;}
+.nf-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px;}
+@media(max-width:480px){.nf-cards{grid-template-columns:1fr;}}
+.nf-card{padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);
+  border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;
+  display:flex;flex-direction:column;gap:4px;}
+.nf-card:hover{background:rgba(201,168,76,.1);border-color:var(--border-gold);}
+.nf-card-name{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);}
+.nf-card-addr{font-size:11px;color:var(--g3);}
+.nf-card-tag{font-size:10px;font-weight:700;color:var(--gold);margin-top:2px;}
+</style>
 <!-- ══ HERO ══ -->
 <section class="hero" id="heroSec">
-  <div class="hero-badge"><div class="hero-badge-dot"></div>OpenStreetMap · 국토교통부 공공데이터</div>
+  <div class="hero-badge"><div class="hero-badge-dot"></div>전국 아파트 · 국토교통부 공공데이터</div>
   <h1 class="hero-h1">당신의 아파트,<br><em>지금 몇 점인가요?</em></h1>
   <p class="hero-sub">
-    아파트 이름 하나로 <strong>교통·학군·핵심시설·시세</strong> 7개 항목을<br>
-    자동 분석합니다. 전국 아파트 검색, 바로 시작하세요.
+    아파트명·동·지역명으로 검색하면 자동완성 목록이 나타납니다.<br>
+    <strong>DB에 없는 아파트는 "없음" 표시</strong> — 임의 점수 없음.
   </p>
 
-  <div class="search-outer">
+  <!-- ── 검색창 ── -->
+  <div class="search-outer" id="search-outer">
     <div class="search-box">
       <input class="search-input" id="si" type="text"
-        placeholder="아파트 이름을 입력하세요 (예: 래미안퍼스티지, 헬리오시티)"
+        placeholder="아파트명·동·지역 입력 (예: 풍무, 김포, 헬리오시티…)"
         autocomplete="off">
       <button class="search-go" id="go-btn" onclick="doSearch()">
         <span>🔍</span> 분석 시작
@@ -653,226 +732,148 @@ body::after{
     <div class="ac" id="ac"></div>
   </div>
 
+  <!-- ── 인기 검색 ── -->
   <div class="quick">
-    <span class="q-txt">인기 검색</span>
-    <button class="q-chip" onclick="pick('래미안퍼스티지')">래미안퍼스티지</button>
-    <button class="q-chip" onclick="pick('아크로리버파크')">아크로리버파크</button>
-    <button class="q-chip" onclick="pick('헬리오시티')">헬리오시티</button>
-    <button class="q-chip" onclick="pick('힐스테이트판교역')">힐스테이트판교역</button>
-    <button class="q-chip" onclick="pick('마포래미안푸르지오')">마포래미안푸르지오</button>
+    <span class="q-txt">인기</span>
+    <button class="q-chip" onclick="pickByKey('래미안퍼스티지')">래미안퍼스티지</button>
+    <button class="q-chip" onclick="pickByKey('반포자이')">반포자이</button>
+    <button class="q-chip" onclick="pickByKey('헬리오시티')">헬리오시티</button>
+    <button class="q-chip" onclick="pickByKey('잠실엘스')">잠실엘스</button>
+    <button class="q-chip" onclick="pickByKey('마포래미안푸르지오')">마포래미안푸르지오</button>
+  </div>
+
+  <!-- ══ 지역 브라우저 ══ -->
+  <div class="region-browser" id="regionBrowser">
+    <div class="rb-header">
+      <div class="rb-title">📍 지역으로 찾기</div>
+      <div class="rb-breadcrumb" id="rb-bread"></div>
+    </div>
+    <div class="rb-chips" id="rb-city"></div>
+    <div class="rb-chips" id="rb-gu" style="display:none"></div>
+    <div class="rb-apt-grid" id="rb-list" style="display:none"></div>
   </div>
 
   <div class="hero-kpi">
     <div class="h-kpi"><div class="kpi-n">7개</div><div class="kpi-l">평가 항목</div></div>
     <div class="h-kpi"><div class="kpi-n">100점</div><div class="kpi-l">종합 점수</div></div>
-    <div class="h-kpi"><div class="kpi-n">무료</div><div class="kpi-l">OSM 기반 분석</div></div>
+    <div class="h-kpi"><div class="kpi-n">DB</div><div class="kpi-l">등록 아파트만</div></div>
     <div class="h-kpi"><div class="kpi-n">즉시</div><div class="kpi-l">결과 확인</div></div>
   </div>
 </section>
+
+<!-- ══ "없음" 패널 ══ -->
+<div id="not-found-panel" style="display:none;position:relative;z-index:1;min-height:60vh;align-items:center;justify-content:center;flex-direction:column;padding:60px 24px;">
+  <div style="max-width:600px;width:100%;text-align:center;">
+    <div style="font-size:52px;margin-bottom:16px;">🔍</div>
+    <div style="font-family:var(--serif);font-size:24px;font-weight:700;margin-bottom:10px;" id="nf-title">DB에 없는 아파트입니다</div>
+    <div style="font-size:14px;color:var(--g2);line-height:1.8;margin-bottom:28px;" id="nf-query"></div>
+    <div id="nf-similar" style="margin-bottom:28px;text-align:left;"></div>
+    <button onclick="backToSearch()" style="height:46px;padding:0 28px;background:linear-gradient(135deg,var(--gold),#a8722a);color:var(--bg);border:none;border-radius:var(--r);font-size:14px;font-weight:800;cursor:pointer;font-family:var(--sans);">← 다시 검색</button>
+  </div>
+</div>
 
 <!-- ══ API MODAL ══ -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <button class="modal-x" onclick="closeModal()">✕</button>
     <h2 class="modal-title">API 설정</h2>
-    <p class="modal-desc">국토교통부 키를 입력하면 실거래가·시세변동이 실데이터로 분석됩니다.<br>입력 없이도 OSM 기반 5개 항목은 바로 분석됩니다.</p>
+    <p class="modal-desc">국토교통부 키를 입력하면 실거래가·시세변동이 실데이터로 분석됩니다.<br>없어도 DB 기반 5개 항목은 바로 분석됩니다.</p>
     <div class="field">
       <label>국토교통부 실거래가 API 키</label>
       <input id="molit-in" type="text" placeholder="data.go.kr에서 발급한 서비스 키">
-      <div class="field-hint">
-        <a href="https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15058747" target="_blank">👉 무료 발급 (자동승인, 약 1시간)</a>
-        — 실거래가 · 시세변동 · 가격수준 분석에 필요
-      </div>
+      <div class="field-hint"><a href="https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15058747" target="_blank">👉 무료 발급 (자동승인)</a> — 실거래가 분석에 필요</div>
     </div>
     <button class="modal-save" onclick="saveKeys()">저장하기</button>
-    <div class="modal-note">
-      ✅ <strong>카카오 API 키 불필요</strong> — 위치(Nominatim), 교통·학군·편의시설(Overpass API)은 모두 무료로 자동 분석됩니다.
-    </div>
+    <div class="modal-note">✅ DB에 등록된 아파트만 분석됩니다. 임의 점수 없이 정확한 데이터만 제공합니다.</div>
   </div>
 </div>
 
 <!-- ══ LOADING ══ -->
 <div class="loading" id="loading">
-  <div class="loading-orb">
-    <div class="orb-r"></div><div class="orb-r"></div><div class="orb-r"></div>
-    <div class="orb-c"></div>
-  </div>
+  <div class="loading-orb"><div class="orb-r"></div><div class="orb-r"></div><div class="orb-r"></div><div class="orb-c"></div></div>
   <div class="loading-msg" id="lmsg">분석을 시작합니다…</div>
   <div class="loading-steps">
-    <div class="l-step">📍 위치 조회 (Nominatim OSM)</div>
+    <div class="l-step">📍 아파트 DB 조회</div>
     <div class="l-step">🏙️ 핵심 업무지구 거리 계산</div>
-    <div class="l-step">🚇 교통 분석 (Overpass OSM)</div>
-    <div class="l-step">🏫 학군 분석 (Overpass OSM)</div>
+    <div class="l-step">🚇 교통 접근성 분석</div>
+    <div class="l-step">🏫 학군 분석</div>
     <div class="l-step">🏪 편의시설 분석</div>
     <div class="l-step">📡 실거래가 수집</div>
     <div class="l-step">📊 점수 계산 중</div>
   </div>
 </div>
 
-<!-- ══ ERROR ══ -->
 <div class="err" id="err-box"></div>
 
 <!-- ══ RESULT ══ -->
 <div id="result">
 <div class="rw">
-
-  <!-- 상단 재검색 바 -->
   <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;padding:16px 20px;background:rgba(13,17,23,.85);border:1px solid var(--border);border-radius:var(--r2);backdrop-filter:blur(10px);" class="anim">
-    <div style="font-size:13px;color:var(--g2);">🔍 다른 아파트 검색하기</div>
-    <div style="flex:1;position:relative;">
-      <input id="si2" type="text" placeholder="아파트 이름 입력…" autocomplete="off"
-        style="width:100%;height:40px;background:rgba(255,255,255,.06);border:1px solid var(--border-gold);border-radius:var(--r);padding:0 14px;font-size:13px;color:var(--white);outline:none;font-family:var(--sans);">
-    </div>
-    <button onclick="doSearch2()" style="height:40px;padding:0 20px;background:linear-gradient(135deg,var(--gold),#a8722a);color:var(--bg);border:none;border-radius:var(--r);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--sans);white-space:nowrap;">다시 분석</button>
+    <div style="font-size:13px;color:var(--g2);flex-shrink:0;">🔍 다른 아파트</div>
+    <div style="flex:1;"><input id="si2" type="text" placeholder="아파트 이름 입력…" autocomplete="off" style="width:100%;height:40px;background:rgba(255,255,255,.06);border:1px solid var(--border-gold);border-radius:var(--r);padding:0 14px;font-size:13px;color:var(--white);outline:none;font-family:var(--sans);"></div>
+    <button onclick="doSearch2()" style="height:40px;padding:0 20px;background:linear-gradient(135deg,var(--gold),#a8722a);color:var(--bg);border:none;border-radius:var(--r);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--sans);white-space:nowrap;">분석</button>
     <button onclick="newSearch()" style="height:40px;padding:0 16px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:var(--r);color:var(--g2);font-size:13px;cursor:pointer;font-family:var(--sans);">← 처음으로</button>
   </div>
-
-
-
-  <!-- 1. 결과 히어로 -->
   <div class="r-hero anim">
     <div class="r-hero-grid">
       <div>
         <div class="r-name" id="r-name">아파트명</div>
         <div class="r-addr"><span>📍</span><span id="r-addr">주소</span></div>
         <div class="mini-bars" id="mini-bars"></div>
-        <div class="r-meta">
-          📅 분석일시: <span id="r-date"></span> &nbsp;·&nbsp;
-          위치·교통·학군: OpenStreetMap &nbsp;·&nbsp; 실거래가: 국토교통부
-        </div>
+        <div class="r-meta">📅 분석일시: <span id="r-date"></span> &nbsp;·&nbsp; 데이터: 자체 DB + 국토교통부</div>
       </div>
       <div style="display:flex;gap:28px;align-items:center;flex-shrink:0;">
         <div class="score-ring-wrap">
           <div class="ring-svg-wrap">
             <svg width="130" height="130" viewBox="0 0 130 130">
               <circle class="ring-bg" cx="65" cy="65" r="56"/>
-              <circle class="ring-fill" id="ring-fill" cx="65" cy="65" r="56"
-                stroke-dasharray="351.86" stroke-dashoffset="351.86"/>
+              <circle class="ring-fill" id="ring-fill" cx="65" cy="65" r="56" stroke-dasharray="351.86" stroke-dashoffset="351.86"/>
             </svg>
-            <div class="ring-inner">
-              <div class="ring-num" id="r-score">--</div>
-              <div class="ring-unit">/ 100점</div>
-            </div>
+            <div class="ring-inner"><div class="ring-num" id="r-score">--</div><div class="ring-unit">/ 100점</div></div>
           </div>
         </div>
-        <div class="grade-box">
-          <span class="grade-letter" id="r-grade">-</span>
-          <div class="grade-label" id="r-grade-nm">등급</div>
-        </div>
+        <div class="grade-box"><span class="grade-letter" id="r-grade">-</span><div class="grade-label" id="r-grade-nm">등급</div></div>
       </div>
     </div>
   </div>
-
-  <!-- 2. 7개 점수 카드 -->
-  <div class="sec-hd anim">
-    <div class="sec-n">1</div>
-    <div class="sec-t">항목별 상세 점수</div>
-    <div class="sec-sub">7개 기준 · 가중 합산 100점</div>
-  </div>
+  <div class="sec-hd anim"><div class="sec-n">1</div><div class="sec-t">항목별 상세 점수</div><div class="sec-sub">7개 기준 · 가중 합산 100점</div></div>
   <div class="cards" id="cards"></div>
-
-  <!-- 3. 장단점 -->
-  <div class="sec-hd anim">
-    <div class="sec-n">2</div>
-    <div class="sec-t">장점 &amp; 주의사항</div>
-  </div>
+  <div class="sec-hd anim"><div class="sec-n">2</div><div class="sec-t">장점 &amp; 주의사항</div></div>
   <div class="pc2">
-    <div class="pc-box">
-      <div class="pc-hd good">✅ 이 아파트의 강점</div>
-      <div class="pc-body" id="pros"></div>
-    </div>
-    <div class="pc-box">
-      <div class="pc-hd warn">⚠️ 확인이 필요한 사항</div>
-      <div class="pc-body" id="cons"></div>
-    </div>
+    <div class="pc-box"><div class="pc-hd good">✅ 이 아파트의 강점</div><div class="pc-body" id="pros"></div></div>
+    <div class="pc-box"><div class="pc-hd warn">⚠️ 확인이 필요한 사항</div><div class="pc-body" id="cons"></div></div>
   </div>
-
-  <!-- 4. 투자의견 -->
-  <div class="invest anim">
-    <div class="invest-hd">💡 종합 투자 · 실거주 의견</div>
-    <div class="invest-body" id="inv-body"></div>
-    <div class="invest-tag" id="inv-tag"></div>
-  </div>
-
-  <!-- 5. 레이더 + 핵심시설 -->
-  <div class="sec-hd anim">
-    <div class="sec-n">3</div>
-    <div class="sec-t">시각 분석</div>
-  </div>
+  <div class="invest anim"><div class="invest-hd">💡 종합 투자 · 실거주 의견</div><div class="invest-body" id="inv-body"></div><div class="invest-tag" id="inv-tag"></div></div>
+  <div class="sec-hd anim"><div class="sec-n">3</div><div class="sec-t">시각 분석</div></div>
   <div class="col2">
-    <div class="panel">
-      <div class="panel-hd">🕸️ 항목별 레이더 차트</div>
-      <div style="padding:20px;display:flex;align-items:center;justify-content:center">
-        <canvas id="radar" width="340" height="300"></canvas>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="panel-hd">🏙️ 핵심 업무지구까지 거리</div>
-      <div style="padding:20px">
-        <div class="hub-list" id="hub-list"></div>
-        <div class="hub-legend">
-          <div class="hub-leg"><div class="hub-dot" style="background:#10b981"></div>3km 이하 우수</div>
-          <div class="hub-leg"><div class="hub-dot" style="background:#fbbf24"></div>3~8km 보통</div>
-          <div class="hub-leg"><div class="hub-dot" style="background:#f43f5e"></div>8km↑ 먼 편</div>
-        </div>
-      </div>
-    </div>
+    <div class="panel"><div class="panel-hd">🕸️ 레이더 차트</div><div style="padding:20px;display:flex;align-items:center;justify-content:center"><canvas id="radar" width="340" height="300"></canvas></div></div>
+    <div class="panel"><div class="panel-hd">🏙️ 핵심 업무지구까지 거리</div><div style="padding:20px"><div class="hub-list" id="hub-list"></div><div class="hub-legend"><div class="hub-leg"><div class="hub-dot" style="background:#10b981"></div>3km 이하</div><div class="hub-leg"><div class="hub-dot" style="background:#fbbf24"></div>3~8km</div><div class="hub-leg"><div class="hub-dot" style="background:#f43f5e"></div>8km↑</div></div></div></div>
   </div>
-
-  <!-- 6. 가격 추이 -->
-  <div class="sec-hd anim">
-    <div class="sec-n">4</div>
-    <div class="sec-t">월별 실거래가 추이</div>
-    <div class="sec-sub">㎡당 평균가 (만원) · 최근 6개월</div>
-  </div>
-  <div class="panel anim" style="margin-bottom:20px">
-    <div style="padding:16px 20px">
-      <canvas id="trend" width="1100" height="220"></canvas>
-    </div>
-  </div>
-
-  <!-- 7. 거래 내역 -->
-  <div class="sec-hd anim">
-    <div class="sec-n">5</div>
-    <div class="sec-t">실거래 내역</div>
-    <div class="sec-sub">최근 6개월 · 최대 20건</div>
-  </div>
+  <div class="sec-hd anim"><div class="sec-n">4</div><div class="sec-t">월별 실거래가 추이</div><div class="sec-sub">㎡당 평균가 · 최근 6개월</div></div>
+  <div class="panel anim" style="margin-bottom:20px"><div style="padding:16px 20px"><canvas id="trend" width="1100" height="220"></canvas></div></div>
+  <div class="sec-hd anim"><div class="sec-n">5</div><div class="sec-t">실거래 내역</div><div class="sec-sub">최근 6개월 · 최대 20건</div></div>
   <div class="panel anim">
     <div style="padding:14px 0 0">
       <div class="f-row">
         <button class="fc on" data-a="all">전체</button>
-        <button class="fc" data-a="33-66">33~66㎡ (10~20평)</button>
-        <button class="fc" data-a="66-99">66~99㎡ (20~30평)</button>
-        <button class="fc" data-a="99-132">99~132㎡ (30~40평)</button>
-        <button class="fc" data-a="132-">132㎡ 이상</button>
+        <button class="fc" data-a="33-66">33~66㎡</button>
+        <button class="fc" data-a="66-99">66~99㎡</button>
+        <button class="fc" data-a="99-132">99~132㎡</button>
+        <button class="fc" data-a="132-">132㎡+</button>
       </div>
       <div style="overflow-x:auto">
-        <table class="tbl">
-          <thead><tr>
-            <th>아파트명</th><th>거래일</th><th>전용면적</th>
-            <th>층</th><th>거래가</th><th>㎡당 단가</th>
-          </tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+        <table class="tbl"><thead><tr><th>아파트명</th><th>거래일</th><th>전용면적</th><th>층</th><th>거래가</th><th>㎡당 단가</th></tr></thead><tbody id="tbody"></tbody></table>
       </div>
-      <div style="padding:10px 20px;font-size:11px;color:var(--g3);border-top:1px solid var(--border)">
-        ※ 국토교통부 실거래가 공개시스템 기준. 투자 결정 전 전문가 상담을 권장합니다.
-      </div>
+      <div style="padding:10px 20px;font-size:11px;color:var(--g3);border-top:1px solid var(--border)">※ 국토교통부 실거래가 공개시스템 기준. 투자 결정 전 전문가 상담을 권장합니다.</div>
     </div>
   </div>
+</div>
+</div>
 
-</div><!-- /rw -->
-</div><!-- /result -->
-
-<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
-
 <script>
 /* ══════════════════════════════════════════════════════════════
-   AptScore v4 — 전국 아파트 완전 지원
-   · DB 매칭 아파트: 정밀 점수
-   · DB 미등록 아파트: Nominatim 위치 → 좌표 기반 추정 점수
-   · apt=null 시 모든 함수 안전 처리 (null 에러 완전 제거)
+   AptScore v5 — DB 등록 아파트만 분석 / 임의 점수 없음
 ══════════════════════════════════════════════════════════════ */
 
 const CFG={
@@ -881,7 +882,6 @@ const CFG={
   ok(){return this.molit.length>10;}
 };
 
-/* ── 핵심 업무지구 ── */
 const HUBS=[
   {n:'강남역',    la:37.4980,lo:127.0276,w:3},
   {n:'광화문',    la:37.5752,lo:126.9769,w:3},
@@ -892,138 +892,155 @@ const HUBS=[
   {n:'종로3가',   la:37.5717,lo:126.9920,w:1},
 ];
 
-/* ══════════════════════════════════════
-   전국 주요 아파트 DB
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   전국 아파트 DB
+   각 항목: k(검색키워드배열), n(정식명), a(주소), city(시), gu(구/군), dong(동/읍)
+            la(위도), lo(경도), yr(건축년도), st(인근역), sd(역거리m)
+══════════════════════════════════════════════════════════════ */
 const APT_DB=[
-  /* 서울 강남 */
-  {k:['래미안퍼스티지','퍼스티지'],n:'래미안퍼스티지',a:'서울 서초구 반포동',la:37.5068,lo:127.0046,gu:'서초',yr:2009,st:'신반포역',sd:150},
-  {k:['아크로리버파크'],n:'아크로리버파크',a:'서울 서초구 반포동',la:37.5077,lo:127.0059,gu:'서초',yr:2016,st:'신반포역',sd:180},
-  {k:['반포자이'],n:'반포자이',a:'서울 서초구 반포동',la:37.5090,lo:127.0070,gu:'서초',yr:2009,st:'반포역',sd:350},
-  {k:['신반포자이'],n:'신반포자이',a:'서울 서초구 잠원동',la:37.5114,lo:127.0044,gu:'서초',yr:2020,st:'잠원역',sd:200},
-  {k:['래미안블레스티지'],n:'래미안블레스티지',a:'서울 서초구 반포동',la:37.5012,lo:127.0021,gu:'서초',yr:2018,st:'사당역',sd:500},
-  {k:['디에이치아너힐스','아너힐스'],n:'디에이치아너힐스',a:'서울 강남구 개포동',la:37.4795,lo:127.0576,gu:'강남',yr:2019,st:'개포동역',sd:300},
-  {k:['래미안대치팰리스','대치팰리스'],n:'래미안대치팰리스',a:'서울 강남구 대치동',la:37.4976,lo:127.0630,gu:'강남',yr:2015,st:'대치역',sd:280},
-  {k:['은마아파트','은마'],n:'은마아파트',a:'서울 강남구 대치동',la:37.4969,lo:127.0618,gu:'강남',yr:1979,st:'대치역',sd:400},
-  {k:['타워팰리스'],n:'타워팰리스',a:'서울 강남구 도곡동',la:37.4907,lo:127.0437,gu:'강남',yr:2002,st:'도곡역',sd:200},
-  {k:['도곡렉슬'],n:'도곡렉슬',a:'서울 강남구 도곡동',la:37.4871,lo:127.0436,gu:'강남',yr:2006,st:'매봉역',sd:350},
-  /* 서울 송파/강동 */
-  {k:['헬리오시티'],n:'헬리오시티',a:'서울 강동구 둔촌동',la:37.4991,lo:127.1219,gu:'강동',yr:2018,st:'둔촌동역',sd:150},
-  {k:['올림픽파크포레온'],n:'올림픽파크포레온',a:'서울 강동구 둔촌동',la:37.5002,lo:127.1238,gu:'강동',yr:2023,st:'둔촌동역',sd:280},
-  {k:['잠실엘스'],n:'잠실엘스',a:'서울 송파구 잠실동',la:37.5082,lo:127.0891,gu:'송파',yr:2008,st:'잠실역',sd:600},
-  {k:['잠실리센츠'],n:'잠실리센츠',a:'서울 송파구 잠실동',la:37.5098,lo:127.0920,gu:'송파',yr:2008,st:'잠실역',sd:450},
-  {k:['잠실트리지움'],n:'잠실트리지움',a:'서울 송파구 잠실동',la:37.5110,lo:127.0935,gu:'송파',yr:2008,st:'잠실역',sd:380},
-  {k:['파크리오'],n:'파크리오',a:'서울 송파구 신천동',la:37.5145,lo:127.1005,gu:'송파',yr:2008,st:'잠실역',sd:500},
-  {k:['롯데캐슬이스트폴','이스트폴'],n:'롯데캐슬이스트폴',a:'서울 송파구 문정동',la:37.4878,lo:127.1175,gu:'송파',yr:2023,st:'장지역',sd:200},
-  {k:['위례자이더시티','위례자이'],n:'위례자이더시티',a:'경기 성남시 수정구',la:37.4659,lo:127.1344,gu:'위례',yr:2020,st:'복정역',sd:900},
-  /* 서울 마포/용산 */
-  {k:['마포래미안푸르지오','마포래미안'],n:'마포래미안푸르지오',a:'서울 마포구 아현동',la:37.5551,lo:126.9545,gu:'마포',yr:2014,st:'아현역',sd:350},
-  {k:['공덕파크자이'],n:'공덕파크자이',a:'서울 마포구 공덕동',la:37.5445,lo:126.9509,gu:'마포',yr:2016,st:'공덕역',sd:200},
-  {k:['아크로리버뷰'],n:'아크로리버뷰',a:'서울 용산구 이촌동',la:37.5239,lo:126.9742,gu:'용산',yr:2019,st:'이촌역',sd:180},
-  {k:['래미안첼리투스'],n:'래미안첼리투스',a:'서울 용산구 이촌동',la:37.5244,lo:126.9728,gu:'용산',yr:2016,st:'이촌역',sd:250},
-  /* 서울 성동/광진 */
-  {k:['트리마제'],n:'트리마제',a:'서울 성동구 성수동',la:37.5439,lo:127.0562,gu:'성동',yr:2017,st:'뚝섬역',sd:350},
-  {k:['옥수파크힐스'],n:'옥수파크힐스',a:'서울 성동구 옥수동',la:37.5353,lo:127.0150,gu:'성동',yr:2011,st:'옥수역',sd:200},
-  {k:['아크로리버하임','흑석아크로'],n:'아크로리버하임',a:'서울 동작구 흑석동',la:37.5080,lo:126.9612,gu:'동작',yr:2019,st:'흑석역',sd:180},
-  /* 서울 양천/강서 */
-  {k:['목동신시가지','목동아파트'],n:'목동신시가지',a:'서울 양천구 목동',la:37.5298,lo:126.8705,gu:'양천',yr:1987,st:'오목교역',sd:350},
-  {k:['마곡힐스테이트'],n:'마곡힐스테이트',a:'서울 강서구 마곡동',la:37.5601,lo:126.8305,gu:'강서',yr:2018,st:'마곡역',sd:300},
-  /* 서울 여의도/영등포 */
-  {k:['여의도자이'],n:'여의도자이',a:'서울 영등포구 여의도동',la:37.5240,lo:126.9215,gu:'영등포',yr:2009,st:'여의도역',sd:400},
-  /* 경기 판교/분당 */
-  {k:['힐스테이트판교역','판교힐스테이트'],n:'힐스테이트판교역',a:'경기 성남시 분당구 백현동',la:37.3924,lo:127.1078,gu:'판교',yr:2015,st:'판교역',sd:250},
-  {k:['판교알파리움'],n:'판교알파리움',a:'경기 성남시 분당구 삼평동',la:37.3946,lo:127.1143,gu:'판교',yr:2015,st:'판교역',sd:600},
-  {k:['파크뷰','분당파크뷰'],n:'분당파크뷰',a:'경기 성남시 분당구 수내동',la:37.3827,lo:127.1228,gu:'분당',yr:2004,st:'수내역',sd:300},
-  /* 경기 광교/동탄 */
-  {k:['광교중흥S클래스','광교중흥'],n:'광교중흥S클래스',a:'경기 수원시 영통구 이의동',la:37.2842,lo:127.0476,gu:'광교',yr:2016,st:'광교역',sd:800},
-  {k:['동탄역롯데캐슬','동탄롯데'],n:'동탄역롯데캐슬',a:'경기 화성시 오산동',la:37.2103,lo:127.0753,gu:'동탄',yr:2020,st:'동탄역',sd:300},
-  /* 경기 고양/일산 */
-  {k:['일산자이'],n:'일산자이',a:'경기 고양시 일산서구 대화동',la:37.6778,lo:126.7508,gu:'일산',yr:2008,st:'대화역',sd:400},
-  {k:['킨텍스꿈에그린'],n:'킨텍스꿈에그린',a:'경기 고양시 일산서구 대화동',la:37.6799,lo:126.7380,gu:'일산',yr:2014,st:'대화역',sd:650},
-  /* 경기 하남/남양주 */
-  {k:['하남미사','미사강변'],n:'하남미사강변푸르지오',a:'경기 하남시 망월동',la:37.5515,lo:127.2080,gu:'하남',yr:2015,st:'미사역',sd:400},
-  {k:['다산신도시','다산래미안'],n:'다산래미안',a:'경기 남양주시 다산동',la:37.6049,lo:127.2105,gu:'남양주',yr:2019,st:'다산역',sd:400},
-  /* 경기 김포 */
-  {k:['한강신도시','김포한강'],n:'김포한강신도시',a:'경기 김포시 구래동',la:37.6147,lo:126.7232,gu:'김포',yr:2012,st:'구래역',sd:500},
-  {k:['김포풍무','풍무동아파트','풍무역'],n:'김포풍무센트럴자이',a:'경기 김포시 풍무동',la:37.6192,lo:126.7548,gu:'김포',yr:2021,st:'풍무역',sd:300},
-  {k:['풍무동서해','풍무서해','서해아파트'],n:'풍무동서해아파트',a:'경기 김포시 풍무동',la:37.6180,lo:126.7530,gu:'김포',yr:2010,st:'풍무역',sd:600},
-  {k:['김포골드라인','감정역'],n:'김포감정힐스테이트',a:'경기 김포시 감정동',la:37.6071,lo:126.7139,gu:'김포',yr:2018,st:'사우역',sd:400},
-  {k:['고촌아파트','고촌역'],n:'고촌힐스테이트',a:'경기 김포시 고촌읍',la:37.5934,lo:126.7523,gu:'김포',yr:2015,st:'고촌역',sd:350},
-  {k:['운양역','운양동'],n:'김포운양역한화포레나',a:'경기 김포시 운양동',la:37.6250,lo:126.7356,gu:'김포',yr:2020,st:'운양역',sd:250},
-  {k:['장기역','장기동아파트'],n:'장기역롯데캐슬',a:'경기 김포시 장기동',la:37.6307,lo:126.7266,gu:'김포',yr:2019,st:'장기역',sd:200},
-  /* 인천 */
-  {k:['송도자이','송도아파트'],n:'송도자이하버뷰',a:'인천 연수구 송도동',la:37.3846,lo:126.6528,gu:'송도',yr:2016,st:'인천대입구역',sd:700},
-  {k:['검단신도시','검단아파트'],n:'검단힐스테이트',a:'인천 서구 왕길동',la:37.5892,lo:126.7005,gu:'검단',yr:2022,st:'완정역',sd:600},
-  {k:['부평래미안'],n:'부평래미안',a:'인천 부평구 부평동',la:37.4897,lo:126.7237,gu:'부평',yr:2010,st:'부평역',sd:400},
-  {k:['청라국제도시','청라아파트'],n:'청라국제도시SK뷰',a:'인천 서구 청라동',la:37.5404,lo:126.6485,gu:'서구',yr:2014,st:'청라국제도시역',sd:600},
-  {k:['계양테크노밸리','계양신도시'],n:'계양테크노밸리중흥',a:'인천 계양구 박촌동',la:37.5678,lo:126.7120,gu:'계양',yr:2024,st:'귤현역',sd:800},
-  /* 경기 부천/광명/시흥 */
-  {k:['상동래미안','부천상동'],n:'상동래미안',a:'경기 부천시 상동',la:37.4923,lo:126.7766,gu:'부천',yr:2003,st:'상동역',sd:350},
-  {k:['광명푸르지오','광명소하'],n:'광명소하푸르지오',a:'경기 광명시 소하동',la:37.4413,lo:126.8717,gu:'광명',yr:2016,st:'광명사거리역',sd:600},
-  {k:['시흥장현','시흥자이'],n:'시흥장현자이',a:'경기 시흥시 장현동',la:37.4069,lo:126.8159,gu:'시흥',yr:2021,st:'시흥대야역',sd:900},
-  /* 경기 의정부/양주/파주 */
-  {k:['의정부롯데','의정부래미안'],n:'의정부롯데캐슬',a:'경기 의정부시 의정부동',la:37.7380,lo:127.0349,gu:'의정부',yr:2018,st:'의정부역',sd:300},
-  {k:['양주옥정','옥정신도시'],n:'양주옥정롯데캐슬',a:'경기 양주시 옥정동',la:37.8093,lo:127.0108,gu:'양주',yr:2020,st:'회정역',sd:700},
-  {k:['운정신도시','파주운정'],n:'운정신도시아이파크',a:'경기 파주시 목동동',la:37.7152,lo:126.7697,gu:'파주',yr:2014,st:'운정역',sd:800},
-  {k:['교하자이','파주교하'],n:'파주교하자이',a:'경기 파주시 교하동',la:37.7341,lo:126.7530,gu:'파주',yr:2018,st:'야당역',sd:700},
-  /* 경기 수원/안양/군포 */
-  {k:['영통아이파크','수원영통'],n:'영통아이파크',a:'경기 수원시 영통구 영통동',la:37.2619,lo:127.0511,gu:'수원',yr:2007,st:'영통역',sd:250},
-  {k:['평촌래미안'],n:'평촌래미안',a:'경기 안양시 동안구 평촌동',la:37.3889,lo:126.9458,gu:'안양',yr:2003,st:'평촌역',sd:500},
-  {k:['산본자이'],n:'산본자이',a:'경기 군포시 산본동',la:37.3588,lo:126.9295,gu:'군포',yr:2010,st:'산본역',sd:400},
-  /* 경기 평택/화성/오산 */
-  {k:['평택지제역더샵','지제역더샵'],n:'평택지제역더샵',a:'경기 평택시 세교동',la:37.0198,lo:127.0701,gu:'평택',yr:2022,st:'지제역',sd:250},
-  {k:['동탄자이파밀리에','동탄자이'],n:'동탄자이파밀리에',a:'경기 화성시 반송동',la:37.2253,lo:127.0850,gu:'동탄',yr:2016,st:'동탄역',sd:1200},
-  /* 경기 용인/기흥 */
-  {k:['기흥역센트럴자이','기흥역자이'],n:'기흥역센트럴자이',a:'경기 용인시 기흥구 동백동',la:37.2749,lo:127.1145,gu:'기흥',yr:2020,st:'기흥역',sd:300},
-  {k:['수지래미안','수지구청역'],n:'수지래미안',a:'경기 용인시 수지구 풍덕천동',la:37.3228,lo:127.0936,gu:'수지',yr:2008,st:'수지구청역',sd:400},
-  {k:['광교아이파크'],n:'광교아이파크',a:'경기 수원시 영통구 이의동',la:37.2868,lo:127.0457,gu:'광교',yr:2015,st:'광교역',sd:600},
-  /* 부산 */
-  {k:['해운대자이'],n:'해운대자이',a:'부산 해운대구 우동',la:35.1576,lo:129.1604,gu:'해운대',yr:2011,st:'해운대역',sd:400},
-  {k:['엘시티','해운대엘시티'],n:'엘시티더샵',a:'부산 해운대구 중동',la:35.1618,lo:129.1633,gu:'해운대',yr:2019,st:'해운대역',sd:700},
-  {k:['마린시티자이'],n:'마린시티자이',a:'부산 해운대구 우동',la:35.1604,lo:129.1527,gu:'해운대',yr:2007,st:'동백역',sd:350},
-  {k:['사직롯데캐슬'],n:'사직롯데캐슬',a:'부산 동래구 사직동',la:35.1978,lo:129.0820,gu:'동래',yr:2015,st:'사직역',sd:250},
-  {k:['수영자이'],n:'수영자이',a:'부산 수영구 광안동',la:35.1527,lo:129.1217,gu:'수영',yr:2018,st:'수영역',sd:600},
-  {k:['동래래미안아이파크'],n:'동래래미안아이파크',a:'부산 동래구 온천동',la:35.2068,lo:129.0842,gu:'동래',yr:2019,st:'온천장역',sd:400},
-  {k:['부산시민공원래미안'],n:'부산시민공원래미안',a:'부산 연제구 거제동',la:35.1793,lo:129.0633,gu:'연제',yr:2016,st:'거제역',sd:350},
-  /* 대구 */
-  {k:['범어자이','수성자이'],n:'범어자이',a:'대구 수성구 범어동',la:35.8613,lo:128.6217,gu:'수성',yr:2012,st:'범어역',sd:350},
-  {k:['수성힐스테이트'],n:'수성힐스테이트',a:'대구 수성구 수성동',la:35.8587,lo:128.6283,gu:'수성',yr:2010,st:'수성구민운동장역',sd:400},
-  {k:['연경지구','연경힐스테이트'],n:'연경힐스테이트',a:'대구 북구 연경동',la:35.9118,lo:128.5781,gu:'북구',yr:2022,st:'팔달역',sd:1800},
-  /* 대전/세종/광주/울산 */
-  {k:['세종자이','세종래미안'],n:'세종자이',a:'세종특별자치시 나성동',la:36.5032,lo:127.2703,gu:'세종',yr:2016,st:'세종청사역',sd:800},
-  {k:['도안신도시','도안래미안'],n:'도안래미안',a:'대전 서구 도안동',la:36.3638,lo:127.3506,gu:'서구',yr:2015,st:'정부청사역',sd:1200},
-  {k:['상무자이','광주상무'],n:'상무자이',a:'광주 서구 치평동',la:35.1521,lo:126.8526,gu:'서구',yr:2013,st:'상무역',sd:300},
-  {k:['울산삼산자이'],n:'울산삼산자이',a:'울산 남구 삼산동',la:35.5362,lo:129.3286,gu:'남구',yr:2012,st:'울산역',sd:2000},
-  /* 경기 가평/양평/이천/여주 */
-  {k:['가평아파트','가평자이'],n:'가평자이',a:'경기 가평군 가평읍',la:37.8313,lo:127.5097,gu:'가평',yr:2018,st:'가평역',sd:600},
-  {k:['이천자이','이천아파트'],n:'이천자이',a:'경기 이천시 증포동',la:37.2716,lo:127.4345,gu:'이천',yr:2017,st:'이천역',sd:500},
-  /* 경기 안산/반월 */
-  {k:['안산고잔','안산자이'],n:'안산고잔자이',a:'경기 안산시 단원구 고잔동',la:37.3189,lo:126.8307,gu:'안산',yr:2015,st:'중앙역',sd:300},
+  /* ── 서울 서초구 ── */
+  {k:['래미안퍼스티지','퍼스티지','반포퍼스티지'],n:'래미안퍼스티지',city:'서울',gu:'서초구',dong:'반포동',a:'서울 서초구 반포동',la:37.5068,lo:127.0046,yr:2009,st:'신반포역',sd:150},
+  {k:['아크로리버파크','반포아크로'],n:'아크로리버파크',city:'서울',gu:'서초구',dong:'반포동',a:'서울 서초구 반포동',la:37.5077,lo:127.0059,yr:2016,st:'신반포역',sd:180},
+  {k:['반포자이'],n:'반포자이',city:'서울',gu:'서초구',dong:'반포동',a:'서울 서초구 반포동',la:37.5090,lo:127.0070,yr:2009,st:'반포역',sd:350},
+  {k:['신반포자이','잠원자이'],n:'신반포자이',city:'서울',gu:'서초구',dong:'잠원동',a:'서울 서초구 잠원동',la:37.5114,lo:127.0044,yr:2020,st:'잠원역',sd:200},
+  {k:['래미안블레스티지','블레스티지'],n:'래미안블레스티지',city:'서울',gu:'서초구',dong:'반포동',a:'서울 서초구 반포동',la:37.5012,lo:127.0021,yr:2018,st:'사당역',sd:500},
+  {k:['서초래미안'],n:'서초래미안',city:'서울',gu:'서초구',dong:'서초동',a:'서울 서초구 서초동',la:37.4941,lo:126.9983,yr:2011,st:'서초역',sd:550},
+  /* ── 서울 강남구 ── */
+  {k:['디에이치아너힐스','아너힐스'],n:'디에이치아너힐스',city:'서울',gu:'강남구',dong:'개포동',a:'서울 강남구 개포동',la:37.4795,lo:127.0576,yr:2019,st:'개포동역',sd:300},
+  {k:['래미안대치팰리스','대치팰리스'],n:'래미안대치팰리스',city:'서울',gu:'강남구',dong:'대치동',a:'서울 강남구 대치동',la:37.4976,lo:127.0630,yr:2015,st:'대치역',sd:280},
+  {k:['은마아파트','은마'],n:'은마아파트',city:'서울',gu:'강남구',dong:'대치동',a:'서울 강남구 대치동',la:37.4969,lo:127.0618,yr:1979,st:'대치역',sd:400},
+  {k:['타워팰리스','도곡타워'],n:'타워팰리스',city:'서울',gu:'강남구',dong:'도곡동',a:'서울 강남구 도곡동',la:37.4907,lo:127.0437,yr:2002,st:'도곡역',sd:200},
+  {k:['도곡렉슬','렉슬'],n:'도곡렉슬',city:'서울',gu:'강남구',dong:'도곡동',a:'서울 강남구 도곡동',la:37.4871,lo:127.0436,yr:2006,st:'매봉역',sd:350},
+  {k:['청담자이'],n:'청담자이',city:'서울',gu:'강남구',dong:'청담동',a:'서울 강남구 청담동',la:37.5236,lo:127.0502,yr:2012,st:'청담역',sd:600},
+  /* ── 서울 송파구 ── */
+  {k:['헬리오시티','둔촌헬리오'],n:'헬리오시티',city:'서울',gu:'강동구',dong:'둔촌동',a:'서울 강동구 둔촌동',la:37.4991,lo:127.1219,yr:2018,st:'둔촌동역',sd:150},
+  {k:['올림픽파크포레온','포레온'],n:'올림픽파크포레온',city:'서울',gu:'강동구',dong:'둔촌동',a:'서울 강동구 둔촌동',la:37.5002,lo:127.1238,yr:2023,st:'둔촌동역',sd:280},
+  {k:['잠실엘스','엘스'],n:'잠실엘스',city:'서울',gu:'송파구',dong:'잠실동',a:'서울 송파구 잠실동',la:37.5082,lo:127.0891,yr:2008,st:'잠실역',sd:600},
+  {k:['잠실리센츠','리센츠'],n:'잠실리센츠',city:'서울',gu:'송파구',dong:'잠실동',a:'서울 송파구 잠실동',la:37.5098,lo:127.0920,yr:2008,st:'잠실역',sd:450},
+  {k:['잠실트리지움','트리지움'],n:'잠실트리지움',city:'서울',gu:'송파구',dong:'잠실동',a:'서울 송파구 잠실동',la:37.5110,lo:127.0935,yr:2008,st:'잠실역',sd:380},
+  {k:['파크리오'],n:'파크리오',city:'서울',gu:'송파구',dong:'신천동',a:'서울 송파구 신천동',la:37.5145,lo:127.1005,yr:2008,st:'잠실역',sd:500},
+  {k:['롯데캐슬이스트폴','이스트폴'],n:'롯데캐슬이스트폴',city:'서울',gu:'송파구',dong:'문정동',a:'서울 송파구 문정동',la:37.4878,lo:127.1175,yr:2023,st:'장지역',sd:200},
+  /* ── 서울 마포구 ── */
+  {k:['마포래미안푸르지오','마포래미안','마포푸르지오'],n:'마포래미안푸르지오',city:'서울',gu:'마포구',dong:'아현동',a:'서울 마포구 아현동',la:37.5551,lo:126.9545,yr:2014,st:'아현역',sd:350},
+  {k:['공덕파크자이','공덕자이'],n:'공덕파크자이',city:'서울',gu:'마포구',dong:'공덕동',a:'서울 마포구 공덕동',la:37.5445,lo:126.9509,yr:2016,st:'공덕역',sd:200},
+  {k:['DMC파크뷰자이','상암DMC'],n:'DMC파크뷰자이',city:'서울',gu:'마포구',dong:'상암동',a:'서울 마포구 상암동',la:37.5729,lo:126.8965,yr:2008,st:'디지털미디어시티역',sd:500},
+  /* ── 서울 용산구 ── */
+  {k:['아크로리버뷰','이촌아크로'],n:'아크로리버뷰',city:'서울',gu:'용산구',dong:'이촌동',a:'서울 용산구 이촌동',la:37.5239,lo:126.9742,yr:2019,st:'이촌역',sd:180},
+  {k:['래미안첼리투스','첼리투스'],n:'래미안첼리투스',city:'서울',gu:'용산구',dong:'이촌동',a:'서울 용산구 이촌동',la:37.5244,lo:126.9728,yr:2016,st:'이촌역',sd:250},
+  /* ── 서울 성동구 ── */
+  {k:['트리마제','성수트리마제'],n:'트리마제',city:'서울',gu:'성동구',dong:'성수동',a:'서울 성동구 성수동',la:37.5439,lo:127.0562,yr:2017,st:'뚝섬역',sd:350},
+  {k:['옥수파크힐스','옥수역'],n:'옥수파크힐스',city:'서울',gu:'성동구',dong:'옥수동',a:'서울 성동구 옥수동',la:37.5353,lo:127.0150,yr:2011,st:'옥수역',sd:200},
+  {k:['왕십리자이','왕십리센트라스'],n:'왕십리자이',city:'서울',gu:'성동구',dong:'행당동',a:'서울 성동구 행당동',la:37.5609,lo:127.0367,yr:2016,st:'왕십리역',sd:300},
+  /* ── 서울 동작구 ── */
+  {k:['아크로리버하임','흑석아크로','흑석자이'],n:'아크로리버하임',city:'서울',gu:'동작구',dong:'흑석동',a:'서울 동작구 흑석동',la:37.5080,lo:126.9612,yr:2019,st:'흑석역',sd:180},
+  {k:['사당아이파크','사당롯데'],n:'사당아이파크',city:'서울',gu:'동작구',dong:'사당동',a:'서울 동작구 사당동',la:37.4757,lo:126.9788,yr:2015,st:'사당역',sd:200},
+  /* ── 서울 양천구 ── */
+  {k:['목동신시가지','목동아파트','오목교'],n:'목동신시가지',city:'서울',gu:'양천구',dong:'목동',a:'서울 양천구 목동',la:37.5298,lo:126.8705,yr:1987,st:'오목교역',sd:350},
+  {k:['목동힐스테이트'],n:'목동힐스테이트',city:'서울',gu:'양천구',dong:'목동',a:'서울 양천구 목동',la:37.5276,lo:126.8742,yr:2007,st:'목동역',sd:600},
+  /* ── 서울 강서구 ── */
+  {k:['마곡힐스테이트','마곡역'],n:'마곡힐스테이트',city:'서울',gu:'강서구',dong:'마곡동',a:'서울 강서구 마곡동',la:37.5601,lo:126.8305,yr:2018,st:'마곡역',sd:300},
+  {k:['강서롯데캐슬','마곡롯데'],n:'강서마곡롯데캐슬',city:'서울',gu:'강서구',dong:'마곡동',a:'서울 강서구 마곡동',la:37.5573,lo:126.8294,yr:2019,st:'마곡나루역',sd:400},
+  /* ── 서울 영등포구 ── */
+  {k:['여의도자이','여의도아이파크'],n:'여의도자이',city:'서울',gu:'영등포구',dong:'여의도동',a:'서울 영등포구 여의도동',la:37.5240,lo:126.9215,yr:2009,st:'여의도역',sd:400},
+  {k:['당산래미안','당산에스티지'],n:'래미안에스티지',city:'서울',gu:'영등포구',dong:'당산동',a:'서울 영등포구 당산동',la:37.5346,lo:126.9010,yr:2010,st:'당산역',sd:350},
+  /* ── 서울 노원구 ── */
+  {k:['상계주공','상계동주공'],n:'상계주공',city:'서울',gu:'노원구',dong:'상계동',a:'서울 노원구 상계동',la:37.6578,lo:127.0694,yr:1988,st:'노원역',sd:400},
+  /* ── 서울 은평구 ── */
+  {k:['녹번힐스테이트','녹번역'],n:'힐스테이트녹번',city:'서울',gu:'은평구',dong:'녹번동',a:'서울 은평구 녹번동',la:37.5981,lo:126.9319,yr:2018,st:'녹번역',sd:150},
+  /* ── 경기 성남 분당/판교 ── */
+  {k:['힐스테이트판교역','판교힐스테이트'],n:'힐스테이트판교역',city:'경기',gu:'성남시',dong:'백현동',a:'경기 성남시 분당구 백현동',la:37.3924,lo:127.1078,yr:2015,st:'판교역',sd:250},
+  {k:['판교알파리움','알파리움'],n:'판교알파리움',city:'경기',gu:'성남시',dong:'삼평동',a:'경기 성남시 분당구 삼평동',la:37.3946,lo:127.1143,yr:2015,st:'판교역',sd:600},
+  {k:['판교푸르지오그랑블','판교푸르지오'],n:'판교푸르지오그랑블',city:'경기',gu:'성남시',dong:'백현동',a:'경기 성남시 분당구 백현동',la:37.3935,lo:127.1052,yr:2017,st:'판교역',sd:450},
+  {k:['분당파크뷰','수내파크뷰'],n:'분당파크뷰',city:'경기',gu:'성남시',dong:'수내동',a:'경기 성남시 분당구 수내동',la:37.3827,lo:127.1228,yr:2004,st:'수내역',sd:300},
+  {k:['이매촌한신','이매역'],n:'이매촌한신',city:'경기',gu:'성남시',dong:'이매동',a:'경기 성남시 분당구 이매동',la:37.3948,lo:127.1267,yr:1993,st:'이매역',sd:250},
+  /* ── 경기 광교/동탄/위례 ── */
+  {k:['광교중흥S클래스','광교중흥'],n:'광교중흥S클래스',city:'경기',gu:'수원시',dong:'이의동',a:'경기 수원시 영통구 이의동',la:37.2842,lo:127.0476,yr:2016,st:'광교역',sd:800},
+  {k:['광교아이파크'],n:'광교아이파크',city:'경기',gu:'수원시',dong:'이의동',a:'경기 수원시 영통구 이의동',la:37.2868,lo:127.0457,yr:2015,st:'광교역',sd:600},
+  {k:['힐스테이트광교','광교힐스테이트'],n:'힐스테이트광교',city:'경기',gu:'수원시',dong:'이의동',a:'경기 수원시 영통구 이의동',la:37.2878,lo:127.0510,yr:2016,st:'광교중앙역',sd:400},
+  {k:['동탄역롯데캐슬','동탄롯데'],n:'동탄역롯데캐슬',city:'경기',gu:'화성시',dong:'오산동',a:'경기 화성시 오산동',la:37.2103,lo:127.0753,yr:2020,st:'동탄역',sd:300},
+  {k:['동탄메타폴리스','동탄메타'],n:'동탄메타폴리스',city:'경기',gu:'화성시',dong:'청계동',a:'경기 화성시 청계동',la:37.2089,lo:127.0771,yr:2018,st:'동탄역',sd:500},
+  {k:['동탄자이파밀리에','동탄자이'],n:'동탄자이파밀리에',city:'경기',gu:'화성시',dong:'반송동',a:'경기 화성시 반송동',la:37.2253,lo:127.0850,yr:2016,st:'동탄역',sd:1200},
+  {k:['위례자이더시티','위례자이'],n:'위례자이더시티',city:'경기',gu:'성남시',dong:'창곡동',a:'경기 성남시 수정구 창곡동',la:37.4659,lo:127.1344,yr:2020,st:'복정역',sd:900},
+  /* ── 경기 고양/일산 ── */
+  {k:['일산자이'],n:'일산자이',city:'경기',gu:'고양시',dong:'대화동',a:'경기 고양시 일산서구 대화동',la:37.6778,lo:126.7508,yr:2008,st:'대화역',sd:400},
+  {k:['킨텍스꿈에그린','킨텍스아파트'],n:'킨텍스꿈에그린',city:'경기',gu:'고양시',dong:'대화동',a:'경기 고양시 일산서구 대화동',la:37.6799,lo:126.7380,yr:2014,st:'대화역',sd:650},
+  {k:['고양장항아이파크','장항지구'],n:'고양장항아이파크',city:'경기',gu:'고양시',dong:'장항동',a:'경기 고양시 덕양구 장항동',la:37.6540,lo:126.8275,yr:2019,st:'원흥역',sd:350},
+  /* ── 경기 하남/남양주 ── */
+  {k:['하남미사강변','미사강변','미사리'],n:'하남미사강변푸르지오',city:'경기',gu:'하남시',dong:'망월동',a:'경기 하남시 망월동',la:37.5515,lo:127.2080,yr:2015,st:'미사역',sd:400},
+  {k:['다산래미안','다산신도시'],n:'다산래미안',city:'경기',gu:'남양주시',dong:'다산동',a:'경기 남양주시 다산동',la:37.6049,lo:127.2105,yr:2019,st:'다산역',sd:400},
+  {k:['별내자이'],n:'별내자이',city:'경기',gu:'남양주시',dong:'별내동',a:'경기 남양주시 별내동',la:37.6390,lo:127.1380,yr:2015,st:'별내역',sd:600},
+  /* ── 경기 김포 ── */
+  {k:['김포한강신도시','김포한강','한강메트로자이'],n:'한강메트로자이',city:'경기',gu:'김포시',dong:'구래동',a:'경기 김포시 구래동',la:37.6147,lo:126.7232,yr:2012,st:'구래역',sd:500},
+  {k:['김포풍무자이','풍무자이','풍무센트럴자이'],n:'김포풍무센트럴자이',city:'경기',gu:'김포시',dong:'풍무동',a:'경기 김포시 풍무동',la:37.6192,lo:126.7548,yr:2021,st:'풍무역',sd:300},
+  {k:['풍무동서해','풍무서해','서해아파트','풍무서해그랑블'],n:'풍무서해그랑블',city:'경기',gu:'김포시',dong:'풍무동',a:'경기 김포시 풍무동',la:37.6180,lo:126.7530,yr:2015,st:'풍무역',sd:600},
+  {k:['풍무롯데캐슬','풍무캐슬'],n:'풍무롯데캐슬',city:'경기',gu:'김포시',dong:'풍무동',a:'경기 김포시 풍무동',la:37.6185,lo:126.7560,yr:2018,st:'풍무역',sd:400},
+  {k:['풍무e편한세상','풍무이편한'],n:'풍무e편한세상',city:'경기',gu:'김포시',dong:'풍무동',a:'경기 김포시 풍무동',la:37.6175,lo:126.7545,yr:2014,st:'풍무역',sd:500},
+  {k:['김포감정힐스테이트','감정동힐스테이트'],n:'김포감정힐스테이트',city:'경기',gu:'김포시',dong:'감정동',a:'경기 김포시 감정동',la:37.6071,lo:126.7139,yr:2018,st:'사우역',sd:400},
+  {k:['고촌힐스테이트','고촌아파트'],n:'고촌힐스테이트',city:'경기',gu:'김포시',dong:'고촌읍',a:'경기 김포시 고촌읍',la:37.5934,lo:126.7523,yr:2015,st:'고촌역',sd:350},
+  {k:['고촌롯데캐슬','고촌캐슬','고촌롯데'],n:'고촌롯데캐슬',city:'경기',gu:'김포시',dong:'고촌읍',a:'경기 김포시 고촌읍',la:37.5940,lo:126.7510,yr:2017,st:'고촌역',sd:280},
+  {k:['운양역한화포레나','운양역아파트'],n:'운양역한화포레나',city:'경기',gu:'김포시',dong:'운양동',a:'경기 김포시 운양동',la:37.6250,lo:126.7356,yr:2020,st:'운양역',sd:250},
+  {k:['장기역롯데캐슬','장기동아파트','장기역캐슬'],n:'장기역롯데캐슬',city:'경기',gu:'김포시',dong:'장기동',a:'경기 김포시 장기동',la:37.6307,lo:126.7266,yr:2019,st:'장기역',sd:200},
+  {k:['걸포북변역','걸포아파트'],n:'걸포북변역모아미래도',city:'경기',gu:'김포시',dong:'걸포동',a:'경기 김포시 걸포동',la:37.6220,lo:126.7180,yr:2021,st:'걸포북변역',sd:200},
+  {k:['사우동자이','사우자이','사우힐스'],n:'사우동자이',city:'경기',gu:'김포시',dong:'사우동',a:'경기 김포시 사우동',la:37.6162,lo:126.7160,yr:2016,st:'사우역',sd:300},
+  /* ── 인천 ── */
+  {k:['송도자이하버뷰','송도자이','송도아파트'],n:'송도자이하버뷰',city:'인천',gu:'연수구',dong:'송도동',a:'인천 연수구 송도동',la:37.3846,lo:126.6528,yr:2016,st:'인천대입구역',sd:700},
+  {k:['송도더샵','송도센트럴파크'],n:'송도더샵센트럴파크',city:'인천',gu:'연수구',dong:'송도동',a:'인천 연수구 송도동',la:37.3816,lo:126.6568,yr:2011,st:'센트럴파크역',sd:350},
+  {k:['검단힐스테이트','검단신도시'],n:'검단힐스테이트',city:'인천',gu:'서구',dong:'왕길동',a:'인천 서구 왕길동',la:37.5892,lo:126.7005,yr:2022,st:'완정역',sd:600},
+  {k:['청라SK뷰','청라국제도시'],n:'청라국제도시SK뷰',city:'인천',gu:'서구',dong:'청라동',a:'인천 서구 청라동',la:37.5404,lo:126.6485,yr:2014,st:'청라국제도시역',sd:600},
+  {k:['부평래미안'],n:'부평래미안',city:'인천',gu:'부평구',dong:'부평동',a:'인천 부평구 부평동',la:37.4897,lo:126.7237,yr:2010,st:'부평역',sd:400},
+  /* ── 경기 파주 ── */
+  {k:['운정신도시아이파크','파주운정'],n:'운정신도시아이파크',city:'경기',gu:'파주시',dong:'목동동',a:'경기 파주시 목동동',la:37.7152,lo:126.7697,yr:2014,st:'운정역',sd:800},
+  {k:['파주교하자이','교하자이'],n:'파주교하자이',city:'경기',gu:'파주시',dong:'교하동',a:'경기 파주시 교하동',la:37.7341,lo:126.7530,yr:2018,st:'야당역',sd:700},
+  /* ── 경기 의정부/양주 ── */
+  {k:['의정부롯데캐슬','의정부롯데'],n:'의정부롯데캐슬',city:'경기',gu:'의정부시',dong:'의정부동',a:'경기 의정부시 의정부동',la:37.7380,lo:127.0349,yr:2018,st:'의정부역',sd:300},
+  {k:['양주옥정롯데','옥정신도시'],n:'양주옥정롯데캐슬',city:'경기',gu:'양주시',dong:'옥정동',a:'경기 양주시 옥정동',la:37.8093,lo:127.0108,yr:2020,st:'회정역',sd:700},
+  /* ── 경기 수원/안양 ── */
+  {k:['영통아이파크','영통역'],n:'영통아이파크',city:'경기',gu:'수원시',dong:'영통동',a:'경기 수원시 영통구 영통동',la:37.2619,lo:127.0511,yr:2007,st:'영통역',sd:250},
+  {k:['래미안영통마스터힐스','망포역'],n:'래미안영통마스터힐스',city:'경기',gu:'수원시',dong:'망포동',a:'경기 수원시 영통구 망포동',la:37.2559,lo:127.0455,yr:2022,st:'망포역',sd:200},
+  {k:['평촌래미안','범계역'],n:'평촌래미안',city:'경기',gu:'안양시',dong:'평촌동',a:'경기 안양시 동안구 평촌동',la:37.3889,lo:126.9458,yr:2003,st:'평촌역',sd:500},
+  /* ── 경기 평택 ── */
+  {k:['평택지제역더샵','지제역더샵'],n:'평택지제역더샵',city:'경기',gu:'평택시',dong:'세교동',a:'경기 평택시 세교동',la:37.0198,lo:127.0701,yr:2022,st:'지제역',sd:250},
+  /* ── 경기 용인 ── */
+  {k:['기흥역센트럴자이','기흥역자이'],n:'기흥역센트럴자이',city:'경기',gu:'용인시',dong:'동백동',a:'경기 용인시 기흥구 동백동',la:37.2749,lo:127.1145,yr:2020,st:'기흥역',sd:300},
+  {k:['수지래미안','수지구청역'],n:'수지래미안',city:'경기',gu:'용인시',dong:'풍덕천동',a:'경기 용인시 수지구 풍덕천동',la:37.3228,lo:127.0936,yr:2008,st:'수지구청역',sd:400},
+  /* ── 부산 ── */
+  {k:['해운대자이'],n:'해운대자이',city:'부산',gu:'해운대구',dong:'우동',a:'부산 해운대구 우동',la:35.1576,lo:129.1604,yr:2011,st:'해운대역',sd:400},
+  {k:['엘시티더샵','해운대엘시티'],n:'엘시티더샵',city:'부산',gu:'해운대구',dong:'중동',a:'부산 해운대구 중동',la:35.1618,lo:129.1633,yr:2019,st:'해운대역',sd:700},
+  {k:['마린시티자이'],n:'마린시티자이',city:'부산',gu:'해운대구',dong:'우동',a:'부산 해운대구 우동',la:35.1604,lo:129.1527,yr:2007,st:'동백역',sd:350},
+  {k:['사직롯데캐슬'],n:'사직롯데캐슬',city:'부산',gu:'동래구',dong:'사직동',a:'부산 동래구 사직동',la:35.1978,lo:129.0820,yr:2015,st:'사직역',sd:250},
+  {k:['동래래미안아이파크'],n:'동래래미안아이파크',city:'부산',gu:'동래구',dong:'온천동',a:'부산 동래구 온천동',la:35.2068,lo:129.0842,yr:2019,st:'온천장역',sd:400},
+  {k:['수영자이'],n:'수영자이',city:'부산',gu:'수영구',dong:'광안동',a:'부산 수영구 광안동',la:35.1527,lo:129.1217,yr:2018,st:'수영역',sd:600},
+  {k:['부산시민공원래미안','연제래미안'],n:'부산시민공원래미안',city:'부산',gu:'연제구',dong:'거제동',a:'부산 연제구 거제동',la:35.1793,lo:129.0633,yr:2016,st:'거제역',sd:350},
+  /* ── 대구 ── */
+  {k:['범어자이','수성자이'],n:'범어자이',city:'대구',gu:'수성구',dong:'범어동',a:'대구 수성구 범어동',la:35.8613,lo:128.6217,yr:2012,st:'범어역',sd:350},
+  {k:['수성힐스테이트'],n:'수성힐스테이트',city:'대구',gu:'수성구',dong:'수성동',a:'대구 수성구 수성동',la:35.8587,lo:128.6283,yr:2010,st:'수성구민운동장역',sd:400},
+  {k:['연경힐스테이트','연경지구'],n:'연경힐스테이트',city:'대구',gu:'북구',dong:'연경동',a:'대구 북구 연경동',la:35.9118,lo:128.5781,yr:2022,st:'팔달역',sd:1800},
+  /* ── 대전/세종/광주/울산 ── */
+  {k:['세종자이'],n:'세종자이',city:'세종',gu:'세종시',dong:'나성동',a:'세종특별자치시 나성동',la:36.5032,lo:127.2703,yr:2016,st:'세종청사역',sd:800},
+  {k:['도안래미안','도안신도시'],n:'도안래미안',city:'대전',gu:'서구',dong:'도안동',a:'대전 서구 도안동',la:36.3638,lo:127.3506,yr:2015,st:'정부청사역',sd:1200},
+  {k:['상무자이','광주상무'],n:'상무자이',city:'광주',gu:'서구',dong:'치평동',a:'광주 서구 치평동',la:35.1521,lo:126.8526,yr:2013,st:'상무역',sd:300},
+  {k:['울산삼산자이'],n:'울산삼산자이',city:'울산',gu:'남구',dong:'삼산동',a:'울산 남구 삼산동',la:35.5362,lo:129.3286,yr:2012,st:'울산역',sd:2000},
 ];
 
-/* ── 지역코드 매핑 ── */
-const LAWD={
-  '강남':'11680','서초':'11650','송파':'11710','강동':'11740',
-  '마포':'11440','용산':'11170','성동':'11200','광진':'11215',
-  '강서':'11500','양천':'11470','영등포':'11560','동작':'11590',
-  '관악':'11620','은평':'11380','서대문':'11410','종로':'11110',
-  '중구':'11140','성북':'11290','노원':'11350','강북':'11305',
-  '도봉':'11320','중랑':'11260','동대문':'11230','금천':'11545',
-  '구로':'11530','수원':'41110','성남':'41130','분당':'41135',
-  '고양':'41280','용인':'41460','부천':'41190','안산':'41270',
-  '화성':'41590','남양주':'41360','평택':'41220','시흥':'41390',
-  '해운대':'26350','수성':'27290','일산':'41285','광명':'41210',
-  '하남':'41450','과천':'41290','의왕':'41430','군포':'41410',
-  '안양':'41170','의정부':'41150','판교':'41135','동탄':'41590',
-  '광교':'41115','위례':'11710','부산':'26110','인천':'28110',
-  '대구':'27110','대전':'30110','광주':'29110','울산':'31110','세종':'36110',
-  '김포':'41570','파주':'41480','양주':'41630','포천':'41650',
-  '가평':'41820','이천':'41500','안성':'41550','여주':'41670',
-  '계양':'28245','서구':'28260','연수':'28185','부평':'28237',
-  '검단':'28260',
-};
+/* ══════════════════════════════════════════
+   지역 분류 (지역 브라우저용)
+══════════════════════════════════════════ */
+function buildRegionIndex(){
+  const cities={},gus={};
+  for(const a of APT_DB){
+    if(!cities[a.city]) cities[a.city]=new Set();
+    cities[a.city].add(a.gu);
+    const key=a.city+'|'+a.gu;
+    if(!gus[key]) gus[key]=[];
+    gus[key].push(a);
+  }
+  return{cities,gus};
+}
+const REGION=buildRegionIndex();
 
-/* ── 점수 메타 ── */
+/* ══════════════════════════════════════════
+   점수 데이터
+══════════════════════════════════════════ */
 const SCORE_META={
   '실거래가시세변동':{icon:'💹',w:20,lbl:'시세변동'},
   '핵심시설접근성':  {icon:'🏙️',w:20,lbl:'핵심시설'},
@@ -1052,206 +1069,174 @@ function fp(v){
   return `${m.toLocaleString()}만원`;
 }
 function scoreColor(s){return s>=75?'#10b981':s>=55?'#fbbf24':'#f43f5e';}
+function highlight(text,q){
+  if(!q) return text;
+  const idx=text.indexOf(q);
+  if(idx<0) return text;
+  return text.slice(0,idx)+'<mark>'+text.slice(idx,idx+q.length)+'</mark>'+text.slice(idx+q.length);
+}
 
-/* ══════════════════════════════════════
-   DB 검색
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   DB 검색 — DB에 없으면 반드시 null 반환
+══════════════════════════════════════════ */
 function findApt(q){
-  q=q.trim();
-  // 완전 일치
-  for(const a of APT_DB){if(a.k.some(k=>k===q)||a.n===q)return a;}
-  // 포함 매칭
+  q=q.trim().replace(/\s+/g,'');
+  if(!q) return null;
+  // 1. 완전 일치
+  for(const a of APT_DB){
+    const keys=[...a.k,a.n].map(s=>s.replace(/\s+/g,''));
+    if(keys.some(k=>k===q)) return a;
+  }
+  // 2. 포함 — 검색어가 키워드를 포함하거나, 키워드가 검색어를 포함
   const cand=[];
   for(const a of APT_DB){
-    for(const k of a.k){
-      if(q.includes(k)||k.includes(q)) cand.push({a,sc:k.length+10});
+    const keys=[...a.k,a.n].map(s=>s.replace(/\s+/g,''));
+    for(const k of keys){
+      if(q.includes(k)&&k.length>=3) cand.push({a,sc:k.length*2});
+      else if(k.includes(q)&&q.length>=3) cand.push({a,sc:q.length});
     }
-    if(a.n.includes(q)||q.includes(a.n.replace(/\s/g,'')))
-      cand.push({a,sc:a.n.length});
   }
-  if(cand.length){cand.sort((x,y)=>y.sc-x.sc);return cand[0].a;}
-  return null;
-}
-
-/* ══════════════════════════════════════
-   Nominatim 위치 조회
-══════════════════════════════════════ */
-async function getLocation(name){
-  const queries=[
-    `${name} 아파트 경기도`,
-    `${name} 아파트 한국`,
-    `${name} Korea`,
-  ];
-  for(const q of queries){
-    try{
-      await sleep(500);
-      const r=await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&countrycodes=kr&addressdetails=1`,
-        {headers:{'User-Agent':'AptScore/4.0 (apartment-analysis)'}}
-      );
-      if(!r.ok) continue;
-      const d=await r.json();
-      if(d.length){
-        const it=d[0], a=it.address||{};
-        const addr=[
-          a.city||a.county||a.town||a.state_district||a.state,
-          a.suburb||a.neighbourhood||a.quarter||a.village
-        ].filter(Boolean).join(' ');
-        return{
-          la:parseFloat(it.lat),
-          lo:parseFloat(it.lon),
-          addr:addr||it.display_name.split(',').slice(0,3).join(','),
-          raw:a
-        };
-      }
-    }catch(e){console.warn('Nominatim:',e);}
+  if(cand.length){
+    cand.sort((x,y)=>y.sc-x.sc);
+    // 점수가 충분히 높을 때만 매칭 (2글자 이하 오매칭 방지)
+    if(cand[0].sc>=4) return cand[0].a;
   }
   return null;
 }
 
-/* ══════════════════════════════════════
-   주소에서 지역 코드 추출
-══════════════════════════════════════ */
-function addrToLawd(addr,name){
-  if(!addr&&!name) return '11680';
-  const text=(addr||'')+(name||'');
-  for(const[k,v] of Object.entries(LAWD)){
-    if(text.includes(k)) return v;
+/* 유사 아파트 찾기 (없음 패널용) */
+function findSimilar(q){
+  q=q.replace(/\s+/g,'');
+  const scored=[];
+  for(const a of APT_DB){
+    let best=0;
+    const keys=[...a.k,a.n,a.gu,a.dong,a.city].map(s=>s.replace(/\s+/g,''));
+    for(const k of keys){
+      // 공통 문자 수
+      let common=0;
+      for(const ch of q) if(k.includes(ch)) common++;
+      const sc=common/Math.max(q.length,k.length);
+      if(sc>best) best=sc;
+      // 지역명 포함 보너스
+      if(q.includes(a.dong)||a.dong.includes(q)) best=Math.max(best,.7);
+      if(q.includes(a.gu.replace(/시$|구$/,''))||a.gu.includes(q)) best=Math.max(best,.5);
+    }
+    if(best>0) scored.push({a,sc:best});
   }
-  return '11680';
+  scored.sort((x,y)=>y.sc-x.sc);
+  return scored.slice(0,6).filter(x=>x.sc>.2).map(x=>x.a);
 }
 
-/* ══════════════════════════════════════
-   주소에서 구/시 이름 추출
-══════════════════════════════════════ */
-function addrToGu(addr,name){
-  const text=(addr||'')+(name||'');
-  // 구 단위
-  const guMatch=text.match(/([가-힣]+(?:구|군))/);
-  if(guMatch) return guMatch[1].replace(/구$|군$/,'');
-  // 시 단위
-  const siMatch=text.match(/([가-힣]+시)/);
-  if(siMatch) return siMatch[1].replace(/시$/,'');
-  return '기타';
+/* 자동완성 검색 */
+function searchAC(q){
+  if(!q||q.length<1) return[];
+  const qn=q.replace(/\s+/g,'');
+  const seen=new Set(), res=[];
+  for(const a of APT_DB){
+    if(seen.has(a.n)) continue;
+    const keys=[...a.k,a.n,a.dong,a.gu].map(s=>s.replace(/\s+/g,''));
+    const match=keys.some(k=>k.includes(qn)||qn.includes(k));
+    if(match){seen.add(a.n);res.push(a);}
+  }
+  // 정렬: 이름 시작 일치 우선
+  res.sort((a,b)=>{
+    const an=a.n.replace(/\s+/g,''),bn=b.n.replace(/\s+/g,'');
+    const as=an.startsWith(qn)?1:0, bs=bn.startsWith(qn)?1:0;
+    return bs-as;
+  });
+  return res.slice(0,12);
 }
 
-/* ══════════════════════════════════════
-   점수 함수들 — apt가 null이어도 모두 안전
-══════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   점수 계산 (DB 등록 아파트만)
+══════════════════════════════════════════ */
+const SCHOOL_SCORE={
+  '서초구':92,'강남구':95,'양천구':85,'송파구':80,'성동구':70,'광진구':65,
+  '마포구':70,'용산구':72,'영등포구':60,'동작구':65,'은평구':58,'서대문구':62,
+  '노원구':75,'강동구':68,'강서구':60,'강북구':55,'도봉구':58,'관악구':55,
+  '구로구':55,'금천구':52,'중랑구':55,'동대문구':58,'성북구':62,'종로구':70,
+  '중구':65,
+  '성남시':82,'수원시':62,'용인시':65,'화성시':57,'고양시':63,'안양시':65,
+  '하남시':65,'남양주시':58,'의정부시':58,'파주시':58,'김포시':60,'부천시':60,
+  '시흥시':54,'안산시':58,'광명시':60,'군포시':60,'의왕시':58,'과천시':75,
+  '해운대구':78,'동래구':70,'수성구':85,'연제구':65,'수영구':68,
+  '수성구':85,'북구':55,
+  '세종시':65,'서구':58,'남구':55,
+};
+const PRICE_MAP={
+  '서초구':6500,'강남구':7000,'용산구':5500,'송파구':5000,'성동구':4800,'광진구':4200,
+  '마포구':4000,'양천구':3800,'영등포구':3500,'동작구':3800,'서대문구':3500,
+  '노원구':2800,'도봉구':2500,'강북구':2500,'관악구':2800,'은평구':2800,
+  '강서구':3200,'강동구':3500,'종로구':4000,'중구':3800,'구로구':2700,'금천구':2500,
+  '성남시':5000,'수원시':2900,'화성시':2800,'고양시':2500,'용인시':3000,
+  '하남시':3500,'남양주시':2500,'의정부시':2200,'파주시':2200,'김포시':2400,
+  '부천시':2600,'시흥시':2200,'안양시':2800,'광명시':2800,
+  '해운대구':4000,'동래구':2800,'수성구':3200,'연제구':2500,'수영구':3000,
+  '세종시':2800,'서구':1900,'남구':1900,'북구':2000,
+};
 
-/* 핵심시설 */
 function scoreHubs(la,lo){
-  if(!la||!lo) return{s:45,d:{'안내':'위치 조회 실패'},facs:{}};
   const facs={};let tw=0,ws=0;
   for(const h of HUBS){
-    tw+=h.w;
-    const dist=hav(la,lo,h.la,h.lo);
+    tw+=h.w;const dist=hav(la,lo,h.la,h.lo);
     let sc=dist<=1000?100:dist<=3000?100-(dist-1000)/2000*30:
            dist<=7000?70-(dist-3000)/4000*30:
            dist<=15000?40-(dist-7000)/8000*40:0;
-    facs[h.n]=dist; ws+=h.w*Math.max(0,sc);
+    facs[h.n]=dist;ws+=h.w*Math.max(0,sc);
   }
   const sorted=Object.entries(facs).sort((a,b)=>a[1]-b[1]);
   return{s:Math.round(ws/tw*10)/10,
-    d:{'가장가까운':sorted[0]?.[0]||'','거리':sorted[0]?fd(sorted[0][1]):'',
-       '강남역':fd(facs['강남역']),'광화문':fd(facs['광화문']),'여의도':fd(facs['여의도'])},
-    facs};
+    d:{'가장가까운':sorted[0]?.[0],'거리':fd(sorted[0]?.[1]||0),
+       '강남역':fd(facs['강남역']),'광화문':fd(facs['광화문'])},facs};
 }
 
-/* 교통 — apt 있으면 DB 역거리, 없으면 좌표 추정 */
-function scoreTransit(apt,la,lo){
-  if(!la||!lo) return{s:45,d:{'안내':'위치 조회 필요'}};
-
-  if(apt && apt.sd){
-    const sd=apt.sd, stName=apt.st||'인근역';
-    const isSeoul=la>37.4&&la<37.7&&lo>126.8&&lo<127.2;
-    let base=sd<=300?100:sd<=500?92:sd<=800?80:sd<=1200?65:sd<=1800?48:sd<=2500?32:15;
-    const score=Math.min(100,base*0.82+(isSeoul?15:7));
-    return{s:Math.round(score*10)/10,d:{
-      '가장가까운역':stName,'역거리':fd(sd),
-      '교통여건':isSeoul?'서울권 (버스 밀집)':'수도권/지방',
-    }};
-  }
-
-  // 좌표만 있을 때: 서울 중심 거리 기반 추정
-  const distSeoul=hav(la,lo,37.5665,126.9780);
-  const isSeoul=la>37.4&&la<37.7&&lo>126.8&&lo<127.2;
-  const isCapital=la>37.0&&la<38.1&&lo>126.5&&lo<127.8;
-  let base=distSeoul<=5000?82:distSeoul<=10000?70:distSeoul<=20000?58:
-           distSeoul<=35000?46:distSeoul<=60000?36:25;
-  if(isSeoul) base=Math.min(100,base+10);
-  else if(isCapital) base=Math.min(100,base+5);
-  return{s:Math.round(base*10)/10,d:{
-    '교통여건':isSeoul?'서울권 교통 우수':isCapital?'수도권 교통 보통':'지방 교통',
-    '서울중심거리':fd(Math.round(distSeoul)),
-    '안내':'DB 미등록 — 좌표 기반 추정',
+function scoreTransit(apt){
+  const sd=apt.sd,st=apt.st;
+  const isSeoul=apt.city==='서울';
+  const isCap=apt.city==='서울'||apt.city==='경기'||apt.city==='인천';
+  let base=sd<=300?100:sd<=500?92:sd<=800?80:sd<=1200?65:sd<=1800?48:sd<=2500?32:15;
+  const bonus=isSeoul?15:isCap?8:3;
+  return{s:Math.min(100,Math.round((base*0.82+bonus)*10)/10),d:{
+    '가장가까운역':st,'역거리':fd(sd),
+    '교통여건':isSeoul?'서울권 (버스 밀집)':isCap?'수도권':'지방',
   }};
 }
 
-/* 학군 — apt 있으면 DB gu, 없으면 주소 파싱 */
-const SCHOOL_SCORE={
-  '강남':95,'서초':92,'양천':85,'송파':80,'노원':75,'용산':72,
-  '성동':70,'광진':65,'마포':70,'영등포':60,'동작':65,'관악':55,
-  '종로':70,'중구':65,'성북':62,'강북':55,'도봉':58,'강서':60,
-  '구로':55,'금천':52,'은평':58,'서대문':62,'강동':68,
-  '분당':88,'판교':82,'광교':78,'동탄':70,'위례':72,
-  '일산':75,'고양':63,'수원':62,'안양':65,'군포':60,
-  '하남':65,'남양주':58,'의정부':58,'부천':60,'시흥':54,
-  '해운대':78,'동래':70,'수성':85,'연제':65,'부산':60,
-  '대구':60,'대전':62,'광주':58,'울산':55,'세종':65,
-  '송도':68,'검단':58,'부평':58,'광명':60,'계양':57,
-  '오산':55,'평택':54,'화성':57,'김포':60,'파주':58,
-  '양주':55,'포천':50,'가평':48,'이천':55,'안성':52,'여주':50,
-  '기흥':65,'수지':70,'서구':55,
-};
-function scoreSchool(apt,guName){
-  const gu=apt?apt.gu:(guName||'기타');
-  const base=SCHOOL_SCORE[gu]||58;
-  const yrBonus=apt?(apt.yr<2000?5:apt.yr<2010?2:0):0;
-  const label=gu==='강남'||gu==='서초'?'8학군 최우수권':
-               gu==='양천'?'목동 학군 우수권':
-               gu==='분당'||gu==='수성'?'수도권/지방 최우수권':
-               base>=75?'우수 학군':base>=65?'양호한 학군':'일반 학군';
-  return{s:Math.min(100,Math.round(base+yrBonus)),d:{
-    '지역학군':gu,'학군수준':base>=85?'최상':base>=75?'상':base>=65?'중상':base>=55?'중':'하',
-    '학군특징':label,
-  }};
+function scoreSchool(apt){
+  const base=SCHOOL_SCORE[apt.gu]||58;
+  const yrBonus=apt.yr<2000?5:apt.yr<2010?2:0;
+  const gu=apt.gu;
+  const label=gu==='강남구'||gu==='서초구'?'8학군 최우수권':
+               gu==='양천구'?'목동 학군 우수권':
+               gu==='성남시'?'분당/판교 최우수':
+               gu==='수성구'?'대구 수성구 최우수':
+               base>=80?'우수 학군':base>=70?'양호한 학군':'일반 학군';
+  return{s:Math.min(100,Math.round(base+yrBonus)),d:{'지역':gu,'학군수준':base>=85?'최상':base>=75?'상':base>=65?'중상':'중','특징':label}};
 }
 
-/* 편의시설 — 좌표 기반 */
-function scoreAmenity(la,lo,addr){
-  if(!la||!lo) return{s:45,d:{'안내':'위치 조회 필요'}};
+function scoreAmenity(la,lo,apt){
   const distSeoul=hav(la,lo,37.5665,126.9780);
-  const isSeoul=la>37.4&&la<37.7&&lo>126.8&&lo<127.2;
-  const isCapital=la>37.0&&la<38.1&&lo>126.5&&lo<127.8;
-  const isBigCity=(la>35.0&&la<35.3&&lo>128.9&&lo<129.3)|| // 부산
-                  (la>35.8&&la<35.95&&lo>128.5&&lo<128.75)|| // 대구
-                  (la>36.3&&la<36.5&&lo>127.3&&lo<127.5)||   // 대전
-                  (la>35.1&&la<35.2&&lo>126.8&&lo<126.95)||  // 광주
-                  (la>35.5&&la<35.6&&lo>129.3&&lo<129.4);    // 울산
-
+  const isSeoul=apt.city==='서울';
+  const isCap=apt.city==='경기'||apt.city==='인천';
+  const isBig=apt.city==='부산'||apt.city==='대구'||apt.city==='대전'||apt.city==='광주'||apt.city==='울산';
   let base=distSeoul<=5000?88:distSeoul<=10000?78:distSeoul<=20000?66:
            distSeoul<=35000?56:distSeoul<=60000?46:36;
-  if(isSeoul) base=Math.min(100,base+8);
-  else if(isCapital) base=Math.min(100,base+5);
-  else if(isBigCity) base=Math.min(100,base+3);
-
-  // 계획 신도시 상업지구 보너스
-  const planned=(addr||'').match(/판교|광교|동탄|위례|운정|검단|청라|세종|미사|다산|옥정|한강신도시|송도|위례|장항/);
-  if(planned) base=Math.min(100,base+7);
-
+  if(isSeoul)base=Math.min(100,base+8);
+  else if(isCap)base=Math.min(100,base+5);
+  else if(isBig)base=Math.min(100,base+3);
+  // 신도시 계획 상업지구
+  if(['구래동','풍무동','운양동','장기동','걸포동','삼평동','백현동','이의동','오산동','청계동','반송동','나성동','왕길동','청라동'].includes(apt.dong))
+    base=Math.min(100,base+5);
   return{s:Math.round(base*10)/10,d:{
-    '생활인프라':isSeoul?'서울권 (매우 풍부)':isCapital?'수도권 (보통)':isBigCity?'광역시권':'지방',
+    '생활인프라':isSeoul?'서울권 (풍부)':isCap?'수도권 (보통)':isBig?'광역시권':'지방',
     '서울도심거리':fd(Math.round(distSeoul)),
   }};
 }
 
-/* 건물 신축도 — apt 있으면 DB yr, 없으면 실거래 연도 or 기본값 */
 function scoreBuilding(apt,recs){
-  let yr=apt?apt.yr:0;
+  let yr=apt.yr;
   const yrRecs=recs.filter(r=>r.buildYear>1970).map(r=>r.buildYear);
   if(yrRecs.length) yr=Math.round(yrRecs.reduce((a,b)=>a+b)/yrRecs.length);
-  if(!yr) return{s:60,d:{'건축년도':'정보없음','안내':'MOLIT API 키 입력 시 정확한 연식 표시'}};
   const age=new Date().getFullYear()-yr;
   return{s:Math.round(Math.max(0,Math.min(100,(35-age)/35*100))*10)/10,d:{
     '건축년도':yr+'년','연식':age+'년',
@@ -1260,71 +1245,58 @@ function scoreBuilding(apt,recs){
   }};
 }
 
-/* 실거래가 시세변동 */
 function scorePrice(recs){
   const h=Math.max(1,Math.floor(recs.length/2));
   const avg=a=>{const v=a.filter(r=>r.area>0).map(r=>r.price/r.area);return v.length?v.reduce((a,b)=>a+b)/v.length:0;};
   const[c,p]=[avg(recs.slice(0,h)),avg(recs.slice(h))];
-  if(!p||!c) return{s:55,chg:0,d:{'안내':'MOLIT API 키 입력 시 실거래가 분석','기준':'55점 (보합 기준 적용)'}};
+  if(!p||!c) return{s:55,chg:0,d:{'안내':'MOLIT API 키 입력 시 실데이터 표시','기준':'55점 (보합 기준)'}};
   const chg=(c-p)/p*100;
   return{s:Math.round(Math.max(0,Math.min(100,(chg+5)/15*100))*10)/10,chg,d:{
-    '현재㎡단가':Math.round(c).toLocaleString()+'만',
-    '이전㎡단가':Math.round(p).toLocaleString()+'만',
+    '현재㎡단가':Math.round(c).toLocaleString()+'만','이전㎡단가':Math.round(p).toLocaleString()+'만',
     '변동률':(chg>0?'+':'')+chg.toFixed(1)+'%','거래건수':recs.slice(0,h).length+'건',
   }};
 }
 
-/* ㎡당 가격수준 — ★ apt null 안전 처리 ★ */
-const PRICE_MAP={
-  '강남':7000,'서초':6500,'용산':5500,'송파':5000,'성동':4800,'광진':4200,
-  '마포':4000,'양천':3800,'영등포':3500,'동작':3800,'서대문':3500,
-  '노원':2800,'도봉':2500,'강북':2500,'관악':2800,'은평':2800,
-  '구로':2700,'금천':2500,'강서':3200,'강동':3500,'종로':4000,'중구':3800,
-  '분당':5000,'판교':5500,'광교':4000,'동탄':3500,'위례':4000,
-  '일산':2800,'고양':2500,'수원':2800,'안양':2800,'군포':2500,
-  '하남':3500,'남양주':2500,'의정부':2200,'부천':2600,'시흥':2200,
-  '해운대':4000,'동래':2800,'수성':3200,'연제':2500,
-  '대구':2200,'대전':2000,'광주':1900,'울산':1900,'세종':2800,
-  '송도':3200,'검단':2200,'부평':2200,'광명':2800,'계양':2000,
-  '오산':2000,'평택':1900,'화성':2800,'김포':2400,'파주':2200,
-  '양주':2000,'가평':1600,'이천':2000,'안성':1700,'여주':1700,
-  '기흥':3000,'수지':3200,'서구':1800,
-};
-function scorePriceLevel(apt,recs,guName){
-  // 실거래 데이터 우선
-  if(recs.length>0){
+function scorePriceLevel(apt,recs){
+  if(recs.length){
     const vals=recs.filter(r=>r.area>0).map(r=>r.price/r.area);
     if(vals.length){
       const avg=vals.reduce((a,b)=>a+b)/vals.length;
       const avgT=recs.reduce((a,r)=>a+r.price,0)/recs.length;
       return{s:Math.round(Math.max(0,Math.min(100,(4500-avg)/4000*100))*10)/10,d:{
-        '㎡당평균':Math.round(avg).toLocaleString()+'만',
-        '평균거래가':fp(Math.round(avgT)),
-        '최고거래가':fp(Math.max(...recs.map(r=>r.price))),
+        '㎡당평균':Math.round(avg).toLocaleString()+'만','평균거래가':fp(Math.round(avgT)),
       }};
     }
   }
-  // DB or 주소 추정
-  const gu=(apt&&apt.gu)||(guName||'기타');
-  const basePrice=PRICE_MAP[gu]||2500;
-  const score=Math.round(Math.max(0,Math.min(100,(4500-basePrice)/4000*100))*10)/10;
-  return{s:score,d:{
-    '지역㎡단가(추정)':basePrice.toLocaleString()+'만원',
-    '가격대':basePrice>=5000?'최고가':basePrice>=4000?'고가':basePrice>=3000?'중상':basePrice>=2000?'중':'저가',
+  const base=PRICE_MAP[apt.gu]||2500;
+  return{s:Math.round(Math.max(0,Math.min(100,(4500-base)/4000*100))*10)/10,d:{
+    '지역㎡단가(추정)':base.toLocaleString()+'만 (추정)',
     '안내':'MOLIT API 키 입력 시 실거래가 반영',
   }};
 }
 
-/* ══════════════════════════════════════
-   MOLIT 실거래 API
-══════════════════════════════════════ */
+/* ── MOLIT ── */
+const LAWD={
+  '서초구':'11650','강남구':'11680','송파구':'11710','강동구':'11740','마포구':'11440',
+  '용산구':'11170','성동구':'11200','광진구':'11215','강서구':'11500','양천구':'11470',
+  '영등포구':'11560','동작구':'11590','관악구':'11620','은평구':'11380','서대문구':'11410',
+  '종로구':'11110','중구':'11140','성북구':'11290','노원구':'11350','강북구':'11305',
+  '도봉구':'11320','중랑구':'11260','동대문구':'11230','금천구':'11545','구로구':'11530',
+  '성남시':'41130','수원시':'41110','용인시':'41460','화성시':'41590','고양시':'41280',
+  '안양시':'41170','부천시':'41190','남양주시':'41360','평택시':'41220','의정부시':'41150',
+  '시흥시':'41390','군포시':'41410','하남시':'41450','광명시':'41210','김포시':'41570',
+  '파주시':'41480','양주시':'41630','안산시':'41270','오산시':'41370','이천시':'41500',
+  '해운대구':'26350','동래구':'26320','수영구':'26410','연제구':'26440',
+  '수성구':'27290','북구':'27230',
+  '서구':'29140','세종시':'36110','남구':'31140',
+};
 function recentMonths(n){
   const r=[],d=new Date();
   for(let i=0;i<n;i++){const t=new Date(d.getFullYear(),d.getMonth()-i,1);r.push(`${t.getFullYear()}${String(t.getMonth()+1).padStart(2,'0')}`);}
   return r;
 }
 async function fetchMolit(lawd,ym){
-  if(!CFG.ok()) return [];
+  if(!CFG.ok()) return[];
   const url=`http://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade?serviceKey=${CFG.molit}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
   try{
     const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
@@ -1335,107 +1307,63 @@ async function fetchMolit(lawd,ym){
         area:parseFloat(g('excluUseAr'))||0,floor:g('floor'),buildYear:parseInt(g('buildYear'),10)||0,
         year:parseInt(g('dealYear'),10)||0,month:parseInt(g('dealMonth'),10)||0,day:parseInt(g('dealDay'),10)||0};
     }).filter(r=>r.price>0&&r.area>0);
-  }catch{return [];}
+  }catch{return[];}
 }
 
-/* ══════════════════════════════════════
-   메인 분석 엔진
-══════════════════════════════════════ */
-let lastRecs=[];
+/* ══════════════════════════════════════════
+   메인 분석 — DB 아파트만
+══════════════════════════════════════════ */
+let lastRecs=[], currentApt=null;
 
-async function analyze(name){
-  setMsg('🔍 아파트 DB 검색 중…');
-  await sleep(100);
+async function analyze(apt){
+  currentApt=apt;
+  setMsg(`✅ DB 매칭: ${apt.n}`);
+  await sleep(200);
 
-  // 1. DB 매칭 시도
-  let apt=findApt(name);
-  let la,lo,addr,guName;
-
-  if(apt){
-    la=apt.la; lo=apt.lo; addr=apt.a; guName=apt.gu;
-    setMsg(`✅ DB 매칭: ${apt.n}`);
-    await sleep(200);
-  } else {
-    // 2. DB 미등록 → Nominatim으로 위치 조회
-    setMsg('📍 위치 조회 중… (Nominatim OSM)');
-    const loc=await getLocation(name);
-    if(loc){
-      la=loc.la; lo=loc.lo; addr=loc.addr;
-      guName=addrToGu(addr, name);
-      setMsg(`📍 위치 확인: ${addr}`);
-    } else {
-      la=null; lo=null; addr='위치 조회 실패';
-      guName=addrToGu('', name);
-      setMsg('⚠️ 위치 조회 실패 — 이름 기반으로 분석 진행');
-    }
-    await sleep(200);
-  }
-
-  // 3. 실거래 수집
-  const lawd=addrToLawd(addr,name);
-  const recs=[];
+  // 실거래 수집
+  const lawd=LAWD[apt.gu]||'11680', recs=[];
   if(CFG.ok()){
     const mons=recentMonths(6);
-    const pfx=name.replace(/\s/g,'').slice(0,4);
+    const pfx=apt.n.replace(/\s/g,'').slice(0,4);
     for(let i=0;i<mons.length;i++){
       setMsg(`📡 실거래가 수집 (${i+1}/6개월)`);
       const d=await fetchMolit(lawd,mons[i]);
       recs.push(...d.filter(r=>{
         const rn=r.name.replace(/\s/g,'');
-        return rn.includes(pfx)||pfx.includes(rn.slice(0,3))||
-               (apt&&rn.includes(apt.n.replace(/\s/g,'').slice(0,4)));
+        return rn.includes(pfx)||apt.k.some(k=>rn.includes(k.slice(0,3)));
       }));
-      await sleep(120);
+      await sleep(100);
     }
   }
   lastRecs=recs;
 
-  // 4. 점수 계산 — 모든 함수 null 안전
-  setMsg('💹 시세 변동 분석…');
-  const p1=scorePrice(recs);
-  setMsg('🏙️ 핵심시설 거리 계산…');
-  const p2=scoreHubs(la,lo);
-  setMsg('🚇 교통 접근성 분석…');
-  const p3=scoreTransit(apt,la,lo);
-  setMsg('🏫 학군 분석…');
-  const p4=scoreSchool(apt,guName);
-  setMsg('🏪 편의시설 분석…');
-  const p5=scoreAmenity(la,lo,addr);
-  setMsg('🏗️ 건물 신축도 분석…');
-  const p6=scoreBuilding(apt,recs);
-  setMsg('💰 가격 수준 분석…');
-  const p7=scorePriceLevel(apt,recs,guName);   // ← apt null 시 guName으로 처리
+  setMsg('🏙️ 핵심시설 거리 계산…'); const p2=scoreHubs(apt.la,apt.lo);
+  setMsg('🚇 교통 접근성 분석…');   const p3=scoreTransit(apt);
+  setMsg('🏫 학군 분석…');           const p4=scoreSchool(apt);
+  setMsg('🏪 편의시설 분석…');       const p5=scoreAmenity(apt.la,apt.lo,apt);
+  setMsg('🏗️ 건물 신축도 분석…');    const p6=scoreBuilding(apt,recs);
+  setMsg('💹 시세 변동 분석…');      const p1=scorePrice(recs);
+  setMsg('💰 가격 수준 분석…');      const p7=scorePriceLevel(apt,recs);
 
-  const scores={
-    '실거래가시세변동':p1.s,'핵심시설접근성':p2.s,
-    '지하철버스교통':p3.s,'학군':p4.s,'편의시설':p5.s,
-    '건물신축도':p6.s,'㎡당가격수준':p7.s
-  };
+  const scores={'실거래가시세변동':p1.s,'핵심시설접근성':p2.s,'지하철버스교통':p3.s,
+    '학군':p4.s,'편의시설':p5.s,'건물신축도':p6.s,'㎡당가격수준':p7.s};
   const total=Math.round(Object.keys(scores).reduce((s,k)=>s+scores[k]*SCORE_META[k].w/100,0)*10)/10;
   const grade=total>=80?'S':total>=70?'A':total>=60?'B':total>=50?'C':'D';
 
-  return{
-    name:apt?apt.n:name, addr, la, lo, recs, scores, total, grade,
-    details:{'실거래가시세변동':p1.d,'핵심시설접근성':p2.d,
-      '지하철버스교통':p3.d,'학군':p4.d,'편의시설':p5.d,
-      '건물신축도':p6.d,'㎡당가격수준':p7.d},
-    facs:p2.facs||{}, chg:p1.chg||0, aptInfo:apt, isDBMatch:!!apt,
-  };
+  return{name:apt.n,addr:apt.a,recs,scores,total,grade,
+    details:{'실거래가시세변동':p1.d,'핵심시설접근성':p2.d,'지하철버스교통':p3.d,
+      '학군':p4.d,'편의시설':p5.d,'건물신축도':p6.d,'㎡당가격수준':p7.d},
+    facs:p2.facs,chg:p1.chg||0};
 }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════
    렌더링
-══════════════════════════════════════ */
+══════════════════════════════════════════ */
 function render(R){
   const gc=GRADE[R.grade];
   document.getElementById('r-name').textContent=R.name;
-
-  // 주소 + DB 뱃지
-  const badge=R.isDBMatch
-    ?`<span style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);padding:2px 10px;border-radius:20px;font-size:11px;color:#34d399;margin-left:8px">✓ DB 매칭</span>`
-    :`<span style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);padding:2px 10px;border-radius:20px;font-size:11px;color:#fbbf24;margin-left:8px">🔍 OSM 조회</span>`;
-  document.getElementById('r-addr').innerHTML=(R.addr||'주소 정보 없음')+badge;
-
+  document.getElementById('r-addr').innerHTML=R.addr+
+    ' <span style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);padding:2px 10px;border-radius:20px;font-size:11px;color:#34d399;margin-left:6px">✓ DB 등록</span>';
   document.getElementById('r-score').textContent=R.total;
   document.getElementById('r-score').style.color=gc;
   document.getElementById('r-grade').textContent=R.grade;
@@ -1445,25 +1373,20 @@ function render(R){
 
   const circ=2*Math.PI*56;
   const rf=document.getElementById('ring-fill');
-  rf.setAttribute('stroke',gc); rf.setAttribute('stroke-dasharray',circ);
+  rf.setAttribute('stroke',gc);rf.setAttribute('stroke-dasharray',circ);
   setTimeout(()=>rf.setAttribute('stroke-dashoffset',circ*(1-R.total/100)),120);
 
-  // 미니 바
   const mbEl=document.getElementById('mini-bars');
   mbEl.innerHTML=Object.entries(R.scores).map(([k,v])=>{
     const c=scoreColor(v),m=SCORE_META[k];
-    return `<div class="mb-row">
-      <div class="mb-lbl">${m.icon} ${m.lbl}</div>
+    return `<div class="mb-row"><div class="mb-lbl">${m.icon} ${m.lbl}</div>
       <div class="mb-track"><div class="mb-fill" style="width:0%;background:${c}" data-t="${v}"></div></div>
-      <div class="mb-val" style="color:${c}">${v}</div>
-    </div>`;
+      <div class="mb-val" style="color:${c}">${v}</div></div>`;
   }).join('');
   setTimeout(()=>mbEl.querySelectorAll('.mb-fill').forEach(el=>{
-    el.style.transition='width 1.2s cubic-bezier(0,0,.2,1)';
-    el.style.width=el.dataset.t+'%';
+    el.style.transition='width 1.2s cubic-bezier(0,0,.2,1)';el.style.width=el.dataset.t+'%';
   }),150);
 
-  // 7개 카드
   const cardsEl=document.getElementById('cards');
   cardsEl.innerHTML=Object.keys(R.scores).map((k,i)=>{
     const s=R.scores[k],m=SCORE_META[k],d=R.details[k]||{},c=scoreColor(s);
@@ -1473,86 +1396,67 @@ function render(R){
         <div class="card-score" style="color:${c}">${s}<span class="card-pt">점</span></div></div>
       <div class="card-name">${k}</div><div class="card-wt">가중치 ${m.w}점</div>
       <div class="card-bar-bg"><div class="card-bar" style="width:0%;background:${c}" data-t="${s}"></div></div>
-      <div class="card-detail">${detail||'–'}</div>
-    </div>`;
+      <div class="card-detail">${detail||'–'}</div></div>`;
   }).join('');
   setTimeout(()=>cardsEl.querySelectorAll('.card-bar').forEach(el=>{
-    el.style.transition='width 1.1s cubic-bezier(0,0,.2,1)';
-    el.style.width=el.dataset.t+'%';
+    el.style.transition='width 1.1s cubic-bezier(0,0,.2,1)';el.style.width=el.dataset.t+'%';
   }),200);
 
-  renderPC(R); renderInvest(R);
-  drawRadar(R.scores,R.grade);
-  drawHubs(R.facs);
-  drawTrend(R.recs);
-  renderTable(R.recs,'all');
-
+  renderPC(R);renderInvest(R);
+  drawRadar(R.scores,R.grade);drawHubs(R.facs);drawTrend(R.recs);renderTable(R.recs,'all');
   document.querySelectorAll('.fc').forEach(btn=>{
-    btn.onclick=()=>{
-      document.querySelectorAll('.fc').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on'); renderTable(lastRecs,btn.dataset.a);
-    };
+    btn.onclick=()=>{document.querySelectorAll('.fc').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');renderTable(lastRecs,btn.dataset.a);};
   });
 }
 
 function renderPC(R){
-  const{scores,details,chg}=R;
-  const pros=[],cons=[];
-  if(chg>=5) pros.push(['💹 강한 시세 상승',`최근 ${chg.toFixed(1)}% 급등`]);
-  else if(chg>=2) pros.push(['💹 시세 상승 추세',`최근 ${chg.toFixed(1)}% 우상향`]);
-  else if(chg<=-5) cons.push(['💹 시세 급락',`최근 ${Math.abs(chg).toFixed(1)}% 하락`]);
-  else if(chg<=-2) cons.push(['💹 시세 하락',`최근 ${Math.abs(chg).toFixed(1)}% 하락 추세`]);
-
-  const s2=scores['핵심시설접근성'],d2=details['핵심시설접근성']||{};
-  if(s2>=80) pros.push(['🏙️ 최상급 도심 접근성',`${d2['가장가까운']||''}까지 ${d2['거리']||''} — 직주근접`]);
-  else if(s2>=60) pros.push(['🏙️ 양호한 도심 접근성',`${d2['가장가까운']||''}까지 ${d2['거리']||''}`]);
-  else cons.push(['🏙️ 도심 접근성 약함','강남·광화문 등 주요 업무지구 원거리']);
-
-  const s3=scores['지하철버스교통'],d3=details['지하철버스교통']||{};
-  if(s3>=80) pros.push(['🚇 역세권 프리미엄',`${d3['가장가까운역']||''} ${d3['역거리']?'('+d3['역거리']+')':''}`]);
-  else if(s3>=60) pros.push(['🚇 양호한 교통 접근성',`${d3['가장가까운역']||d3['교통여건']||''}`]);
-  else cons.push(['🚇 교통 접근성 부족','역까지 거리 — 이동 시간 많음']);
-
-  const s4=scores['학군'],d4=details['학군']||{};
-  if(s4>=85) pros.push(['🏫 최우수 학군',d4['학군특징']||'최우수권']);
-  else if(s4>=70) pros.push(['🏫 우수 학군',d4['학군특징']||'우수']);
-  else if(s4>=60) pros.push(['🏫 양호한 학군','학교 접근성 양호']);
-  else cons.push(['🏫 학군 개선 여지','학군 수준 상대적 약점']);
-
+  const{scores,details,chg}=R;const pros=[],cons=[];
+  if(chg>=5)pros.push(['💹 강한 시세 상승',`최근 ${chg.toFixed(1)}% 급등`]);
+  else if(chg>=2)pros.push(['💹 시세 상승',`최근 ${chg.toFixed(1)}% 우상향`]);
+  else if(chg<=-5)cons.push(['💹 시세 급락',`최근 ${Math.abs(chg).toFixed(1)}% 하락`]);
+  else if(chg<=-2)cons.push(['💹 시세 하락',`최근 ${Math.abs(chg).toFixed(1)}% 하락 추세`]);
+  const d2=details['핵심시설접근성']||{},s2=scores['핵심시설접근성'];
+  if(s2>=80)pros.push(['🏙️ 최상급 도심 접근성',`${d2['가장가까운']}까지 ${d2['거리']}`]);
+  else if(s2>=60)pros.push(['🏙️ 양호한 도심 접근성',`${d2['가장가까운']}까지 ${d2['거리']}`]);
+  else cons.push(['🏙️ 도심 접근성 약함','주요 업무지구 원거리']);
+  const d3=details['지하철버스교통']||{},s3=scores['지하철버스교통'];
+  if(s3>=80)pros.push(['🚇 역세권 프리미엄',`${d3['가장가까운역']} (${d3['역거리']})`]);
+  else if(s3>=60)pros.push(['🚇 양호한 교통',`${d3['가장가까운역']} (${d3['역거리']})`]);
+  else cons.push(['🚇 교통 약점',`역까지 ${d3['역거리']} — 이동 불편`]);
+  const d4=details['학군']||{},s4=scores['학군'];
+  if(s4>=85)pros.push(['🏫 최우수 학군',d4['특징']||'']);
+  else if(s4>=70)pros.push(['🏫 우수 학군',d4['특징']||'']);
+  else if(s4>=60)pros.push(['🏫 양호한 학군','학교 접근성 양호']);
+  else cons.push(['🏫 학군 개선 여지','상대적 학군 약점']);
   const s5=scores['편의시설'],d5=details['편의시설']||{};
-  if(s5>=75) pros.push(['🏪 탁월한 생활 인프라',d5['생활인프라']||'']);
-  else if(s5>=60) pros.push(['🏪 양호한 생활환경',d5['생활인프라']||'']);
+  if(s5>=75)pros.push(['🏪 탁월한 생활 인프라',d5['생활인프라']||'']);
+  else if(s5>=60)pros.push(['🏪 양호한 생활환경',d5['생활인프라']||'']);
   else cons.push(['🏪 편의시설 부족','외곽 지역 특성']);
-
-  const s6=scores['건물신축도'],d6=details['건물신축도']||{};
-  const age=parseInt(d6['연식'])||0;
-  if(s6>=80) pros.push(['🏗️ 신축급',`${d6['건축년도']||''} — ${d6['상태']||'최신시설'}`]);
-  else if(age>=30) pros.push(['🔨 재건축 기대감',`${d6['연식']||''} 노후 — 재건축 가능권`]);
-  if(age>=30&&s6<50) cons.push(['🏗️ 노후 건물',`${d6['연식']||''} — 유지비 증가 가능`]);
-
+  const d6=details['건물신축도']||{},s6=scores['건물신축도'],age=parseInt(d6['연식'])||0;
+  if(s6>=80)pros.push(['🏗️ 신축급',`${d6['건축년도']} — ${d6['상태']}`]);
+  else if(age>=30)pros.push(['🔨 재건축 기대감',`${d6['연식']} 노후 — 재건축 가능권`]);
+  if(age>=30&&s6<50)cons.push(['🏗️ 노후 건물',`${d6['연식']} — 유지비 증가 가능`]);
   const s7=scores['㎡당가격수준'],d7=details['㎡당가격수준']||{};
-  if(s7>=65) pros.push(['💰 합리적 가격대',d7['㎡당평균']||d7['지역㎡단가(추정)']||'']);
-  else if(s7<30) cons.push(['💰 높은 진입 가격',d7['㎡당평균']||d7['지역㎡단가(추정)']||'']);
-
+  if(s7>=65)pros.push(['💰 합리적 가격대',d7['㎡당평균']||d7['지역㎡단가(추정)']||'']);
+  else if(s7<30)cons.push(['💰 높은 진입 가격',d7['㎡당평균']||d7['지역㎡단가(추정)']||'']);
   const mk=(t,d)=>`<div class="pc-item"><div class="pc-ico">◉</div><div><div class="pc-t">${t}</div><div class="pc-d">${d}</div></div></div>`;
-  document.getElementById('pros').innerHTML=pros.slice(0,5).map(([t,d])=>mk(t,d)).join('')||'<div class="pc-d" style="padding:12px 0">분석 데이터 부족</div>';
+  document.getElementById('pros').innerHTML=pros.slice(0,5).map(([t,d])=>mk(t,d)).join('')||'<div class="pc-d" style="padding:12px 0">데이터 부족</div>';
   document.getElementById('cons').innerHTML=cons.slice(0,4).map(([t,d])=>mk(t,d)).join('')||'<div class="pc-d" style="padding:12px 0">특별한 단점 미발견</div>';
 }
 
 function renderInvest(R){
   let body,tag;
-  if(R.total>=75){body='핵심 지표에서 복수의 강점이 확인됩니다. 교통, 학군, 시세 등 주요 항목이 양호하여 실거주 및 투자 모두 긍정적으로 평가됩니다.';tag='<strong>추천 대상:</strong> 직주근접 원하는 직장인, 자녀 교육 중시 가정, 안정적 자산 성장 투자자';}
-  else if(R.total>=62){body='전반적으로 균형 잡힌 입지입니다. 일부 항목에서 개선 여지가 있으나 실거주 목적이라면 긍정적으로 검토할 수 있습니다.';tag='<strong>추천 대상:</strong> 중장기 실거주 목적 수요자, 안정 지향 투자자';}
-  else if(R.total>=50){body='장단점이 혼재합니다. 직장 위치, 자녀 유무 등 개인 상황에 따라 판단이 크게 달라질 수 있습니다. 추가 현장 방문을 권장합니다.';tag='<strong>추천 대상:</strong> 해당 지역 직장인, 특정 생활권 선호자';}
-  else{body='다수 항목에서 취약점이 확인됩니다. 개발 계획, 재건축 호재 유무를 추가 조사하고 신중하게 결정하시기 바랍니다.';tag='<strong>추천 대상:</strong> 장기 저가 매수 전략 투자자, 지역 특수 수요자';}
+  if(R.total>=75){body='핵심 지표에서 복수의 강점이 확인됩니다. 교통, 학군, 시세 등 주요 항목이 양호하여 실거주 및 투자 모두 긍정적으로 평가됩니다.';tag='<strong>추천 대상:</strong> 직주근접 원하는 직장인, 자녀 교육 중시 가정, 자산 성장 투자자';}
+  else if(R.total>=62){body='전반적으로 균형 잡힌 입지입니다. 실거주 목적이라면 긍정적으로 검토할 수 있으며, 개별 약점을 감안한 판단이 필요합니다.';tag='<strong>추천 대상:</strong> 중장기 실거주 목적 수요자, 안정 지향 투자자';}
+  else if(R.total>=50){body='장단점이 혼재합니다. 직장 위치, 자녀 유무 등 개인 상황에 따라 판단이 크게 달라질 수 있습니다. 현장 방문을 권장합니다.';tag='<strong>추천 대상:</strong> 해당 지역 직장인, 특정 생활권 선호자';}
+  else{body='다수 항목에서 취약점이 확인됩니다. 개발 계획, 재건축 호재 유무를 추가 조사하고 신중하게 결정하시기 바랍니다.';tag='<strong>추천 대상:</strong> 장기 저가 매수 전략 투자자';}
   document.getElementById('inv-body').textContent=body;
   document.getElementById('inv-tag').innerHTML=tag;
 }
 
-/* 레이더 차트 */
 function drawRadar(scores,grade){
-  const cv=document.getElementById('radar');
-  const ctx=cv.getContext('2d');
+  const cv=document.getElementById('radar'),ctx=cv.getContext('2d');
   const W=cv.width,H=cv.height,cx=W/2,cy=H/2,R=Math.min(W,H)*.34;
   const keys=Object.keys(scores),vals=keys.map(k=>scores[k]/100);
   const labels=keys.map(k=>SCORE_META[k].icon+' '+SCORE_META[k].lbl);
@@ -1560,25 +1464,22 @@ function drawRadar(scores,grade){
   const[r,g,b]=[1,3,5].map(i=>parseInt(gc.slice(i,i+2),16));
   ctx.clearRect(0,0,W,H);
   [.25,.5,.75,1].forEach(rv=>{
-    ctx.beginPath();
-    for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;i===0?ctx.moveTo(cx+Math.cos(a)*R*rv,cy+Math.sin(a)*R*rv):ctx.lineTo(cx+Math.cos(a)*R*rv,cy+Math.sin(a)*R*rv);}
+    ctx.beginPath();for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;i===0?ctx.moveTo(cx+Math.cos(a)*R*rv,cy+Math.sin(a)*R*rv):ctx.lineTo(cx+Math.cos(a)*R*rv,cy+Math.sin(a)*R*rv);}
     ctx.closePath();ctx.strokeStyle=rv===1?'rgba(255,255,255,.15)':'rgba(255,255,255,.06)';ctx.lineWidth=1;ctx.stroke();
     if(rv<1){ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='9px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.fillText(Math.round(rv*100),cx+3,cy-R*rv+3);}
   });
   for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;ctx.stroke();}
-  ctx.beginPath();
-  for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;i===0?ctx.moveTo(cx+Math.cos(a)*R*vals[i],cy+Math.sin(a)*R*vals[i]):ctx.lineTo(cx+Math.cos(a)*R*vals[i],cy+Math.sin(a)*R*vals[i]);}
+  ctx.beginPath();for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;i===0?ctx.moveTo(cx+Math.cos(a)*R*vals[i],cy+Math.sin(a)*R*vals[i]):ctx.lineTo(cx+Math.cos(a)*R*vals[i],cy+Math.sin(a)*R*vals[i]);}
   ctx.closePath();ctx.fillStyle=`rgba(${r},${g},${b},.18)`;ctx.fill();ctx.strokeStyle=gc;ctx.lineWidth=2.5;ctx.stroke();
   for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;const[px,py]=[cx+Math.cos(a)*R*vals[i],cy+Math.sin(a)*R*vals[i]];ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fillStyle='#07090f';ctx.fill();ctx.strokeStyle=gc;ctx.lineWidth=2;ctx.stroke();}
   ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='bold 11px Noto Sans KR,sans-serif';
   for(let i=0;i<n;i++){const a=(i/n)*2*Math.PI-Math.PI/2;const lx=cx+Math.cos(a)*(R+30),ly=cy+Math.sin(a)*(R+30);ctx.textAlign=lx<cx-5?'right':lx>cx+5?'left':'center';ctx.textBaseline=ly<cy-5?'bottom':ly>cy+5?'top':'middle';ctx.fillText(labels[i],lx,ly);}
 }
 
-/* 핵심시설 바 */
 function drawHubs(facs){
   const el=document.getElementById('hub-list');
   const entries=Object.entries(facs||{}).filter(([,v])=>v>0);
-  if(!entries.length){el.innerHTML='<div style="color:var(--g3);font-size:13px;padding:20px 0">위치 정보 없음</div>';return;}
+  if(!entries.length){el.innerHTML='<div style="color:var(--g3);font-size:13px">–</div>';return;}
   el.innerHTML=entries.sort((a,b)=>a[1]-b[1]).map(([n,dist])=>{
     const km=(dist/1000).toFixed(1);const pct=Math.min(100,dist/25000*100);
     const c=dist<=3000?'#10b981':dist<=8000?'#fbbf24':'#f43f5e';
@@ -1588,15 +1489,11 @@ function drawHubs(facs){
   }).join('');
 }
 
-/* 가격 추이 */
 function drawTrend(recs){
-  const cv=document.getElementById('trend');
-  const ctx=cv.getContext('2d');
-  const W=cv.offsetWidth||cv.width,H=cv.height;
-  cv.width=W;ctx.clearRect(0,0,W,H);
-  if(!recs||!recs.length){ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('실거래가 데이터 없음 — 상단 API 설정에서 국토교통부 키를 입력하세요',W/2,H/2);return;}
-  const monthly={};
-  recs.forEach(r=>{const k=`${r.year}-${String(r.month).padStart(2,'0')}`;if(!monthly[k])monthly[k]=[];if(r.area>0)monthly[k].push(r.price/r.area);});
+  const cv=document.getElementById('trend'),ctx=cv.getContext('2d');
+  const W=cv.offsetWidth||cv.width,H=cv.height;cv.width=W;ctx.clearRect(0,0,W,H);
+  if(!recs||!recs.length){ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('실거래가 없음 — 상단 API 설정에서 국토교통부 키를 입력하세요',W/2,H/2);return;}
+  const monthly={};recs.forEach(r=>{const k=`${r.year}-${String(r.month).padStart(2,'0')}`;if(!monthly[k])monthly[k]=[];if(r.area>0)monthly[k].push(r.price/r.area);});
   const mons=Object.keys(monthly).sort();
   if(mons.length<2){ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('데이터 부족',W/2,H/2);return;}
   const avgs=mons.map(m=>monthly[m].reduce((a,b)=>a+b)/monthly[m].length);
@@ -1613,14 +1510,13 @@ function drawTrend(recs){
   ctx.textAlign='center';ctx.textBaseline='top';mons.forEach((m,i)=>ctx.fillText(m.replace('-','.'),xP(i),PAD.t+cH+10));
 }
 
-/* 거래 테이블 */
 function renderTable(recs,area){
   let filtered=[...recs];
   if(area!=='all'){const[mn,mx]=area.split('-').map(Number);filtered=filtered.filter(r=>r.area>=mn&&(!mx||r.area<mx));}
   filtered.sort((a,b)=>b.year*10000+b.month*100+b.day-(a.year*10000+a.month*100+a.day));
   const top=filtered.slice(0,20);
   const tbody=document.getElementById('tbody');
-  if(!top.length){tbody.innerHTML=`<tr><td colspan="6" class="tbl-empty">${recs.length===0?'거래 데이터 없음 — 상단 API 설정에서 국토교통부 키를 입력하세요':'해당 면적 거래 없음'}</td></tr>`;return;}
+  if(!top.length){tbody.innerHTML=`<tr><td colspan="6" class="tbl-empty">${recs.length===0?'거래 데이터 없음 — API 설정에서 국토교통부 키를 입력하세요':'해당 면적 거래 없음'}</td></tr>`;return;}
   tbody.innerHTML=top.map(r=>{
     const dt=`${r.year}.${String(r.month).padStart(2,'0')}.${String(r.day).padStart(2,'0')}`;
     const m2=r.area>0?Math.round(r.price/r.area):0,py=Math.round(r.area/3.305);
@@ -1628,7 +1524,114 @@ function renderTable(recs,area){
   }).join('');
 }
 
-/* ── UI 컨트롤 ── */
+/* ══════════════════════════════════════════
+   "없음" 패널
+══════════════════════════════════════════ */
+function showNotFound(query){
+  document.getElementById('heroSec').style.display='none';
+  document.getElementById('loading').classList.remove('show');
+  document.getElementById('result').classList.remove('show');
+  const panel=document.getElementById('not-found-panel');
+  panel.style.display='flex';
+
+  document.getElementById('nf-title').textContent=`"${query}" — DB에 없는 아파트`;
+  document.getElementById('nf-query').innerHTML=
+    `입력하신 아파트는 현재 DB에 등록되어 있지 않습니다.<br>
+     <span style="color:var(--g3);font-size:12px">임의 점수 없이, 아래 비슷한 아파트를 선택하거나 직접 요청해 주세요.</span>`;
+
+  const similar=findSimilar(query);
+  const simEl=document.getElementById('nf-similar');
+  if(similar.length){
+    simEl.innerHTML=`<div style="font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--g3);text-transform:uppercase;margin-bottom:10px">🔗 비슷한 아파트 (클릭하여 분석)</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+    ${similar.map(a=>`
+      <div onclick="pickApt(APT_DB.find(x=>x.n==='${a.n}'))" style="padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;" onmouseover="this.style.borderColor='rgba(201,168,76,.4)';this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(13,17,23,.9)'">
+        <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:3px">${a.n}</div>
+        <div style="font-size:11px;color:var(--g3)">${a.a}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--gold);margin-top:4px">${a.yr}년 건축 · ${a.st}</div>
+      </div>`).join('')}
+    </div>`;
+  } else {
+    simEl.innerHTML='<div style="font-size:13px;color:var(--g3);padding:16px 0">비슷한 아파트도 찾지 못했습니다. 지역명(예: 풍무동, 김포시)으로 검색해 보세요.</div>';
+  }
+}
+
+function backToSearch(){
+  document.getElementById('not-found-panel').style.display='none';
+  document.getElementById('heroSec').style.display='flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════════
+   지역 브라우저
+══════════════════════════════════════════ */
+let rbState={city:null,gu:null};
+
+function initRegionBrowser(){
+  const cityEl=document.getElementById('rb-city');
+  const cities=Object.keys(REGION.cities).sort();
+  cityEl.innerHTML=cities.map(c=>`<button class="rb-chip" onclick="rbSelectCity('${c}')">${c}</button>`).join('');
+}
+
+function rbSelectCity(city){
+  rbState={city,gu:null};
+  document.querySelectorAll('#rb-city .rb-chip').forEach(b=>{
+    b.classList.toggle('active',b.textContent===city);
+  });
+  const guEl=document.getElementById('rb-gu');
+  const gus=[...REGION.cities[city]].sort();
+  guEl.innerHTML=`<button class="rb-chip" style="color:var(--g3);font-size:11px" onclick="rbReset()">← 시/도 다시 선택</button>`
+    +gus.map(g=>`<button class="rb-chip" onclick="rbSelectGu('${city}','${g}')">${g}</button>`).join('');
+  guEl.style.display='flex';
+  document.getElementById('rb-list').style.display='none';
+  updateBread();
+}
+
+function rbSelectGu(city,gu){
+  rbState={city,gu};
+  document.querySelectorAll('#rb-gu .rb-chip').forEach(b=>{
+    b.classList.toggle('active',b.textContent===gu);
+  });
+  const key=city+'|'+gu;
+  const apts=REGION.gus[key]||[];
+  const listEl=document.getElementById('rb-list');
+  if(!apts.length){
+    listEl.innerHTML='<div class="rb-empty">등록된 아파트가 없습니다</div>';
+  } else {
+    // 동별 그룹핑
+    const byDong={};
+    for(const a of apts){if(!byDong[a.dong])byDong[a.dong]=[];byDong[a.dong].push(a);}
+    listEl.innerHTML=Object.entries(byDong).sort(([a],[b])=>a.localeCompare(b)).map(([dong,list])=>
+      `<div style="grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--g3);text-transform:uppercase;padding:4px 0 2px;border-top:1px solid var(--border);margin-top:4px">${dong}</div>`
+      +list.map(a=>`<div class="rb-apt-card" onclick="pickApt(APT_DB.find(x=>x.n==='${a.n}'))">
+        <div class="rb-apt-name">${a.n}</div>
+        <div class="rb-apt-meta">${a.yr}년 · ${a.st} ${fd(a.sd)}</div>
+      </div>`).join('')
+    ).join('');
+  }
+  listEl.style.display='grid';
+  updateBread();
+}
+
+function rbReset(){
+  rbState={city:null,gu:null};
+  document.querySelectorAll('.rb-chip').forEach(b=>b.classList.remove('active'));
+  document.getElementById('rb-gu').style.display='none';
+  document.getElementById('rb-list').style.display='none';
+  updateBread();
+}
+
+function updateBread(){
+  const el=document.getElementById('rb-bread');
+  let html='';
+  if(rbState.city) html+=`<span onclick="rbReset()">${rbState.city}</span>`;
+  if(rbState.gu) html+=`<i>›</i><span>${rbState.gu}</span>`;
+  el.innerHTML=html;
+}
+
+/* ══════════════════════════════════════════
+   UI 컨트롤
+══════════════════════════════════════════ */
 function setMsg(msg){document.getElementById('lmsg').textContent=msg;}
 function openModal(){document.getElementById('modalBg').classList.add('open');}
 function closeModal(){document.getElementById('modalBg').classList.remove('open');}
@@ -1643,42 +1646,84 @@ function toast(msg,type='inf'){
   const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${type}`;
   void el.offsetWidth;el.classList.add('show');clearTimeout(toastTm);toastTm=setTimeout(()=>el.classList.remove('show'),3200);
 }
-function pick(name){document.getElementById('si').value=name;document.getElementById('ac').classList.remove('open');doSearch();}
 
-/* 자동완성 — DB 연동 */
+/* DB 아파트 바로 분석 */
+function pickApt(apt){
+  if(!apt){toast('아파트를 찾을 수 없습니다','ng');return;}
+  document.getElementById('si').value=apt.n;
+  document.getElementById('ac').classList.remove('open');
+  runAnalyze(apt);
+}
+function pickByKey(key){
+  const apt=APT_DB.find(a=>a.k.includes(key)||a.n===key);
+  if(apt) pickApt(apt);
+  else{document.getElementById('si').value=key;doSearch();}
+}
+
+/* 자동완성 */
+let acFocusIdx=-1;
 document.getElementById('si').addEventListener('input',e=>{
-  const v=e.target.value.trim();const ac=document.getElementById('ac');
-  if(!v){ac.classList.remove('open');return;}
-  const seen=new Set(),matched=[];
-  for(const apt of APT_DB){
-    if(seen.has(apt.n)) continue;
-    if(apt.k.some(k=>k.includes(v)||v.includes(k))||apt.n.includes(v)||apt.a.includes(v)){
-      seen.add(apt.n);matched.push(apt);
-    }
+  const v=e.target.value;
+  const ac=document.getElementById('ac');
+  acFocusIdx=-1;
+  if(!v.trim()){ac.classList.remove('open');return;}
+  const results=searchAC(v);
+  if(!results.length){
+    ac.innerHTML='<div class="ac-empty">검색 결과 없음 — 지역명(풍무동, 김포)으로 시도해 보세요</div>';
+    ac.classList.add('open');return;
   }
-  if(!matched.length){ac.classList.remove('open');return;}
-  ac.innerHTML=matched.slice(0,8).map(apt=>`<div class="ac-item" onclick="pick('${apt.k[0]}')">
-    <span class="ac-item-icon">🏠</span>
-    <div><div style="color:rgba(255,255,255,.9);font-weight:600">${apt.n}</div>
-    <div style="font-size:11px;color:var(--g3);margin-top:2px">${apt.a} · ${apt.yr}년</div></div>
-  </div>`).join('');
+  ac.innerHTML=results.map((a,i)=>`
+    <div class="ac-item" data-idx="${i}" onclick="pickApt(APT_DB.find(x=>x.n==='${a.n}'))">
+      <div class="ac-item-left">
+        <div class="ac-name">${highlight(a.n,v)}</div>
+        <div class="ac-sub">${a.a} · ${a.yr}년 · ${a.st} ${fd(a.sd)}</div>
+      </div>
+      <div class="ac-tag">${a.city}</div>
+    </div>`).join('');
   ac.classList.add('open');
 });
-document.getElementById('si').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-document.addEventListener('click',e=>{if(!e.target.closest('.search-outer'))document.getElementById('ac').classList.remove('open');});
 
-/* 검색 실행 */
+document.getElementById('si').addEventListener('keydown',e=>{
+  const items=document.querySelectorAll('#ac .ac-item');
+  if(e.key==='ArrowDown'){e.preventDefault();acFocusIdx=Math.min(acFocusIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('focused',i===acFocusIdx));}
+  else if(e.key==='ArrowUp'){e.preventDefault();acFocusIdx=Math.max(acFocusIdx-1,-1);items.forEach((el,i)=>el.classList.toggle('focused',i===acFocusIdx));}
+  else if(e.key==='Enter'){
+    if(acFocusIdx>=0&&items[acFocusIdx]){items[acFocusIdx].click();}
+    else doSearch();
+  }
+  else if(e.key==='Escape') document.getElementById('ac').classList.remove('open');
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-outer')) document.getElementById('ac').classList.remove('open');
+});
+
+/* ══════════════════════════════════════════
+   검색 실행 — DB에 없으면 없음 패널
+══════════════════════════════════════════ */
 async function doSearch(){
   const name=document.getElementById('si').value.trim();
   if(!name){toast('아파트 이름을 입력하세요','ng');return;}
   document.getElementById('ac').classList.remove('open');
+
+  const apt=findApt(name);
+  if(!apt){
+    // DB에 없음 → 없음 패널 표시
+    showNotFound(name);
+    toast(`"${name}" — DB에 없는 아파트입니다`,'ng');
+    return;
+  }
+  runAnalyze(apt);
+}
+
+async function runAnalyze(apt){
   document.getElementById('heroSec').style.display='none';
+  document.getElementById('not-found-panel').style.display='none';
   document.getElementById('loading').classList.add('show');
   document.getElementById('result').classList.remove('show');
   document.getElementById('err-box').classList.remove('show');
-  const btn=document.getElementById('go-btn');btn.disabled=true;
+  document.getElementById('go-btn').disabled=true;
   try{
-    const R=await analyze(name);
+    const R=await analyze(apt);
     document.getElementById('loading').classList.remove('show');
     render(R);
     document.getElementById('result').classList.add('show');
@@ -1689,10 +1734,11 @@ async function doSearch(){
     document.getElementById('loading').classList.remove('show');
     document.getElementById('heroSec').style.display='flex';
     const eb=document.getElementById('err-box');
-    eb.innerHTML=`⚠️ 분석 오류: ${err.message}<br><small>아파트 이름을 더 정확하게 입력해 보세요</small>`;
-    eb.classList.add('show');toast('분석 실패','ng');
-  }finally{btn.disabled=false;}
+    eb.innerHTML=`⚠️ 분석 오류: ${err.message}`;eb.classList.add('show');
+    toast('분석 실패','ng');
+  }finally{document.getElementById('go-btn').disabled=false;}
 }
+
 function doSearch2(){
   const v=document.getElementById('si2').value.trim();
   if(!v){toast('아파트 이름을 입력하세요','ng');return;}
@@ -1700,13 +1746,18 @@ function doSearch2(){
 }
 function newSearch(){
   document.getElementById('result').classList.remove('show');
+  document.getElementById('not-found-panel').style.display='none';
   document.getElementById('heroSec').style.display='flex';
   document.getElementById('si').value='';
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('molit-in').value=CFG.molit;updateDot();
+  document.getElementById('molit-in').value=CFG.molit;
+  updateDot();
+  initRegionBrowser();
 });
 </script>
+-e 
 </body>
 </html>
