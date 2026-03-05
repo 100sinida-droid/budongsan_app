@@ -94,21 +94,6 @@ body::after{
 }
 .nav-logo span{color:var(--gold);}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.nav-api-btn{
-  display:flex;align-items:center;gap:7px;
-  padding:7px 16px;border-radius:20px;
-  background:var(--gold4);border:1px solid var(--border-gold);
-  font-size:12px;color:var(--g2);cursor:pointer;
-  transition:all .2s;font-family:var(--sans);
-}
-.nav-api-btn:hover{background:var(--gold3);color:var(--gold);}
-.nav-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--g3);transition:all .3s;
-}
-.nav-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);}
-.nav-dot.half{background:var(--amber);box-shadow:0 0 8px var(--amber);}
-.nav-status-text{font-size:11px;}
 
 /* ══════════════════════════════════════════
    HERO
@@ -627,12 +612,7 @@ body::after{
     <div class="nav-logo-mark">🏙️</div>
     <span>Apt<span>Score</span></span>
   </a>
-  <div class="nav-right">
-    <button class="nav-api-btn" onclick="openModal()">
-      <div class="nav-dot" id="ndot"></div>
-      <span class="nav-status-text" id="nstat">API 설정</span>
-    </button>
-  </div>
+
 </nav>
 <style>
 /* ── 자동완성 개선 ── */
@@ -776,25 +756,6 @@ body::after{
 </div>
 
 <!-- ══ API MODAL ══ -->
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <button class="modal-x" onclick="closeModal()">✕</button>
-    <h2 class="modal-title">API 설정</h2>
-    <p class="modal-desc">✅ API 키 없이도 DB 등록 228개 아파트를 모두 검색·분석할 수 있습니다.<br>API 키 입력 시 실거래가 데이터가 더 정확해집니다. <span style="color:var(--gold)">선택 사항</span></p>
-    <div class="field">
-      <label>🗝️ 카카오 REST API 키 <span style="color:var(--g3);font-size:11px">선택 — 외부 아파트 주소검색 시 필요</span></label>
-      <input id="kakao-in" type="text" placeholder="카카오 Developers REST API 키" value="cdab16e154b37e68a32ae0e6d9d91b9d">
-      <div class="field-hint"><a href="https://developers.kakao.com/console/app" target="_blank">👉 카카오 Developers에서 무료 발급</a> — DB 미등록 아파트 주소검색 시에만 필요</div>
-    </div>
-    <div class="field" style="margin-top:14px">
-      <label>🗝️ 국토교통부 실거래가 API 키</label>
-      <input id="molit-in" type="text" placeholder="data.go.kr에서 발급한 서비스 키">
-      <div class="field-hint"><a href="https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15058747" target="_blank">👉 공공데이터포털에서 무료 발급</a> — 실거래가·시세변동 분석에 필요</div>
-    </div>
-    <button class="modal-save" onclick="saveKeys()">저장하기</button>
-    <div class="modal-note">카카오 API 키 입력 시 DB 미등록 아파트도 주소 검색 후 분석합니다.</div>
-  </div>
-</div>
 
 <!-- ══ LOADING ══ -->
 <div class="loading" id="loading">
@@ -885,10 +846,11 @@ body::after{
 ══════════════════════════════════════════════════════════════ */
 
 const CFG={
-  molit:localStorage.getItem('molit')||'',
+  molit:localStorage.getItem('molit')||'fad551728c95a236e14821d54bccaada546838a751e426dc9df4a3e813bb51e9',
   kakao:localStorage.getItem('kakao')||'cdab16e154b37e68a32ae0e6d9d91b9d',
   save(m,k){
-    this.molit=m.trim();localStorage.setItem('molit',m.trim());
+    const mk=m.trim()||'fad551728c95a236e14821d54bccaada546838a751e426dc9df4a3e813bb51e9';
+    this.molit=mk;localStorage.setItem('molit',mk);
     if(k){this.kakao=k.trim();localStorage.setItem('kakao',k.trim());}
   },
   ok(){return this.molit.length>10;},
@@ -1604,18 +1566,57 @@ function scorePriceLevel(apt,recs){
 
 /* ── MOLIT ── */
 const LAWD={
-  '서초구':'11650','강남구':'11680','송파구':'11710','강동구':'11740','마포구':'11440',
-  '용산구':'11170','성동구':'11200','광진구':'11215','강서구':'11500','양천구':'11470',
-  '영등포구':'11560','동작구':'11590','관악구':'11620','은평구':'11380','서대문구':'11410',
-  '종로구':'11110','중구':'11140','성북구':'11290','노원구':'11350','강북구':'11305',
-  '도봉구':'11320','중랑구':'11260','동대문구':'11230','금천구':'11545','구로구':'11530',
-  '성남시':'41130','수원시':'41110','용인시':'41460','화성시':'41590','고양시':'41280',
-  '안양시':'41170','부천시':'41190','남양주시':'41360','평택시':'41220','의정부시':'41150',
-  '시흥시':'41390','군포시':'41410','하남시':'41450','광명시':'41210','김포시':'41570',
-  '파주시':'41480','양주시':'41630','안산시':'41270','오산시':'41370','이천시':'41500',
-  '해운대구':'26350','동래구':'26320','수영구':'26410','연제구':'26440',
-  '수성구':'27290','북구':'27230',
-  '서구':'29140','세종시':'36110','남구':'31140',
+  /* 서울 */
+  '종로구':'11110','중구':'11140','용산구':'11170','성동구':'11200','광진구':'11215',
+  '동대문구':'11230','중랑구':'11260','성북구':'11290','강북구':'11305','도봉구':'11320',
+  '노원구':'11350','은평구':'11380','서대문구':'11410','마포구':'11440','양천구':'11470',
+  '강서구_서울':'11500','구로구':'11530','금천구':'11545','영등포구':'11560',
+  '동작구':'11590','관악구':'11620','서초구':'11650','강남구':'11680','송파구':'11710','강동구':'11740',
+  /* 부산 */
+  '부산중구':'26110','부산서구':'26140','부산동구':'26170','영도구':'26200','부산진구':'26230',
+  '동래구':'26260','부산남구':'26290','부산북구':'26320','해운대구':'26350','사하구':'26380',
+  '금정구':'26410','부산강서구':'26440','연제구':'26470','수영구':'26500','사상구':'26530','기장군':'26710',
+  /* 대구 */
+  '대구중구':'27110','대구동구':'27140','대구서구':'27170','대구남구':'27200','대구북구':'27230',
+  '수성구':'27260','달서구':'27290','달성군':'27710',
+  /* 인천 */
+  '인천중구':'28110','인천동구':'28140','미추홀구':'28177','연수구':'28185','남동구':'28200',
+  '부평구':'28237','계양구':'28245','인천서구':'28260',
+  /* 광주 */
+  '광주동구':'29110','광주서구':'29140','광주남구':'29155','광주북구':'29170','광산구':'29200',
+  /* 대전 */
+  '대전동구':'30110','대전중구':'30140','대전서구':'30170','유성구':'30200','대덕구':'30230',
+  /* 울산 */
+  '울산중구':'31110','울산남구':'31140','울산동구':'31170','울산북구':'31200','울주군':'31710',
+  /* 세종 */
+  '세종시':'36110',
+  /* 경기 */
+  '수원시':'41110','성남시':'41130','의정부시':'41150','안양시':'41170','부천시':'41190',
+  '광명시':'41210','평택시':'41220','동두천시':'41250','안산시':'41270','고양시':'41280',
+  '과천시':'41290','구리시':'41310','남양주시':'41360','오산시':'41370','시흥시':'41390',
+  '군포시':'41410','의왕시':'41430','하남시':'41450','용인시':'41460','파주시':'41480',
+  '이천시':'41500','안성시':'41550','김포시':'41570','화성시':'41590','광주시':'41610',
+  '양주시':'41630','포천시':'41650','여주시':'41670',
+  /* 강원 */
+  '춘천시':'51110','원주시':'51130','강릉시':'51150','동해시':'51170','태백시':'51190',
+  '속초시':'51210','삼척시':'51230',
+  /* 충북 */
+  '청주시':'43110','충주시':'43130','제천시':'43150',
+  /* 충남 */
+  '천안시':'44130','공주시':'44150','보령시':'44180','아산시':'44200','서산시':'44210',
+  '논산시':'44230','계룡시':'44250','당진시':'44270',
+  /* 전북 */
+  '전주시':'45110','군산시':'45130','익산시':'45140','정읍시':'45180','남원시':'45190','김제시':'45210',
+  /* 전남 */
+  '목포시':'46110','여수시':'46130','순천시':'46150','나주시':'46170','광양시':'46230',
+  /* 경북 */
+  '포항시':'47110','경주시':'47130','김천시':'47150','안동시':'47170','구미시':'47190',
+  '영주시':'47210','영천시':'47220','상주시':'47230','문경시':'47250','경산시':'47290',
+  /* 경남 */
+  '창원시':'48120','진주시':'48170','통영시':'48220','사천시':'48240','김해시':'48250',
+  '밀양시':'48270','거제시':'48310','양산시':'48330',
+  /* 제주 */
+  '제주시':'50110','서귀포시':'50130',
 };
 function recentMonths(n){
   const r=[],d=new Date();
@@ -1624,17 +1625,117 @@ function recentMonths(n){
 }
 async function fetchMolit(lawd,ym){
   if(!CFG.ok()) return[];
-  const url=`http://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade?serviceKey=${CFG.molit}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
-  try{
-    const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-    const xml=new DOMParser().parseFromString(await r.text(),'text/xml');
-    return Array.from(xml.querySelectorAll('item')).map(i=>{
-      const g=t=>(i.querySelector(t)?.textContent||'').trim();
-      return{name:g('aptNm'),price:parseInt(g('dealAmount').replace(/,/g,''),10)||0,
-        area:parseFloat(g('excluUseAr'))||0,floor:g('floor'),buildYear:parseInt(g('buildYear'),10)||0,
-        year:parseInt(g('dealYear'),10)||0,month:parseInt(g('dealMonth'),10)||0,day:parseInt(g('dealDay'),10)||0};
-    }).filter(r=>r.price>0&&r.area>0);
-  }catch{return[];}
+  const encoded=encodeURIComponent(CFG.molit);
+  const apiUrl=`https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade?serviceKey=${encoded}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
+  // CORS 프록시 순서대로 시도
+  const tries=[
+    ()=>fetch(apiUrl,{signal:AbortSignal.timeout(8000)}),
+    ()=>fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,{signal:AbortSignal.timeout(10000)}),
+    ()=>fetch(`https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,{signal:AbortSignal.timeout(10000)}),
+  ];
+  for(const tryFn of tries){
+    try{
+      const r=await tryFn();
+      if(!r.ok) continue;
+      const txt=await r.text();
+      if(!txt.includes('<item>')) continue;
+      const xml=new DOMParser().parseFromString(txt,'text/xml');
+      const items=Array.from(xml.querySelectorAll('item')).map(i=>{
+        const g=t=>(i.querySelector(t)?.textContent||'').trim();
+        return{
+          name:g('aptNm'),
+          price:parseInt((g('dealAmount')||'0').replace(/,/g,''),10)||0,
+          area:parseFloat(g('excluUseAr'))||0,
+          floor:g('floor'),
+          buildYear:parseInt(g('buildYear'),10)||0,
+          year:parseInt(g('dealYear'),10)||0,
+          month:parseInt(g('dealMonth'),10)||0,
+          day:parseInt(g('dealDay'),10)||0,
+          dong:g('umdNm'),
+        };
+      }).filter(r=>r.price>0&&r.area>0&&r.name);
+      if(items.length>0) return items;
+    }catch(e){continue;}
+  }
+  return[];
+}
+
+/* 특정 아파트의 최근 6개월 실거래 데이터 수집 */
+async function fetchAptRealTrade(apt){
+  if(!CFG.ok()||!apt) return{trades:[],avg:0,trend:55};
+  // 법정동코드 매핑
+  const LAWD={
+    '서울':{'종로구':'11110','중구':'11140','용산구':'11170','성동구':'11200','광진구':'11215',
+      '동대문구':'11230','중랑구':'11260','성북구':'11290','강북구':'11305','도봉구':'11320',
+      '노원구':'11350','은평구':'11380','서대문구':'11410','마포구':'11440','양천구':'11470',
+      '강서구':'11500','구로구':'11530','금천구':'11545','영등포구':'11560','동작구':'11590',
+      '관악구':'11620','서초구':'11650','강남구':'11680','송파구':'11710','강동구':'11740'},
+    '부산':{'중구':'26110','서구':'26140','동구':'26170','영도구':'26200','부산진구':'26230',
+      '동래구':'26260','남구':'26290','북구':'26320','해운대구':'26350','사하구':'26380',
+      '금정구':'26410','강서구':'26440','연제구':'26470','수영구':'26500','사상구':'26530','기장군':'26710'},
+    '대구':{'중구':'27110','동구':'27140','서구':'27170','남구':'27200','북구':'27230',
+      '수성구':'27260','달서구':'27290','달성군':'27710'},
+    '인천':{'중구':'28110','동구':'28140','미추홀구':'28177','연수구':'28185','남동구':'28200',
+      '부평구':'28237','계양구':'28245','서구':'28260'},
+    '광주':{'동구':'29110','서구':'29140','남구':'29155','북구':'29170','광산구':'29200'},
+    '대전':{'동구':'30110','중구':'30140','서구':'30170','유성구':'30200','대덕구':'30230'},
+    '울산':{'중구':'31110','남구':'31140','동구':'31170','북구':'31200','울주군':'31710'},
+    '세종':{'세종시':'36110'},
+    '경기':{'수원시':'41110','성남시':'41130','의정부시':'41150','안양시':'41170','부천시':'41190',
+      '광명시':'41210','평택시':'41220','안산시':'41270','고양시':'41280','과천시':'41290',
+      '구리시':'41310','남양주시':'41360','오산시':'41370','시흥시':'41390','군포시':'41410',
+      '의왕시':'41430','하남시':'41450','용인시':'41460','파주시':'41480','이천시':'41500',
+      '안성시':'41550','김포시':'41570','화성시':'41590','광주시':'41610','양주시':'41630','포천시':'41650'},
+    '강원도':{'춘천시':'51110','원주시':'51130','강릉시':'51150','동해시':'51170','태백시':'51190','속초시':'51210'},
+    '충청북도':{'청주시':'43110','충주시':'43130','제천시':'43150'},
+    '충청남도':{'천안시':'44130','공주시':'44150','보령시':'44180','아산시':'44200','서산시':'44210'},
+    '전라북도':{'전주시':'45110','군산시':'45130','익산시':'45140'},
+    '전라남도':{'목포시':'46110','여수시':'46130','순천시':'46150','나주시':'46170'},
+    '경상북도':{'포항시':'47110','경주시':'47130','김천시':'47150','안동시':'47170','구미시':'47190'},
+    '경상남도':{'창원시':'48120','진주시':'48170','통영시':'48220','사천시':'48240','김해시':'48250'},
+    '제주':{'제주시':'50110','서귀포시':'50130'},
+  };
+  const cityMap=LAWD[apt.city]||{};
+  // gu에서 실제 키 찾기 (성남시의 경우 상위 시로)
+  let lawd=cityMap[apt.gu];
+  if(!lawd){
+    // 광역시 내 구인 경우 상위 시 코드
+    const parentCity=Object.keys(LAWD).find(c=>Object.keys(LAWD[c]).some(g=>g===apt.gu));
+    if(parentCity) lawd=LAWD[parentCity][apt.gu];
+  }
+  if(!lawd) return{trades:[],avg:0,trend:55};
+
+  const now=new Date();
+  const months=Array.from({length:6},(_,i)=>{
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    return`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}`;
+  });
+
+  let allTrades=[];
+  for(const ym of months){
+    const rows=await fetchMolit(lawd,ym);
+    const matched=rows.filter(r=>{
+      const rn=r.name.replace(/\s/g,'');
+      const an=apt.n.replace(/\s/g,'');
+      return rn===an||rn.includes(an)||an.includes(rn);
+    });
+    allTrades.push(...matched);
+    if(matched.length>0) await new Promise(r=>setTimeout(r,200));
+  }
+  if(allTrades.length===0) return{trades:[],avg:0,trend:55};
+
+  // 최신순 정렬
+  allTrades.sort((a,b)=>b.year*10000+b.month*100-(a.year*10000+a.month*100));
+  // ㎡당 평균 단가 (만원)
+  const prices=allTrades.map(t=>Math.round(t.price/t.area));
+  const avg=Math.round(prices.reduce((s,v)=>s+v,0)/prices.length);
+  // 시세 트렌드: 최근 3개월 vs 이전 3개월 비교
+  const half=Math.ceil(prices.length/2);
+  const recent=prices.slice(0,half).reduce((s,v)=>s+v,0)/half;
+  const older=prices.slice(half).reduce((s,v)=>s+v,0)/(prices.length-half)||recent;
+  const trendScore=older>0?Math.min(100,Math.max(0,Math.round(50+(recent-older)/older*200))):55;
+
+  return{trades:allTrades.slice(0,10),avg,trend:trendScore,recentPrice:recent};
 }
 
 /* ══════════════════════════════════════════
@@ -1649,7 +1750,10 @@ async function analyze(apt){
   await sleep(200);
 
   // 실거래 수집
-  const lawd=LAWD[apt.gu]||'11680', recs=[];
+  const _gu=apt.gu,_city=apt.city;
+  // 동명이구 처리: city 접두어 붙은 키 우선, 없으면 gu 직접
+  const _cityPfx=_city.replace('특별시','').replace('광역시','').replace('특별자치시','').replace('도','').slice(0,2);
+  const lawd=LAWD[_cityPfx+_gu]||LAWD[_gu+'_서울']||LAWD[_gu]||'11680', recs=[];
   if(CFG.ok()){
     const mons=recentMonths(6);
     const pfx=apt.n.replace(/\s/g,'').slice(0,4);
@@ -1823,7 +1927,7 @@ function drawHubs(facs){
 function drawTrend(recs){
   const cv=document.getElementById('trend'),ctx=cv.getContext('2d');
   const W=cv.offsetWidth||cv.width,H=cv.height;cv.width=W;ctx.clearRect(0,0,W,H);
-  if(!recs||!recs.length){ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('실거래가 없음 — 상단 API 설정에서 국토교통부 키를 입력하세요',W/2,H/2);return;}
+  if(!recs||!recs.length){ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('실거래가 데이터를 불러오는 중이거나 해당 단지 거래 없음',W/2,H/2);return;}
   const monthly={};recs.forEach(r=>{const k=`${r.year}-${String(r.month).padStart(2,'0')}`;if(!monthly[k])monthly[k]=[];if(r.area>0)monthly[k].push(r.price/r.area);});
   const mons=Object.keys(monthly).sort();
   if(mons.length<2){ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('데이터 부족',W/2,H/2);return;}
@@ -1847,7 +1951,7 @@ function renderTable(recs,area){
   filtered.sort((a,b)=>b.year*10000+b.month*100+b.day-(a.year*10000+a.month*100+a.day));
   const top=filtered.slice(0,20);
   const tbody=document.getElementById('tbody');
-  if(!top.length){tbody.innerHTML=`<tr><td colspan="6" class="tbl-empty">${recs.length===0?'거래 데이터 없음 — API 설정에서 국토교통부 키를 입력하세요':'해당 면적 거래 없음'}</td></tr>`;return;}
+  if(!top.length){tbody.innerHTML=`<tr><td colspan="6" class="tbl-empty">${recs.length===0?'거래 데이터 없음 — 해당 기간 실거래 없음':'해당 면적 거래 없음'}</td></tr>`;return;}
   tbody.innerHTML=top.map(r=>{
     const dt=`${r.year}.${String(r.month).padStart(2,'0')}.${String(r.day).padStart(2,'0')}`;
     const m2=r.area>0?Math.round(r.price/r.area):0,py=Math.round(r.area/3.305);
@@ -1964,22 +2068,6 @@ function updateBread(){
    UI 컨트롤
 ══════════════════════════════════════════ */
 function setMsg(msg){document.getElementById('lmsg').textContent=msg;}
-function openModal(){document.getElementById('modalBg').classList.add('open');}
-function closeModal(){document.getElementById('modalBg').classList.remove('open');}
-function saveKeys(){
-  CFG.save(
-    document.getElementById('molit-in').value,
-    document.getElementById('kakao-in').value
-  );
-  updateDot();toast('💾 저장 완료','ok');closeModal();
-}
-function updateDot(){
-  const dot=document.getElementById('ndot'),stat=document.getElementById('nstat');
-  if(CFG.ok()&&CFG.kakaoOk()){dot.className='nav-dot on';stat.textContent='API 연결됨';}
-  else if(CFG.kakaoOk()){dot.className='nav-dot on';stat.textContent='카카오 연결됨';}
-  else if(CFG.ok()){dot.className='nav-dot on';stat.textContent='MOLIT 연결됨';}
-  else{dot.className='nav-dot';stat.textContent='API 설정';}
-}
 let toastTm;
 function toast(msg,type='inf'){
   const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${type}`;
@@ -2185,7 +2273,6 @@ function newSearch(){
 
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('molit-in').value=CFG.molit;
-  updateDot();
   initRegionBrowser();
 });
 </script>
