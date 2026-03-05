@@ -826,7 +826,7 @@ body::after{
   <h1 class="hero-h1">당신의 아파트,<br><em>지금 몇 점인가요?</em></h1>
   <p class="hero-sub">
     아파트명·동·지역명으로 검색하면 자동완성 목록이 나타납니다.<br>
-    <strong>DB에 없는 아파트는 "없음" 표시</strong> — 임의 점수 없음.
+    <strong>전국 모든 아파트 실시간 점수 산출</strong>
   </p>
 
   <!-- ── 검색창 ── -->
@@ -859,7 +859,7 @@ body::after{
   <div class="hero-kpi">
     <div class="h-kpi"><div class="kpi-n">7개</div><div class="kpi-l">평가 항목</div></div>
     <div class="h-kpi"><div class="kpi-n">100점</div><div class="kpi-l">종합 점수</div></div>
-    <div class="h-kpi"><div class="kpi-n">DB</div><div class="kpi-l">등록 아파트만</div></div>
+    <div class="h-kpi"><div class="kpi-n">전국</div><div class="kpi-l">모든 아파트</div></div>
     <div class="h-kpi"><div class="kpi-n">즉시</div><div class="kpi-l">결과 확인</div></div>
   </div>
 </section>
@@ -1011,8 +1011,6 @@ body::after{
 const FULL_DB_VERSION = 1;
 const IDB_NAME = 'aptscoreDB';
 const IDB_STORE = 'apts';
-let fullDbApts = [];       // 수집된 전체 단지
-let dbCollecting = false;
 let dbPaused = false;
 let dbCurrentPage = 1;
 let dbTotalPages = 0;
@@ -1524,6 +1522,14 @@ const HUBS=GU_HUBS['서울|강남구'];
    각 항목: k(검색키워드배열), n(정식명), a(주소), city(시), gu(구/군), dong(동/읍)
             la(위도), lo(경도), yr(건축년도), st(인근역), sd(역거리m)
 ══════════════════════════════════════════════════════════════ */
+
+/* 전역 apt 임시 맵 — onclick에서 객체 직접 참조 */
+const _AMAP = [];
+function _aptIdx(apt){ _AMAP.push(apt); return _AMAP.length-1; }
+function pickIdx(i){ const a=_AMAP[i]; if(a) pickApt(a); }
+function clearAmap(){ _AMAP.length=0; }
+let fullDbApts=[];
+let dbCollecting=false;
 const APT_DB=[
   /* ── 강원도 ── */
   {k:['강릉자이'],n:'강릉자이',city:'강원도',gu:'강릉시',dong:'교동',a:'강원도 강릉시 교동',la:37.7519,lo:128.8761,yr:2020,st:'강릉역',sd:1200,price:2100},
@@ -2478,8 +2484,7 @@ let lastRecs=[], currentApt=null;
 
 async function analyze(apt){
   currentApt=apt;
-  const src=apt.isKakao?`🗺️ 카카오 검색: ${apt.n}`:`✅ DB 매칭: ${apt.n}`;
-  setMsg(src);
+  setMsg(`🔍 ${apt.n} 분석 중…`);
   await sleep(200);
 
   // 실거래 수집
@@ -2532,7 +2537,7 @@ function render(R){
   const gc=GRADE[R.grade];
   document.getElementById('r-name').textContent=R.name;
   document.getElementById('r-addr').innerHTML=R.addr+
-    ' <span style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);padding:2px 10px;border-radius:20px;font-size:11px;color:#34d399;margin-left:6px">✓ DB 등록</span>';
+    '';
   document.getElementById('r-score').textContent=R.total;
   document.getElementById('r-score').style.color=gc;
   document.getElementById('r-grade').textContent=R.grade;
@@ -2703,22 +2708,24 @@ function showNotFound(query){
   const panel=document.getElementById('not-found-panel');
   panel.style.display='flex';
 
-  document.getElementById('nf-title').textContent=`"${query}" — DB에 없는 아파트`;
+  document.getElementById('nf-title').textContent=`"${query}" — 검색 결과 없음`;
   document.getElementById('nf-query').innerHTML=
-    `입력하신 아파트는 현재 DB에 등록되어 있지 않습니다.<br>
-     <span style="color:var(--g3);font-size:12px">임의 점수 없이, 아래 비슷한 아파트를 선택하거나 직접 요청해 주세요.</span>`;
+    `해당 이름의 아파트를 찾지 못했습니다.<br>
+     <span style="color:var(--g3);font-size:12px">아파트 정식 명칭 또는 지역명(예: 검단 호반써밋, 풍무동)으로 다시 검색해 보세요.</span>`;
 
   const similar=findSimilar(query);
   const simEl=document.getElementById('nf-similar');
   if(similar.length){
     simEl.innerHTML=`<div style="font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--g3);text-transform:uppercase;margin-bottom:10px">🔗 비슷한 아파트 (클릭하여 분석)</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-    ${similar.map(a=>`
-      <div onclick="pickApt(APT_DB.find(x=>x.n===${JSON.stringify(a.n)}))" style="padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;" onmouseover="this.style.borderColor='rgba(201,168,76,.4)';this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(13,17,23,.9)'">
+    ${(()=>{ clearAmap(); return similar; })().map(a=>{
+      const idx=_aptIdx(a);
+      return `<div onclick="pickIdx(${idx})" style="padding:14px 16px;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left;transition:all .18s;" onmouseover="this.style.borderColor='rgba(201,168,76,.4)';this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)';this.style.background='rgba(13,17,23,.9)'">
         <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.88);margin-bottom:3px">${a.n}</div>
         <div style="font-size:11px;color:var(--g3)">${a.city} ${a.gu} ${a.dong}</div>
         <div style="font-size:10px;font-weight:700;color:var(--gold);margin-top:4px">${a.yr>1900?a.yr+'년 건축 · ':' '}${a.st&&a.sd<9000?a.st+' '+fd(a.sd):''}</div>
-      </div>`).join('')}
+      </div>`;
+    }).join('')}
     </div>`;
   } else {
     simEl.innerHTML='<div style="font-size:13px;color:var(--g3);padding:16px 0">비슷한 아파트도 찾지 못했습니다. 지역명(예: 풍무동, 김포시)으로 검색해 보세요.</div>';
@@ -2815,17 +2822,22 @@ function rsShowApts(apts,label){
   }
 
   // 준공년도 최신순 정렬
+  clearAmap();
   const sorted=[...apts].sort((a,b)=>b.yr-a.yr);
-  grid.innerHTML=sorted.map(a=>`
-    <div class="rs-apt-card" onclick="pickApt(APT_DB.find(x=>x.n===${JSON.stringify(a.n)}))">
+  grid.innerHTML=sorted.map(a=>{
+    const idx=_aptIdx(a);
+    const yr=a.yr>1900?`${a.yr}년`:'연도미상';
+    const dist=a.sd<9000?`${a.st} ${fd(a.sd)}`:'';
+    return `<div class="rs-apt-card" onclick="pickIdx(${idx})">
       <div class="rs-apt-name">${a.n}</div>
-      <div class="rs-apt-addr">${a.dong}</div>
+      <div class="rs-apt-addr">${a.city} ${a.gu} ${a.dong}</div>
       <div class="rs-apt-meta">
-        <span class="rs-apt-tag">${a.yr}년</span>
-        <span class="rs-apt-tag">${a.st} ${fd(a.sd)}</span>
-        ${a.price?`<span class="rs-apt-tag">${a.price.toLocaleString()}만/㎡</span>`:''}
+        <span class="rs-apt-tag">${yr}</span>
+        ${dist?`<span class="rs-apt-tag">${dist}</span>`:''}
+        ${a.price>0?`<span class="rs-apt-tag">${a.price.toLocaleString()}만/㎡</span>`:''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -2867,12 +2879,14 @@ document.getElementById('si').addEventListener('input',e=>{
     ac.classList.add('open');return;
   }
   // 결과 수 헤더
+  clearAmap();
   const hdr=results.length>=10?`<div class="ac-section">${results.length}개 검색결과 · 최대 12개 표시</div>`:'';
-  ac.innerHTML=hdr+results.map((a,i)=>{
+  ac.innerHTML=hdr+results.map((a)=>{
     const yr=a.yr>1900?`${a.yr}년`:'';
     const dist=a.sd<9000?`${a.st} ${fd(a.sd)}`:'';
     const sub=[a.gu,a.dong,yr,dist].filter(Boolean).join(' · ');
-    return `<div class="ac-item" data-idx="${i}" onclick="pickApt(APT_DB.find(x=>x.n===${JSON.stringify(a.n)}))">
+    const idx=_aptIdx(a);
+    return `<div class="ac-item" onclick="pickIdx(${idx})">
       <div class="ac-item-left">
         <div class="ac-name">${highlight(a.n,v)}</div>
         <div class="ac-sub">${sub}</div>
@@ -3003,24 +3017,63 @@ async function doSearch(){
   if(!name){toast('아파트 이름을 입력하세요','ng');return;}
   document.getElementById('ac').classList.remove('open');
 
-  // 1단계: 내부 DB 검색
+  // 1단계: 정적 DB 검색 (빠른 경로)
   const apt=findApt(name);
   if(apt){runAnalyze(apt);return;}
 
-  // 2단계: 전국 검색 (카카오 우선 → Nominatim 자동 폴백)
+  // 2단계: 수집된 전국 DB에서 검색 (fullDbApts)
+  if(fullDbApts.length>0){
+    const fromFull=fullDbApts.find(a=>{
+      const an=a.n.replace(/\s/g,''), qn=name.replace(/\s/g,'');
+      return an===qn||an.includes(qn)||qn.includes(an);
+    });
+    if(fromFull){ runAnalyze(fromFull); return; }
+  }
+
+  // 3단계: 실시간 지오코딩 → 즉시 분석 (DB 불필요)
   setLoadingVisible(true);
-  setMsg('🔍 전국 아파트 검색 중…');
-  const extApt=await kakaoSearchApt(name);
+  setMsg('🔍 전국 검색 중…');
+  const extApt=await geoSearchApt(name);
   if(extApt){
-    toast(`📍 검색 완료: ${extApt.n}`,'inf');
+    toast(`📍 ${extApt.n} — 실시간 분석`,'inf');
     runAnalyze(extApt);
     return;
   }
   setLoadingVisible(false);
-
-  // 3단계: 없음
   showNotFound(name);
   toast(`"${name}" — 검색 결과 없음`,'ng');
+}
+
+/* 지오코딩 통합 함수: 카카오 → OSM → 공공데이터 순 */
+async function geoSearchApt(query){
+  // 카카오 먼저
+  const kakaoResult=await kakaoSearchApt(query);
+  if(kakaoResult) return kakaoResult;
+
+  // OSM Nominatim
+  try{
+    const q=encodeURIComponent(query+' 아파트 대한민국');
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&addressdetails=1&limit=5&accept-language=ko`,
+      {headers:{'User-Agent':'AptScore/1.0'},signal:AbortSignal.timeout(8000)});
+    if(r.ok){
+      const data=await r.json();
+      const item=data.find(d=>d.type==='apartments'||d.class==='building'||d.addresstype==='amenity')||data[0];
+      if(item){
+        const a=item.address||{};
+        const city=normCity(a.city||a.province||a.state||'기타');
+        const gu=a.city_district||a.suburb||a.county||city;
+        const dong=a.quarter||a.neighbourhood||a.road||'';
+        return{
+          n:item.display_name.split(',')[0].trim()||query,
+          a:`${city} ${gu} ${dong}`.trim(),
+          city,gu,dong,
+          la:parseFloat(item.lat),lo:parseFloat(item.lon),
+          yr:0,st:'',sd:9999,price:0,k:[query],isKakao:true,
+        };
+      }
+    }
+  }catch(e){}
+  return null;
 }
 
 function setLoadingVisible(v){
