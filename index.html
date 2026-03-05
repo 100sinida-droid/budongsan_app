@@ -715,7 +715,7 @@ body::after{
 </style>
 <!-- ══ HERO ══ -->
 <section class="hero" id="heroSec">
-  <div class="hero-badge"><div class="hero-badge-dot"></div>전국 아파트 · 국토교통부 공공데이터</div>
+  <div class="hero-badge"><div class="hero-badge-dot"></div>전국 아파트 · 카카오 지도 API 연동</div>
   <h1 class="hero-h1">당신의 아파트,<br><em>지금 몇 점인가요?</em></h1>
   <p class="hero-sub">
     아파트명·동·지역명으로 검색하면 자동완성 목록이 나타납니다.<br>
@@ -783,7 +783,7 @@ body::after{
     <p class="modal-desc">✅ API 키 없이도 DB 등록 228개 아파트를 모두 검색·분석할 수 있습니다.<br>API 키 입력 시 실거래가 데이터가 더 정확해집니다. <span style="color:var(--gold)">선택 사항</span></p>
     <div class="field">
       <label>🗝️ 카카오 REST API 키 <span style="color:var(--g3);font-size:11px">선택 — 외부 아파트 주소검색 시 필요</span></label>
-      <input id="kakao-in" type="text" placeholder="카카오 Developers REST API 키">
+      <input id="kakao-in" type="text" placeholder="카카오 Developers REST API 키" value="cdab16e154b37e68a32ae0e6d9d91b9d">
       <div class="field-hint"><a href="https://developers.kakao.com/console/app" target="_blank">👉 카카오 Developers에서 무료 발급</a> — DB 미등록 아파트 주소검색 시에만 필요</div>
     </div>
     <div class="field" style="margin-top:14px">
@@ -886,7 +886,7 @@ body::after{
 
 const CFG={
   molit:localStorage.getItem('molit')||'',
-  kakao:localStorage.getItem('kakao')||'',
+  kakao:localStorage.getItem('kakao')||'cdab16e154b37e68a32ae0e6d9d91b9d',
   save(m,k){
     this.molit=m.trim();localStorage.setItem('molit',m.trim());
     if(k){this.kakao=k.trim();localStorage.setItem('kakao',k.trim());}
