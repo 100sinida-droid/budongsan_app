@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부동산 용어 사전 — 갭투자·전세가율·용적률 등 완벽 정리 | AptScore</title>
+<meta name="description" content="갭투자, 전세가율, 용적률, 재건축, LTV, DSR 등 부동산 투자에 필수적인 용어를 쉽고 명확하게 설명합니다.">
+<meta name="keywords" content="부동산용어,갭투자,전세가율,용적률,재건축,LTV,DSR,청약,분양권,입주권">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7938956361770773" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f;--bg2:#0d1117;--bg3:#131923;
+  --gold:#c9a84c;--gold2:#e8c97a;
+  --white:#ffffff;--g1:#f1f5f9;--g2:#94a3b8;--g3:#475569;
+  --border:rgba(255,255,255,0.07);--border-gold:rgba(201,168,76,0.25);
+  --r:12px;--r2:16px;
+  --sans:'Noto Sans KR',sans-serif;--serif:'Gowun Batang',serif;
+}
+body{background:var(--bg);color:var(--g1);font-family:var(--sans);line-height:1.7;min-height:100vh;}
+a{color:var(--gold);text-decoration:none;}a:hover{text-decoration:underline;}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:60px;background:rgba(7,9,15,.95);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);}
+.nav-logo span span{color:var(--white);}
+.nav-links{display:flex;gap:24px;font-size:13px;color:var(--g2);}
+.nav-links a{color:var(--g2);transition:color .2s;}.nav-links a:hover{color:var(--gold);text-decoration:none;}
+.page-hero{background:linear-gradient(135deg,rgba(201,168,76,.08) 0%,transparent 60%);
+  border-bottom:1px solid var(--border);padding:64px 40px 48px;text-align:center;}
+.page-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;
+  background:rgba(201,168,76,.1);border:1px solid var(--border-gold);font-size:12px;color:var(--gold);margin-bottom:20px;}
+.page-h1{font-family:var(--serif);font-size:clamp(26px,4vw,44px);font-weight:700;margin-bottom:16px;}
+.page-h1 em{color:var(--gold);font-style:normal;}
+.page-desc{font-size:15px;color:var(--g2);max-width:640px;margin:0 auto 24px;line-height:1.8;}
+/* 검색 */
+.term-search{max-width:500px;margin:0 auto;position:relative;}
+.term-search input{width:100%;height:48px;background:rgba(255,255,255,.06);border:1px solid var(--border-gold);
+  border-radius:var(--r);padding:0 48px 0 18px;font-size:14px;color:var(--white);outline:none;font-family:var(--sans);}
+.term-search input::placeholder{color:var(--g3);}
+.term-search span{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:16px;}
+/* CONTENT */
+.wrap{max-width:900px;margin:0 auto;padding:0 24px;}
+.ad-wrap{max-width:900px;margin:32px auto;padding:0 24px;}
+/* 카테고리 탭 */
+.cat-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:28px 0 8px;}
+.cat-tab{padding:7px 16px;border-radius:20px;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  font-size:12px;font-weight:600;color:var(--g3);transition:all .18s;font-family:var(--sans);}
+.cat-tab:hover,.cat-tab.active{background:rgba(201,168,76,.1);border-color:var(--border-gold);color:var(--gold);}
+/* 용어 목록 */
+.terms-section{margin-bottom:48px;padding-top:8px;}
+.terms-section-title{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--white);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;}
+.term-list{display:flex;flex-direction:column;gap:2px;}
+.term-item{padding:18px 20px;background:rgba(13,17,23,.7);border:1px solid var(--border);
+  border-radius:var(--r);transition:border-color .18s;cursor:pointer;}
+.term-item:hover{border-color:var(--border-gold);}
+.term-item.open{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);}
+.term-header{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.term-name{font-size:15px;font-weight:700;color:var(--white);}
+.term-eng{font-size:12px;color:var(--g3);margin-left:8px;}
+.term-tag{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;
+  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold);flex-shrink:0;}
+.term-arrow{font-size:12px;color:var(--g3);transition:transform .2s;flex-shrink:0;}
+.term-item.open .term-arrow{transform:rotate(180deg);}
+.term-body{display:none;padding-top:14px;border-top:1px solid var(--border);margin-top:14px;}
+.term-item.open .term-body{display:block;}
+.term-body p{font-size:13px;color:var(--g2);line-height:1.85;margin-bottom:10px;}
+.term-body p:last-child{margin-bottom:0;}
+.term-body .example{background:rgba(255,255,255,.04);border-radius:8px;padding:12px 14px;
+  margin-top:10px;font-size:12px;color:var(--g3);}
+.term-body .example strong{color:var(--gold);}
+/* RELATED */
+.related{border-top:1px solid var(--border);padding:40px 0;}
+.related h3{font-size:18px;margin-bottom:20px;color:var(--white);font-family:var(--serif);}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:600px){.related-grid{grid-template-columns:1fr;}.nav-links{display:none;}}
+.related-card{padding:16px;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:var(--r);transition:border-color .2s;}
+.related-card:hover{border-color:var(--border-gold);}
+.related-card h4{font-size:13px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.related-card p{font-size:11px;color:var(--g3);margin-bottom:0;}
+footer{border-top:1px solid var(--border);padding:32px 40px;text-align:center;font-size:12px;color:var(--g3);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">🏙️ Apt<span>Score</span></a>
+  <div class="nav-links">
+    <a href="index.html">🔍 아파트 분석</a>
+    <a href="guide.html">📖 투자 가이드</a>
+    <a href="realestate-terms.html">📚 부동산 용어</a>
+    <a href="market-trend.html">📈 시장 동향</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-badge">📚 부동산 용어 사전</div>
+  <h1 class="page-h1">부동산 <em>핵심 용어</em> 완벽 정리</h1>
+  <p class="page-desc">갭투자, 전세가율, 용적률, LTV, DSR… 부동산 뉴스를 이해하는 데 필수적인 용어들을 쉽고 정확하게 설명합니다.</p>
+  <div class="term-search">
+    <input type="text" id="termSearch" placeholder="용어 검색 (예: 갭투자, LTV…)" oninput="filterTerms(this.value)">
+    <span>🔍</span>
+  </div>
+</div>
+
+<div class="ad-wrap">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7938956361770773" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="autorelaxed" data-ad-client="ca-pub-7938956361770773" data-ad-slot="5368010468"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<div class="wrap">
+<div class="cat-tabs">
+  <button class="cat-tab active" onclick="filterCat('all',this)">전체</button>
+  <button class="cat-tab" onclick="filterCat('price',this)">가격·거래</button>
+  <button class="cat-tab" onclick="filterCat('loan',this)">대출·금융</button>
+  <button class="cat-tab" onclick="filterCat('rebuild',this)">재건축·재개발</button>
+  <button class="cat-tab" onclick="filterCat('supply',this)">공급·청약</button>
+  <button class="cat-tab" onclick="filterCat('tax',this)">세금·규제</button>
+  <button class="cat-tab" onclick="filterCat('infra',this)">입지·인프라</button>
+</div>
+
+<div id="termsContainer">
+
+<div class="terms-section" data-cat="price">
+  <div class="terms-section-title">💰 가격·거래 용어</div>
+  <div class="term-list">
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">갭투자</span><span class="term-eng">Gap Investment</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">가격·거래</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>매매가와 전세가의 차이(갭)만큼의 자금으로 아파트를 매입하는 투자 방식입니다. 예를 들어 매매가 5억, 전세가 4억인 아파트라면 갭(1억)만 투자해 소유권을 취득하고, 세입자의 전세금으로 나머지를 충당합니다.</p><p>전세가율이 높을수록 초기 투자금이 적게 들지만, 전세가 하락 시 역전세(전세금 반환 어려움) 위험이 있습니다.</p><div class="example"><strong>예시</strong>: 매매 4억, 전세 3.5억 → 갭 5천만 원으로 투자 가능. 전세가율 87.5%.</div></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">전세가율</span><span class="term-eng">Jeonse Price Ratio</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">가격·거래</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>아파트 매매가 대비 전세가의 비율입니다. 전세가율이 높을수록 갭투자 비용이 낮고, 해당 지역의 실거주 수요가 강함을 나타냅니다. 반대로 전세가율이 지나치게 높으면(90% 이상) 깡통전세 위험이 있습니다.</p><div class="example"><strong>계산법</strong>: 전세가 ÷ 매매가 × 100 = 전세가율(%)</div></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">호가</span><span class="term-eng">Asking Price</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">가격·거래</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>매도자(집주인)가 팔겠다고 제시하는 가격입니다. 실거래가(실제로 거래 완료된 가격)와 다를 수 있습니다. 호가와 실거래가의 차이가 크면 시장이 과열되었거나 침체된 신호일 수 있습니다.</p><p>투자 판단은 호가가 아닌 최근 실거래가를 기준으로 해야 합니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">KB시세</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">가격·거래</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>KB국민은행에서 조사·공표하는 아파트 시세입니다. 매주 갱신되며, 은행 대출 심사 시 담보가치 산정에 많이 활용됩니다. 공시가격, 실거래가와 함께 아파트 가치를 파악하는 핵심 데이터입니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">공시가격</span><span class="term-eng">Official Price</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">가격·거래</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>국토교통부가 매년 공식적으로 발표하는 부동산 가격입니다. 재산세, 종합부동산세, 건강보험료 등 각종 조세·부담금 산정의 기준이 됩니다. 실거래가의 70~80% 수준으로 책정되는 경우가 많습니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="terms-section" data-cat="loan">
+  <div class="terms-section-title">🏦 대출·금융 용어</div>
+  <div class="term-list">
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">LTV</span><span class="term-eng">Loan To Value Ratio (주택담보대출비율)</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">대출·금융</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>주택 가격 대비 대출 가능 금액의 비율입니다. LTV 70%라면 10억 짜리 주택에 최대 7억까지 대출이 가능합니다. 규제 지역, 주택 수, 차주의 신용도에 따라 LTV 한도가 달라집니다.</p><div class="example"><strong>예시</strong>: LTV 70% 적용 시, 5억 아파트 → 최대 3.5억 대출 가능</div></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">DSR</span><span class="term-eng">Debt Service Ratio (총부채원리금상환비율)</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">대출·금융</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>연 소득 대비 연간 대출 원리금 상환액의 비율입니다. DSR 40%라면 연소득의 40%까지만 원리금 상환에 사용할 수 있습니다. 고소득자일수록 대출 한도가 높아집니다.</p><div class="example"><strong>예시</strong>: 연소득 6,000만 원, DSR 40% → 연간 원리금 상환 한도 2,400만 원</div></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">주택담보대출</span><span class="term-eng">Mortgage Loan</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">대출·금융</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>주택을 담보로 받는 대출입니다. 금리는 고정금리와 변동금리로 구분되며, 최근에는 혼합금리(초기 고정 후 변동)도 많이 사용됩니다. 금리 변화에 따라 이자 부담이 크게 달라지므로 금리 유형 선택이 중요합니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">전세자금대출</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">대출·금융</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>전세 계약 시 전세금 마련을 위해 이용하는 대출입니다. HUG·HF·SGI 보증서를 활용하면 낮은 금리로 이용할 수 있습니다. 청년·신혼부부 전용 저금리 상품도 운용되고 있습니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="terms-section" data-cat="rebuild">
+  <div class="terms-section-title">🔨 재건축·재개발 용어</div>
+  <div class="term-list">
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">재건축</span><span class="term-eng">Reconstruction</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">재건축·재개발</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>노후 아파트를 철거하고 새 아파트를 짓는 사업입니다. 기존 조합원이 새 아파트 입주권을 받고, 일반분양을 통해 수익을 창출합니다. 준공 30년 이상, 안전진단 D등급 이하 등의 요건이 필요합니다.</p><p>재건축 초과이익 환수제에 의해 일정 금액 이상의 이익은 환수됩니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">재개발</span><span class="term-eng">Redevelopment</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">재건축·재개발</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>노후 불량 주거지역을 정비하는 사업입니다. 재건축과 달리 아파트뿐 아니라 빌라, 연립주택, 상가 등 혼재된 구역을 대상으로 합니다. 도로, 공원 등 기반시설도 함께 정비됩니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">용적률</span><span class="term-eng">Floor Area Ratio</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">재건축·재개발</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>대지면적 대비 건물 연면적(각 층 바닥면적의 합)의 비율입니다. 용적률이 높을수록 더 많은 가구를 지을 수 있어 수익성이 높아집니다. 재건축 사업의 핵심 지표 중 하나입니다.</p><div class="example"><strong>예시</strong>: 현재 용적률 150% → 300%로 상향 시 2배 가구 공급 가능</div></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">건폐율</span><span class="term-eng">Building Coverage Ratio</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">재건축·재개발</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>대지면적 대비 건물 바닥면적(1층 기준)의 비율입니다. 건폐율이 낮을수록 마당, 조경, 주차장 등 외부 공간이 넓어집니다. 아파트는 일반적으로 20~25% 수준입니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">조합원 입주권</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">재건축·재개발</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>재건축·재개발 구역 내 기존 토지·건물 소유자가 새 아파트에 입주할 수 있는 권리입니다. 분양권과 달리 조합원 자격에서 나오는 권리이며, 이전 등기 후 전매가 가능합니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">비례율</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">재건축·재개발</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>재건축·재개발 사업의 수익성을 나타내는 지표입니다. 비례율이 높을수록 조합원에게 유리합니다. 비례율 × 종전 자산 평가액 = 권리가액입니다.</p><div class="example"><strong>예시</strong>: 비례율 110%, 종전 자산 2억 → 권리가액 2.2억 (추가 분담금 없이 입주)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="terms-section" data-cat="supply">
+  <div class="terms-section-title">🏗️ 공급·청약 용어</div>
+  <div class="term-list">
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">청약통장</span><span class="term-eng">Housing Subscription Account</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">공급·청약</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>신규 아파트 분양을 신청하기 위해 필요한 은행 통장입니다. 청약저축, 청약부금, 주택청약종합저축(현재 통합) 등이 있으며, 가입 기간·납입 횟수·납입 금액에 따라 청약 점수(가점)가 산정됩니다.</p><p>현재는 주택청약종합저축으로 통합 운영되며, 미성년자도 가입 가능합니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">분양가 상한제</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">공급·청약</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>신규 아파트 분양가에 상한을 두어 일정 수준 이상으로 높이지 못하도록 규제하는 제도입니다. 집값 안정을 위해 도입되었으며, 적용 지역의 신규 아파트는 시세보다 저렴하게 공급되어 높은 청약 경쟁률이 나타납니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">전매제한</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">공급·청약</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>분양권·입주권을 계약 체결 후 일정 기간 동안 팔 수 없도록 제한하는 규정입니다. 투기 수요를 억제하기 위해 도입되었으며, 지역과 주택 유형에 따라 제한 기간이 다릅니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">후분양</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">공급·청약</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>아파트 골조 공사가 80% 이상 완료된 후 분양하는 방식입니다. 기존 선분양 방식과 달리 실물을 어느 정도 확인하고 구매할 수 있어 소비자 보호 측면에서 유리합니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="terms-section" data-cat="tax">
+  <div class="terms-section-title">📋 세금·규제 용어</div>
+  <div class="term-list">
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">종합부동산세 (종부세)</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">세금·규제</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>보유한 주택의 공시가격 합계가 일정 기준을 초과할 경우 부과되는 세금입니다. 1주택자는 공시가 12억 원 초과분, 다주택자는 합산 9억 원 초과분에 부과됩니다. 고가 주택 보유자와 다주택자에게 집중적으로 부과됩니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">양도소득세</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">세금·규제</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>부동산을 팔아서 이익이 발생했을 때 부과되는 세금입니다. 1가구 1주택의 경우 2년 이상 보유·거주 시 비과세 혜택이 있습니다(9억 원 이하). 다주택자는 보유 주택 수와 보유 기간에 따라 세율이 달라집니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">조정대상지역</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">세금·규제</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>주택 가격 상승률이 높거나 투기 우려가 있는 지역을 국토교통부 장관이 지정하는 구역입니다. 지정되면 LTV·DTI 강화, 취득세 중과, 청약 자격 제한 등의 규제가 적용됩니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">임대사업자 등록</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">세금·규제</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>주택을 임대 목적으로 운영할 때 지방자치단체에 등록하는 제도입니다. 등록 시 각종 세금 감면 혜택이 있지만, 임대의무기간·임대료 인상률 제한 등의 의무가 발생합니다. 2020년 이후 상당 부분 혜택이 축소되었습니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="terms-section" data-cat="infra">
+  <div class="terms-section-title">🗺️ 입지·인프라 용어</div>
+  <div class="term-list">
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">역세권</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">입지·인프라</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>지하철역 도보 이용이 편리한 주변 지역을 의미합니다. 일반적으로 역 출입구에서 500m 이내를 1차 역세권, 1km 이내를 2차 역세권으로 구분합니다. 역세권 아파트는 교통 편의성이 높아 프리미엄이 형성됩니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">GTX</span><span class="term-eng">Great Train Express</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">입지·인프라</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>수도권 광역급행철도로, 기존 지하철보다 3~5배 빠른 속도로 운행됩니다. A노선(파주~동탄), B노선(인천~마석), C노선(덕정~수원) 등이 추진 중입니다. GTX 역 주변 아파트는 개통 기대감으로 인해 가격이 크게 오르는 경향이 있습니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">신도시</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">입지·인프라</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>정부가 계획적으로 개발한 대규모 주거 단지입니다. 1기 신도시(분당·일산·평촌·산본·중동), 2기 신도시(판교·광교·위례·동탄 등), 3기 신도시(왕숙·교산·창릉·대장·계양) 등이 있습니다.</p><p>계획 도시 특성상 학교·공원·상업시설이 잘 갖춰져 있어 실거주 선호도가 높습니다.</p></div>
+    </div>
+    <div class="term-item" onclick="toggleTerm(this)">
+      <div class="term-header"><div><span class="term-name">혁신도시</span></div><div style="display:flex;align-items:center;gap:8px"><span class="term-tag">입지·인프라</span><span class="term-arrow">▼</span></div></div>
+      <div class="term-body"><p>공공기관 지방 이전을 통해 지역 균형 발전을 도모하는 도시입니다. 10개 혁신도시(부산·대구·광주·울산·강원·충북·전북·전남·경북·경남·제주)에 공공기관 이전이 완료되어, 직주근접 수요로 인해 부동산 가격이 상승하는 효과가 있었습니다.</p></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /termsContainer -->
+</div>
+
+<div class="ad-wrap">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7938956361770773" crossorigin="anonymous"></script>
+<ins class="adsbygoogle" style="display:block" data-ad-format="autorelaxed" data-ad-client="ca-pub-7938956361770773" data-ad-slot="3808518808"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<div class="wrap">
+<div class="related">
+  <h3>관련 페이지</h3>
+  <div class="related-grid">
+    <a href="index.html" class="related-card"><h4>🔍 아파트 즉시 분석</h4><p>아파트 이름으로 7개 항목 점수를 즉시 확인하세요.</p></a>
+    <a href="guide.html" class="related-card"><h4>📖 투자 가이드</h4><p>아파트 투자 단계별 완전 가이드를 확인하세요.</p></a>
+    <a href="market-trend.html" class="related-card"><h4>📈 시장 동향</h4><p>2025년 부동산 시장 최신 트렌드를 분석합니다.</p></a>
+  </div>
+</div>
+</div>
+
+<footer>
+  <p>© 2025 AptScore — 전국 아파트 투자 분석 플랫폼</p>
+  <p style="margin-top:8px">본 사이트의 모든 정보는 참고용이며, 실제 투자 결정 전 전문가 상담을 권장합니다.</p>
+</footer>
+
+<script>
+function toggleTerm(el){el.classList.toggle('open');}
+function filterTerms(q){
+  const items=document.querySelectorAll('.term-item');
+  q=q.toLowerCase();
+  items.forEach(item=>{
+    const text=item.textContent.toLowerCase();
+    item.style.display=text.includes(q)?'':'none';
+  });
+  document.querySelectorAll('.terms-section').forEach(sec=>{
+    const visible=[...sec.querySelectorAll('.term-item')].some(i=>i.style.display!=='none');
+    sec.style.display=visible?'':'none';
+  });
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.terms-section').forEach(sec=>{
+    sec.style.display=(cat==='all'||sec.dataset.cat===cat)?'':'none';
+  });
+}
+</script>
+</body>
+</html>
