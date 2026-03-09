@@ -1029,31 +1029,31 @@ body::after{
         <div class="filter-slide-item">
           <label class="filter-label">준공연도</label>
           <div class="range-wrap">
-            <input type="range" id="f-yr-min" min="1960" max="2025" value="1960" oninput="applyFilters()">
-            <input type="range" id="f-yr-max" min="1960" max="2025" value="2025" oninput="applyFilters()">
+            <input type="range" id="f-yr-min" min="1960" max="2025" value="1960" oninput="applyFiltersWithGrade()">
+            <input type="range" id="f-yr-max" min="1960" max="2025" value="2025" oninput="applyFiltersWithGrade()">
             <div class="range-display"><span id="f-yr-min-v">1960</span> ~ <span id="f-yr-max-v">2025</span>년</div>
           </div>
         </div>
         <div class="filter-slide-item">
           <label class="filter-label">㎡당 단가</label>
           <div class="range-wrap">
-            <input type="range" id="f-price-min" min="0" max="50000" step="500" value="0" oninput="applyFilters()">
-            <input type="range" id="f-price-max" min="0" max="50000" step="500" value="50000" oninput="applyFilters()">
+            <input type="range" id="f-price-min" min="0" max="50000" step="500" value="0" oninput="applyFiltersWithGrade()">
+            <input type="range" id="f-price-max" min="0" max="50000" step="500" value="50000" oninput="applyFiltersWithGrade()">
             <div class="range-display"><span id="f-price-min-v">제한없음</span> ~ <span id="f-price-max-v">제한없음</span></div>
           </div>
         </div>
         <div class="filter-slide-item">
           <label class="filter-label">세대수</label>
           <div class="range-wrap">
-            <input type="range" id="f-hh-min" min="0" max="10000" step="50" value="0" oninput="applyFilters()">
-            <input type="range" id="f-hh-max" min="0" max="10000" step="50" value="10000" oninput="applyFilters()">
+            <input type="range" id="f-hh-min" min="0" max="10000" step="50" value="0" oninput="applyFiltersWithGrade()">
+            <input type="range" id="f-hh-max" min="0" max="10000" step="50" value="10000" oninput="applyFiltersWithGrade()">
             <div class="range-display"><span id="f-hh-min-v">제한없음</span> ~ <span id="f-hh-max-v">제한없음</span>세대</div>
           </div>
         </div>
       </div>
       <!-- 텍스트 검색 -->
       <div class="filter-group" style="flex-direction:row;align-items:center;gap:10px;flex-wrap:wrap;">
-        <input id="f-name" type="text" placeholder="아파트명 포함 검색…" oninput="applyFilters()"
+        <input id="f-name" type="text" placeholder="아파트명 포함 검색…" oninput="applyFiltersWithGrade()"
           style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;
                  color:#fff;padding:7px 12px;font-size:13px;width:220px;outline:none;">
         <button onclick="resetFilters()"
@@ -1062,7 +1062,7 @@ body::after{
           ✕ 초기화
         </button>
         <!-- 정렬 -->
-        <select id="f-sort" onchange="applyFilters()"
+        <select id="f-sort" onchange="applyFiltersWithGrade()"
           style="background:#1a1a2e;border:1px solid rgba(255,255,255,.2);border-radius:8px;
                  color:rgba(255,255,255,.8);padding:7px 12px;font-size:12px;cursor:pointer;">
           <option value="name">이름순</option>
@@ -1076,7 +1076,17 @@ body::after{
     </div>
 
     <!-- 아파트 카드 목록 -->
-    <div id="rs-apt-list" style="margin-top:20px;"></div>
+    <div class="filter-group" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;
+    border-top:1px solid rgba(255,255,255,.07);padding-top:14px;">
+  <span class="filter-label" style="white-space:nowrap;">🏅 예상등급</span>
+  <button onclick="searchByGrade('S')" class="grade-btn grade-S">S 최우수</button>
+  <button onclick="searchByGrade('A')" class="grade-btn grade-A">A 우수</button>
+  <button onclick="searchByGrade('B')" class="grade-btn grade-B">B 양호</button>
+  <button onclick="searchByGrade('C')" class="grade-btn grade-C">C 보통</button>
+  <button onclick="searchByGrade('D')" class="grade-btn grade-D">D 미흡</button>
+  <span id="grade-search-status" style="font-size:11px;color:rgba(255,255,255,.4);margin-left:4px;"></span>
+</div>
+<div id="rs-apt-list" style="margin-top:20px;"></div>
     <div id="rs-load-more" style="text-align:center;margin-top:16px;display:none;">
       <button onclick="loadMoreApts()"
         style="background:rgba(212,166,84,.15);border:1px solid rgba(212,166,84,.3);
@@ -1893,6 +1903,14 @@ body::after{
 .rs-apt-tag.st{background:rgba(100,255,150,.1);color:rgba(100,255,150,.8);}
 .rs-apt-tag.price{background:rgba(212,166,84,.1);color:var(--gold);}
 .rs-apt-tag.hh{background:rgba(200,100,255,.1);color:rgba(200,100,255,.8);}
+
+.grade-btn{padding:5px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;transition:all .18s;}
+.grade-btn:hover{transform:translateY(-1px);}
+.grade-S{background:rgba(212,166,84,.15);color:#d4a654;border-color:rgba(212,166,84,.4);}
+.grade-A{background:rgba(100,200,100,.12);color:#64c864;border-color:rgba(100,200,100,.3);}
+.grade-B{background:rgba(100,180,255,.12);color:#64b4ff;border-color:rgba(100,180,255,.3);}
+.grade-C{background:rgba(200,150,100,.12);color:#c89664;border-color:rgba(200,150,100,.3);}
+.grade-D{background:rgba(200,100,100,.12);color:#c86464;border-color:rgba(200,100,100,.3);}
 </style>
 <!-- ══ HERO ══ -->
 
@@ -2009,31 +2027,31 @@ body::after{
         <div class="filter-slide-item">
           <label class="filter-label">준공연도</label>
           <div class="range-wrap">
-            <input type="range" id="f-yr-min" min="1960" max="2025" value="1960" oninput="applyFilters()">
-            <input type="range" id="f-yr-max" min="1960" max="2025" value="2025" oninput="applyFilters()">
+            <input type="range" id="f-yr-min" min="1960" max="2025" value="1960" oninput="applyFiltersWithGrade()">
+            <input type="range" id="f-yr-max" min="1960" max="2025" value="2025" oninput="applyFiltersWithGrade()">
             <div class="range-display"><span id="f-yr-min-v">1960</span> ~ <span id="f-yr-max-v">2025</span>년</div>
           </div>
         </div>
         <div class="filter-slide-item">
           <label class="filter-label">㎡당 단가</label>
           <div class="range-wrap">
-            <input type="range" id="f-price-min" min="0" max="50000" step="500" value="0" oninput="applyFilters()">
-            <input type="range" id="f-price-max" min="0" max="50000" step="500" value="50000" oninput="applyFilters()">
+            <input type="range" id="f-price-min" min="0" max="50000" step="500" value="0" oninput="applyFiltersWithGrade()">
+            <input type="range" id="f-price-max" min="0" max="50000" step="500" value="50000" oninput="applyFiltersWithGrade()">
             <div class="range-display"><span id="f-price-min-v">제한없음</span> ~ <span id="f-price-max-v">제한없음</span></div>
           </div>
         </div>
         <div class="filter-slide-item">
           <label class="filter-label">세대수</label>
           <div class="range-wrap">
-            <input type="range" id="f-hh-min" min="0" max="10000" step="50" value="0" oninput="applyFilters()">
-            <input type="range" id="f-hh-max" min="0" max="10000" step="50" value="10000" oninput="applyFilters()">
+            <input type="range" id="f-hh-min" min="0" max="10000" step="50" value="0" oninput="applyFiltersWithGrade()">
+            <input type="range" id="f-hh-max" min="0" max="10000" step="50" value="10000" oninput="applyFiltersWithGrade()">
             <div class="range-display"><span id="f-hh-min-v">제한없음</span> ~ <span id="f-hh-max-v">제한없음</span>세대</div>
           </div>
         </div>
       </div>
       <!-- 텍스트 검색 -->
       <div class="filter-group" style="flex-direction:row;align-items:center;gap:10px;flex-wrap:wrap;">
-        <input id="f-name" type="text" placeholder="아파트명 포함 검색…" oninput="applyFilters()"
+        <input id="f-name" type="text" placeholder="아파트명 포함 검색…" oninput="applyFiltersWithGrade()"
           style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;
                  color:#fff;padding:7px 12px;font-size:13px;width:220px;outline:none;">
         <button onclick="resetFilters()"
@@ -2042,7 +2060,7 @@ body::after{
           ✕ 초기화
         </button>
         <!-- 정렬 -->
-        <select id="f-sort" onchange="applyFilters()"
+        <select id="f-sort" onchange="applyFiltersWithGrade()"
           style="background:#1a1a2e;border:1px solid rgba(255,255,255,.2);border-radius:8px;
                  color:rgba(255,255,255,.8);padding:7px 12px;font-size:12px;cursor:pointer;">
           <option value="name">이름순</option>
@@ -2177,6 +2195,10 @@ body::after{
 
 
 <script defer>
+
+
+
+
 
 
 
@@ -4491,11 +4513,11 @@ function toast(msg,type='inf'){
 }
 
 /* DB 아파트 바로 분석 */
-function pickApt(apt){
+async function pickApt(apt){
   if(!apt){toast('아파트를 찾을 수 없습니다','ng');return;}
   document.getElementById('si').value=apt.n;
   document.getElementById('ac').classList.remove('open');
-  runAnalyze(apt);
+  await runAnalyze(apt);
 }
 function pickByKey(key){
   const apt=APT_DB.find(a=>a.k.includes(key)||a.n===key);
@@ -4667,14 +4689,23 @@ async function enrichKakaoApt(apt,recs){
 /* ══════════════════════════════════════════
    검색 실행 — DB → 카카오 → 없음 순서
 ══════════════════════════════════════════ */
+let _searching=false;
 async function doSearch(){
   const name=document.getElementById('si').value.trim();
   if(!name){toast('아파트 이름을 입력하세요','ng');return;}
-  document.getElementById('ac').classList.remove('open');
+  if(_searching){toast('검색 중입니다…','inf');return;}
+  _searching=true;
+  const g=id=>document.getElementById(id);
+  g('ac').classList.remove('open');
+  g('loading').classList.remove('show');
+  g('result').classList.remove('show');
+  g('not-found-panel').style.display='none';
+  if(g('err-box'))g('err-box').classList.remove('show');
+  try{
 
   // 1단계: 정적 DB (421개, 즉시)
   const apt=findApt(name);
-  if(apt){runAnalyze(apt);return;}
+  if(apt){await runAnalyze(apt);return;}
 
   // 2단계: 전국 DB 로딩 대기 후 재검색 (최대 1.5초 대기)
   if(!_aptFullLoaded){
@@ -4685,7 +4716,7 @@ async function doSearch(){
     document.getElementById('loading').classList.remove('show');
     document.getElementById('heroSec').style.display='flex';
     const apt2=findApt(name);
-    if(apt2){runAnalyze(apt2);return;}
+    if(apt2){await runAnalyze(apt2);return;}
   }
 
   // 3단계: fullDbApts 퍼지검색 (46,482개)
@@ -4709,7 +4740,7 @@ async function doSearch(){
     }
     // matchAptName 퍼지 매칭
     if(!fromFull) fromFull=APT_DB.find(a=>matchAptName(name,a));
-    if(fromFull){runAnalyze(fromFull);return;}
+    if(fromFull){await runAnalyze(fromFull);return;}
   }
 
   // 3단계: 공공데이터 통합 검색 (JSONP, 지역기반 즉시수집)
@@ -4719,7 +4750,7 @@ async function doSearch(){
   if(pubApt&&pubApt.n){
     document.getElementById('loading').classList.remove('show');
     toast(`📍 ${pubApt.n} 검색됨`,'inf');
-    runAnalyze(pubApt);return;
+    await runAnalyze(pubApt);return;
   }
 
   // 4단계: 카카오 API 검색
@@ -4728,7 +4759,7 @@ async function doSearch(){
   if(kakaoApt){
     document.getElementById('loading').classList.remove('show');
     toast(`📍 ${kakaoApt.n} 검색됨 — 분석 시작`,'inf');
-    runAnalyze(kakaoApt);
+    await runAnalyze(kakaoApt);
     return;
   }
 
@@ -4736,13 +4767,14 @@ async function doSearch(){
   const osmApt=await osmSearchApt(name);
   if(osmApt){
     document.getElementById('loading').classList.remove('show');
-    runAnalyze(osmApt);
+    await runAnalyze(osmApt);
     return;
   }
 
   document.getElementById('loading').classList.remove('show');
   document.getElementById('heroSec').style.display='flex';
-  showNotFound(name);
+      showNotFound(name);
+  }finally{_searching=false;}
 }
 
 /* OSM Nominatim 폴백 검색 */
@@ -5033,6 +5065,51 @@ function renderAptCards(reset){
   if(moreBtn)moreBtn.style.display=end<_filteredApts.length?'block':'none';
 }
 function loadMoreApts(){_filterPage++;renderAptCards(false);}
+
+
+
+
+
+// ════════════════════════════════
+// 등급 추정 + 등급 검색
+// ════════════════════════════════
+function estimateGrade(a){
+  if(!a||!a.n)return 'D';
+  let score=50;
+  const yr=a.yr||0;
+  if(yr>=2020)score+=20;else if(yr>=2015)score+=15;else if(yr>=2010)score+=8;else if(yr>0&&yr<2000)score-=10;
+  const hh=a.hh||0;
+  if(hh>=2000)score+=10;else if(hh>=1000)score+=8;else if(hh>=500)score+=5;else if(hh>0&&hh<100)score-=8;
+  if(a.st&&a.sd<300)score+=15;else if(a.st&&a.sd<600)score+=10;else if(a.st&&a.sd<1000)score+=5;
+  const BRANDS=['래미안','자이','아이파크','힐스테이트','푸르지오','롯데캐슬','더샵','SK뷰','리센츠','헬리오','디에이치'];
+  if(BRANDS.some(b=>(a.n||'').includes(b)))score+=8;
+  const pr=a.price||0;
+  if(pr>10000)score+=12;else if(pr>5000)score+=7;else if(pr>3000)score+=3;
+  score=Math.min(100,Math.max(0,score));
+  if(score>=85)return 'S';if(score>=70)return 'A';if(score>=55)return 'B';if(score>=40)return 'C';return 'D';
+}
+
+let _gradeFilter=null;
+function searchByGrade(grade){
+  _gradeFilter=(_gradeFilter===grade)?null:grade;
+  document.querySelectorAll('.grade-btn').forEach(b=>{
+    const isActive=b.textContent.trim().startsWith(_gradeFilter||'');
+    b.style.opacity=(!_gradeFilter||isActive)?'1':'0.4';
+    b.style.transform=isActive&&_gradeFilter?'scale(1.05)':'scale(1)';
+  });
+  const st=document.getElementById('grade-search-status');
+  if(st)st.textContent=_gradeFilter?`${_gradeFilter}등급 예상 단지 필터 중`:'';
+  applyFiltersWithGrade();
+}
+
+function applyFiltersWithGrade(){
+  applyFilters();
+  if(!_gradeFilter)return;
+  _filteredApts=_filteredApts.filter(a=>estimateGrade(a)===_gradeFilter);
+  renderAptCards(true);
+  const lbl=document.getElementById('rs-count-label');
+  if(lbl)lbl.textContent=`${_filteredApts.length.toLocaleString()}개 (예상 ${_gradeFilter}등급)`;
+}
 
 
 
