@@ -1076,14 +1076,14 @@ function fetchAptPageJSONP(page,rows){
     };
     const s=document.createElement('script');
     s.id=cb;
-    s.src=`${APT_LIST_URL}?serviceKey=${CFG.molit}&pageNo=${page}&numOfRows=${rows}&_callback=${cb}`;
+    s.src=`${APT_LIST_URL}?serviceKey=${encodeURIComponent(CFG.molit)}&pageNo=${page}&numOfRows=${rows}&_callback=${cb}`;
     s.onerror=()=>{cleanup();resolve(null);};
     document.head.appendChild(s);
   });
 }
 
 async function fetchAptPageXML(page,rows){
-  const url=`${APT_LIST_URL}?serviceKey=${CFG.molit}&pageNo=${page}&numOfRows=${rows}`;
+  const url=`${APT_LIST_URL}?serviceKey=${encodeURIComponent(CFG.molit)}&pageNo=${page}&numOfRows=${rows}`;
   const proxies=[
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -2001,8 +2001,29 @@ function scoreHubs(la,lo,apt){
        '지역기준':gu+' 생활권'},facs};
 }
 
-function scoreTransit(apt){
-  const sd=apt.sd,st=apt.st;
+async function scoreTransit(apt){
+  // 카카오 API로 실시간 가장 가까운 역 검색
+  let sd=apt.sd||9999, st=apt.st||'정보없음';
+  
+  if(apt.la&&apt.lo&&CFG.kakaoOk()){
+    try{
+      const r=await fetch(
+        `https://dapi.kakao.com/v2/local/search/category.json?category_group_code=SW8&x=${apt.lo}&y=${apt.la}&radius=3000&sort=distance&size=5`,
+        {headers:{Authorization:`KakaoAK ${CFG.kakao}`},signal:AbortSignal.timeout(5000)}
+      );
+      if(r.ok){
+        const d=await r.json();
+        if(d.documents&&d.documents.length){
+          const nearest=d.documents[0];
+          sd=Math.round(parseFloat(nearest.distance)||sd);
+          st=nearest.place_name.replace(/역$/,'')+'역';
+          // apt에 최신값 저장
+          apt.sd=sd; apt.st=st;
+        }
+      }
+    }catch(e){}
+  }
+  
   const isSeoul=apt.city==='서울';
   const isCap=apt.city==='서울'||apt.city==='경기'||apt.city==='인천';
   let base=sd<=300?100:sd<=500?92:sd<=800?80:sd<=1200?65:sd<=1800?48:sd<=2500?32:15;
@@ -2081,28 +2102,41 @@ function scorePrice(recs,apt){
 
 /* ㎡당 가격수준 — 비쌀수록 높은 점수 (프리미엄 지역 우수) */
 function scorePriceLevel(apt,recs){
-  if(recs.length){
-    const vals=recs.filter(r=>r.area>0).map(r=>r.price/r.area);
-    if(vals.length){
-      const avg=vals.reduce((a,b)=>a+b)/vals.length;
-      const avgT=recs.reduce((a,r)=>a+r.price,0)/recs.length;
-      // 100만/㎡=0점, 8000만/㎡=100점 (선형, 비쌀수록 높음)
-      const s=Math.round(Math.max(5,Math.min(100,(avg-100)/7900*100))*10)/10;
-      return{s,d:{
-        '㎡당평균':Math.round(avg).toLocaleString()+'만',
-        '평균거래가':fp(Math.round(avgT)),
-        '가격등급':avg>=5000?'최고가권':avg>=3500?'고가권':avg>=2500?'중상가권':avg>=1500?'중가권':'저가권',
-      }};
+  // 1순위: 실거래 데이터로 직접 계산
+  let m2avg=0;
+  if(recs&&recs.length>=2){
+    const valid=recs.filter(r=>r.price>0&&r.area>0&&r.area<500);
+    if(valid.length>=2){
+      m2avg=Math.round(valid.reduce((s,r)=>s+r.price/r.area,0)/valid.length);
     }
   }
-  // DB price → PRICE_MAP 순서로 폴백
-  const base=apt&&apt.price&&apt.price>100?apt.price:(PRICE_MAP[apt.gu]||2000);
-  const s=Math.round(Math.max(5,Math.min(100,(base-100)/7900*100))*10)/10;
-  const grade=base>=5000?'최고가권':base>=3500?'고가권':base>=2500?'중상가권':base>=1500?'중가권':'저가권';
+  
+  // 2순위: DB 단가
+  if(!m2avg&&apt.price>0) m2avg=apt.price;
+  
+  // 3순위: 지역 평균
+  const REGION_AVG={
+    '강남구':12000,'서초구':11000,'송파구':9000,'용산구':10000,'성동구':8000,
+    '마포구':7000,'광진구':6500,'양천구':5500,'영등포구':6000,'동작구':6000,
+    '노원구':4500,'도봉구':4000,'강북구':3800,'은평구':4200,'서대문구':5000,
+    '종로구':7000,'중구':7500,'강서구':5000,'구로구':4800,'금천구':4200,
+    '관악구':4500,'동대문구':4800,'성북구':4500,'중랑구':4000,'강동구':6000,
+    '판교':'분당구','분당구':8000,'수지구':6000,'기흥구':5500,'처인구':3000,
+    '해운대구':5500,'수성구':4500,'유성구':3500,
+  };
+  const regionAvg=REGION_AVG[apt.gu]||REGION_AVG[apt.city]||3000;
+  if(!m2avg) m2avg=regionAvg;
+
+  const ratio=m2avg/regionAvg;
+  // 저렴할수록 높은 점수
+  const s=ratio<=0.8?90:ratio<=1.0?75:ratio<=1.2?60:ratio<=1.5?45:ratio<=2.0?30:15;
+  
   return{s,d:{
-    '㎡당추정단가':base.toLocaleString()+'만',
-    '가격등급':grade,
-    '산출근거':apt&&apt.price&&apt.price>100?'DB 등록 단가':'지역 평균 추정',
+    '㎡당평균':m2avg?`${m2avg.toLocaleString()}만/㎡`:'데이터없음',
+    '지역평균대비':`${((ratio-1)*100).toFixed(0)}%`,
+    '가격등급':ratio<=0.8?'저렴권':ratio<=1.1?'보통권':ratio<=1.5?'고가권':'최고가권',
+    '데이터출처':recs&&recs.length>=2?`실거래 ${recs.length}건 기준`:'DB/지역평균 추정',
+    '거래건수':recs?recs.length:0,
   }};
 }
 
@@ -2200,7 +2234,7 @@ async function fetchMolit(lawd,ym){
       }catch{resolve([]);}
     };
     const url=`https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade`+
-      `?serviceKey=${CFG.molit}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1&_callback=${cbName}`;
+      `?serviceKey=${encodeURIComponent(CFG.molit)}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1&_callback=${cbName}`;
     const s=document.createElement('script');
     s.id=cbName; s.src=url;
     s.onerror=()=>{clearTimeout(timeout);delete window[cbName];s.remove();resolve([]);};
@@ -2314,7 +2348,10 @@ async function analyze(apt){
     _gu==='처인구'?'41461':_gu==='기흥구'?'41463':_gu==='수지구'?'41465':
     // 화성시 서브구
     _gu==='동탄'?'41590':
+    // city 전체 시도 코드로 폴백
+    LAWD[_city]||LAWD[_city.slice(0,2)]||
     '11680'), recs=[];
+  console.log('[AptScore] LAWD코드:', lawd, '|', _cityPfx+_gu, '→', apt.n);
   if(CFG.ok()){
     setMsg('📡 실거래가 병렬 수집 중…');
     const mons=recentMonths(6);
@@ -2325,17 +2362,22 @@ async function analyze(apt){
     for(const d of results){
       recs.push(...d.filter(r=>{
         const rn=r.name.replace(/\s/g,'');
-        return rn.includes(pfx)||aptKeys.some(k=>rn.includes(k.slice(0,3)));
+        const qn=pfx;
+        // 매칭: 앞4자 포함 OR 키워드 포함 OR 아파트명이 검색어 포함
+        return rn.includes(qn)||
+               rn.includes(qn.slice(0,3))||
+               aptKeys.some(k=>k.length>=3&&rn.includes(k.replace(/\s/g,'').slice(0,4)))||
+               qn.includes(rn.slice(0,4));
       }));
     }
   }
 
-  // 카카오 아파트면 실거래로 건축연도 보완
-  if(apt.isKakao) await enrichKakaoApt(apt,recs);
+  // 실거래 데이터로 건축연도 보완 (카카오/전국DB 모두 적용)
+  if(!apt.yr||apt.yr<1970||apt.isKakao) await enrichKakaoApt(apt,recs);
   lastRecs=recs;
 
   setMsg('🏙️ 핵심시설 거리 계산…'); const p2=scoreHubs(apt.la,apt.lo,apt);
-  setMsg('🚇 교통 접근성 분석…');   const p3=scoreTransit(apt);
+  setMsg('🚇 교통 접근성 분석…');   const p3=await scoreTransit(apt);
   setMsg('🏫 학군 분석…');           const p4=scoreSchool(apt);
   setMsg('🏪 편의시설 분석…');       const p5=scoreAmenity(apt.la,apt.lo,apt);
   setMsg('🏗️ 건물 신축도 분석…');    const p6=scoreBuilding(apt,recs);
@@ -2360,7 +2402,7 @@ async function analyze(apt){
 /* MOLIT CORS 프록시 폴백 */
 async function fetchMolitProxy(lawd,ym){
   const base='https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade';
-  const url=`${base}?serviceKey=${CFG.molit}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
+  const url=`${base}?serviceKey=${encodeURIComponent(CFG.molit)}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
   const proxies=[
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -2889,14 +2931,32 @@ async function kakaoSearchApt(query){
 
 /* 카카오로 찾은 아파트의 건축연도를 MOLIT 실거래로 보완 */
 async function enrichKakaoApt(apt,recs){
-  if(recs.length){
-    const yrs=recs.filter(r=>r.buildYear>1970).map(r=>r.buildYear);
-    if(yrs.length) apt.yr=Math.round(yrs.reduce((a,b)=>a+b)/yrs.length);
+  // 실거래에서 건축연도 추출
+  if(recs&&recs.length){
+    const yrs=recs.filter(r=>r.buildYear&&r.buildYear>1960&&r.buildYear<2030).map(r=>r.buildYear);
+    if(yrs.length){
+      // 최빈값으로 건축연도 결정
+      const freq={};yrs.forEach(y=>freq[y]=(freq[y]||0)+1);
+      apt.yr=parseInt(Object.entries(freq).sort((a,b)=>b[1]-a[1])[0][0]);
+    }
   }
-  // 연도 없으면 기본값
-  if(!apt.yr||apt.yr<1970) apt.yr=2000;
-  // 역 정보 없으면 '정보없음'
-  if(!apt.st) apt.st='인근 역 정보없음';
+  
+  // 카카오 단지정보로 건축연도 조회
+  if((!apt.yr||apt.yr<1970)&&apt.la&&apt.lo&&CFG.kakaoOk()){
+    try{
+      const r=await fetch(
+        `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(apt.n+' 아파트')}&x=${apt.lo}&y=${apt.la}&radius=1000&size=3`,
+        {headers:{Authorization:`KakaoAK ${CFG.kakao}`},signal:AbortSignal.timeout(5000)}
+      );
+      if(r.ok){
+        const d=await r.json();
+        // 결과에서 건축연도 추출 불가 (카카오 키워드 API는 건축연도 미제공)
+        // → 실거래가 없으면 2000년 기본값
+      }
+    }catch(e){}
+  }
+  
+  if(!apt.yr||apt.yr<1960) apt.yr=2000;
   return apt;
 }
 
@@ -3062,6 +3122,49 @@ document.addEventListener('DOMContentLoaded',()=>{
   initRegionSection();
   // 전국 DB 수집 (백그라운드)
   setTimeout(initFullDb, 800);
+  
+  // 결과 화면의 si2 자동완성
+  const si2=document.getElementById('si2');
+  if(si2){
+    let ac2=null;
+    // si2 전용 자동완성 드롭다운 동적 생성
+    const ac2wrap=document.createElement('div');
+    ac2wrap.id='ac2';
+    ac2wrap.className='ac';
+    ac2wrap.style.cssText='position:absolute;top:100%;left:0;right:0;z-index:9999;';
+    si2.parentElement.style.position='relative';
+    si2.parentElement.appendChild(ac2wrap);
+    
+    si2.addEventListener('input',e=>{
+      const v=e.target.value;
+      if(!v.trim()){ac2wrap.classList.remove('open');return;}
+      const results=searchAC(v);
+      clearAmap();
+      if(!results.length){
+        ac2wrap.innerHTML='<div class="ac-empty">검색 결과 없음</div>';
+        ac2wrap.classList.add('open');return;
+      }
+      ac2wrap.innerHTML=results.map(a=>{
+        const idx=_aptIdx(a);
+        const sub=[a.gu,a.dong,a.yr>1900?a.yr+'년':''].filter(Boolean).join(' · ');
+        return `<div class="ac-item" onclick="document.getElementById('ac2').classList.remove('open');pickIdx(${idx})">
+          <div class="ac-item-left">
+            <div class="ac-name">${highlight(a.n,v)}</div>
+            <div class="ac-sub">${sub}</div>
+          </div>
+          <div class="ac-tag">${a.city}</div>
+        </div>`;
+      }).join('');
+      ac2wrap.classList.add('open');
+    });
+    si2.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){ac2wrap.classList.remove('open');doSearch2();}
+      else if(e.key==='Escape') ac2wrap.classList.remove('open');
+    });
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('#ac2')&&e.target!==si2) ac2wrap.classList.remove('open');
+    });
+  }
 });
 </script>
 </body>
