@@ -1129,57 +1129,74 @@ async function loadFullAptDb(){
   if(_aptFullPromise)return _aptFullPromise;
   _aptFullPromise=(async()=>{
     try{
-      // 청크 합치기 → atob → GZIP 해제
+      // ── 1. B64 청크 합치기 + atob (yield 후 실행)
+      await new Promise(r=>setTimeout(r,0)); // UI 렌더 먼저
       const b64=APT_RAW_CHUNKS.join('');
+      await new Promise(r=>setTimeout(r,0)); // join 후 yield
       const bin=atob(b64);
       const bytes=new Uint8Array(bin.length);
       for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-      
+
+      // ── 2. GZIP 해제 (비동기 스트림, UI 비블록)
       let text;
       try{
         const ds=new DecompressionStream('gzip');
         const wr=ds.writable.getWriter();
         const rd=ds.readable.getReader();
         wr.write(bytes);wr.close();
-        const chunks=[];
-        while(true){const{done,value}=await rd.read();if(done)break;chunks.push(value);}
-        const tot=chunks.reduce((s,x)=>s+x.length,0);
+        const ch=[];
+        while(true){const{done,value}=await rd.read();if(done)break;ch.push(value);}
+        const tot=ch.reduce((s,x)=>s+x.length,0);
         const buf=new Uint8Array(tot);
-        let off=0;for(const x of chunks){buf.set(x,off);off+=x.length;}
+        let off=0;for(const x of ch){buf.set(x,off);off+=x.length;}
         text=new TextDecoder('utf-8').decode(buf);
       }catch(e){
         console.error('[AptScore] GZIP 해제 실패:',e);return;
       }
-      
-      // 파싱: 이름,la4,lo4,yr,hh,gu_idx
+
+      // ── 3. 줄 파싱: 500줄씩 청크로 나눠 yield → UI 비블록
+      const allLines=text.split('\n');
       const seen=new Set(APT_DB.filter(a=>a&&a.n).map(a=>a.n.replace(/\s/g,'')));
-      const add=[];
-      for(const ln of text.split('\n')){
-        if(!ln.trim())continue;
-        const p=ln.split(',');
-        if(p.length<6)continue;
-        const nm=p[0].replace(/，/g,',').trim();
-        if(!nm||seen.has(nm.replace(/\s/g,'')))continue;
-        const la=parseInt(p[1])/10000;
-        const lo=parseInt(p[2])/10000;
-        if(la<30||lo<100)continue;
-        const yr=parseInt(p[3])||0;
-        const hh=parseInt(p[4])||0;
-        const gp=(APT_GU_LIST[parseInt(p[5])]||'|').split('|');
-        const city=gp[0]||'';
-        const gu=gp[1]||'';
-        add.push({
-          k:makeKws(nm),n:nm,city,gu,dong:'',
-          a:city+(gu?' '+gu:''),
-          la,lo,yr,st:'',sd:9999,price:0,hh,
-        });
-        seen.add(nm.replace(/\s/g,''));
+      const CHUNK_SIZE=500;
+      let total_added=0;
+
+      for(let ci=0;ci<allLines.length;ci+=CHUNK_SIZE){
+        // UI에 제어권 양보 (매 청크마다)
+        await new Promise(r=>setTimeout(r,0));
+
+        const batch=allLines.slice(ci,ci+CHUNK_SIZE);
+        const add=[];
+        for(const ln of batch){
+          if(!ln.trim())continue;
+          const p=ln.split(',');
+          if(p.length<6)continue;
+          const nm=p[0].replace(/，/g,',').trim();
+          if(!nm||seen.has(nm.replace(/\s/g,'')))continue;
+          const la=parseInt(p[1])/10000;
+          const lo=parseInt(p[2])/10000;
+          if(la<30||lo<100)continue;
+          const yr=parseInt(p[3])||0;
+          const hh=parseInt(p[4])||0;
+          const gp=(APT_GU_LIST[parseInt(p[5])]||'|').split('|');
+          add.push({
+            k:makeKws(nm),n:nm,
+            city:gp[0]||'',gu:gp[1]||'',dong:'',
+            a:(gp[0]||'')+(gp[1]?' '+gp[1]:''),
+            la,lo,yr,st:'',sd:9999,price:0,hh,
+          });
+          seen.add(nm.replace(/\s/g,''));
+        }
+        if(add.length){
+          APT_DB.push(...add);
+          fullDbApts.push(...add);
+          total_added+=add.length;
+          // 매 5청크마다 배지 업데이트 (너무 자주 DOM 갱신 방지)
+          if((ci/CHUNK_SIZE)%5===0) updateAptCountBadge();
+        }
       }
-      
-      APT_DB.push(...add);
-      fullDbApts.push(...add);
-      _aptFullLoaded=true;
-      dbDone=true;
+
+      // ── 4. 완료 처리
+      _aptFullLoaded=true;dbDone=true;
       // null 항목 제거 후 REGION 재빌드
       for(let i=APT_DB.length-1;i>=0;i--){if(!APT_DB[i]||!APT_DB[i].n)APT_DB.splice(i,1);}
       try{Object.assign(REGION,buildRegionIndex());}catch(e){}
@@ -1187,7 +1204,7 @@ async function loadFullAptDb(){
       updateAptCountBadge();
       setNavDb('ready',`전국 ${APT_DB.length.toLocaleString()}개`);
       toast(`🏢 전국 ${APT_DB.length.toLocaleString()}개 단지 검색 가능`,'inf');
-      console.log('[AptScore] 전국DB 로드 완료: +'+add.length+'개, 총'+APT_DB.length+'개');
+      console.log('[AptScore] 전국DB 로드 완료: +'+total_added+'개, 총'+APT_DB.length+'개');
     }catch(e){
       console.error('[AptScore] 전국DB 오류:',e);
     }
@@ -1365,11 +1382,12 @@ function updateAptCountBadge(){
   const el=document.getElementById('total-apt-count');
   const mini=document.getElementById('db-collect-mini');
   if(!el) return;
-  el.textContent=APT_DB.length.toLocaleString();
+  const cnt=APT_DB.filter(a=>a&&a.n).length;
+  el.textContent=cnt.toLocaleString();
   if(mini){
     if(_aptFullLoaded) mini.textContent='✓ 전국';
-    else if(APT_DB.length>1000) mini.textContent='로딩중…';
-    else mini.textContent='';
+    else if(cnt>1000) mini.textContent=`로딩 중 (${Math.round(cnt/46482*100)}%)`;
+    else mini.textContent='…';
   }
 }
 
@@ -3779,7 +3797,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   initRegionSection();
   // 전국 DB 수집 (백그라운드)
   // 전국 DB 즉시 로딩 (내장 B64, ~1초)
-  setTimeout(loadFullAptDb, 200);
+  // 페이지 렌더 완료 후 전국DB 로딩 (requestIdleCallback으로 UI 우선)
+  if(typeof requestIdleCallback!=='undefined'){
+    requestIdleCallback(()=>loadFullAptDb(),{timeout:2000});
+  }else{
+    setTimeout(loadFullAptDb,500);
+  }
   // 공공API 백그라운드 수집은 전국 DB 없을 때만
   // setTimeout(initFullDb, 800);  // 내장 DB로 대체
   // 초기 카운트 표시 (loadFullAptDb 완료 후 자동 갱신됨)
