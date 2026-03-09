@@ -2123,12 +2123,231 @@ body::after{
   padding-left: 24px;
   padding-right: 24px;
 }
+
+/* ══ 레이아웃 수정 ══ */
+body { display: block !important; }
+
+/* hero: 전체 화면 중앙 */
+.hero {
+  position: relative !important;
+  z-index: 1 !important;
+  min-height: calc(100vh - 62px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 80px 24px 50px !important;
+  text-align: center !important;
+  float: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* regionSection: hero 바로 아래 full-width 독립 블록 */
+.region-section {
+  display: block !important;
+  position: static !important;
+  float: none !important;
+  clear: both !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  z-index: 1 !important;
+  padding: 48px 0 60px !important;
+  background: rgba(7,9,15,0.98) !important;
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+  margin-top: 0 !important;
+}
+
+/* result: full-width, 필터 위에 덮어씀 */
+#result {
+  display: none;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 32px 0 60px;
+}
+#result.show { display: block !important; }
+
+/* result show 시 region 숨김 */
+body.result-visible .region-section { display: none !important; }
+
+/* rs-inner: 중앙 정렬 컨테이너 */
+.rs-inner {
+  max-width: 960px !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  box-sizing: border-box;
+}
+
+/* 필터 바 개선 */
+.filter-bar {
+  background: rgba(13,17,23,.85) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 18px !important;
+  padding: 22px !important;
+  margin-bottom: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+/* 시도 칩 행 */
+.rs-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+.rs-chip {
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  background: rgba(255,255,255,.04) !important;
+  color: rgba(255,255,255,.65) !important;
+  cursor: pointer !important;
+  transition: all .15s !important;
+  font-family: var(--sans) !important;
+  white-space: nowrap !important;
+}
+.rs-chip:hover { border-color: var(--gold) !important; color: var(--gold) !important; }
+.rs-chip.on {
+  background: rgba(201,168,76,.15) !important;
+  border-color: rgba(201,168,76,.5) !important;
+  color: var(--gold) !important;
+}
+
+/* 슬라이더 3열 */
+.filter-sliders {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 20px !important;
+}
+@media (max-width: 700px) {
+  .filter-sliders { grid-template-columns: 1fr !important; }
+}
+
+/* 아파트 카드 그리드 */
+#rs-apt-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+}
+.apt-card {
+  background: rgba(13,17,23,.9) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  cursor: pointer !important;
+  transition: all .18s !important;
+}
+.apt-card:hover {
+  border-color: rgba(201,168,76,.35) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3) !important;
+}
+.apt-card-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+.apt-card-name { font-size: 14px !important; font-weight: 700 !important; color: #fff !important; line-height: 1.3 !important; }
+.apt-card-addr { font-size: 11px !important; color: rgba(255,255,255,.4) !important; margin-top: 3px !important; }
+.apt-card-grade { font-size: 24px !important; font-weight: 900 !important; font-family: var(--serif) !important; flex-shrink: 0 !important; }
+.apt-card-tags { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; }
+.apt-card-tag { display: inline-block !important; padding: 3px 8px !important; border-radius: 6px !important; font-size: 11px !important; font-weight: 600 !important; }
+.apt-card-tag.yr { background: rgba(99,102,241,.15) !important; color: #818cf8 !important; }
+.apt-card-tag.transit { background: rgba(16,185,129,.15) !important; color: #34d399 !important; }
+.apt-card-tag.price { background: rgba(245,158,11,.12) !important; color: #fbbf24 !important; }
+.apt-card-tag.hh { background: rgba(255,255,255,.07) !important; color: rgba(255,255,255,.5) !important; }
+
+/* rs-title */
+.rs-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 24px !important;
+  font-family: var(--serif) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+.rs-sub { font-size: 13px !important; color: rgba(255,255,255,.45) !important; font-family: var(--sans) !important; font-weight: 400 !important; }
+
+/* 모바일 */
+@media (max-width: 640px) {
+  #rs-apt-list { grid-template-columns: 1fr !important; }
+}
+
+/* ══ 배틀 모달 수정 ══ */
+.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,.75) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+}
+.modal-box {
+  background: #0f1623 !important;
+  border: 1px solid rgba(201,168,76,.25) !important;
+  border-radius: 20px !important;
+  padding: 28px !important;
+  width: 100% !important;
+  max-width: 680px !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+/* 배틀 입력 행 */
+.battle-input-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+  margin-bottom: 16px !important;
+}
+.battle-slot { position: relative !important; }
+.battle-input-wrap {
+  display: flex !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+.battle-input-wrap input {
+  flex: 1 !important;
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  padding: 9px 12px !important;
+  font-size: 13px !important;
+  outline: none !important;
+  min-width: 0 !important;
+}
+.battle-slot-label {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+}
+@media (max-width: 560px) {
+  .battle-input-row { grid-template-columns: 1fr !important; }
+}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
+
+
 
 
 
@@ -2440,8 +2659,7 @@ function _scoreAC(a,qn,tokens){
 function searchAC(q){
   if(!q||q.length<1)return[];
   const qn=q.replace(/\s+/g,''),tokens=q.trim().split(/\s+/).filter(Boolean),seen=new Set(),res=[];
-  const staticCnt=typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:Math.min(APT_DB.length,500);
-  for(const a of APT_DB.slice(0,staticCnt)){
+  for(const a of APT_DB){
     if(!a||!a.n||seen.has(a.n))continue;
     const sc=_scoreAC(a,qn,tokens);
     if(sc>0){seen.add(a.n);a._score=sc;res.push(a);}
@@ -2453,12 +2671,7 @@ function searchAC(q){
       if(cnt>3000)break;if(!a||!a.n||seen.has(a.n))continue;
       const sc=_scoreAC(a,qn,tokens);if(sc>0){seen.add(a.n);a._score=sc;res.push(a);cnt++;}
     }
-  } else if(!_acIdxReady&&APT_DB.length>staticCnt){
-    for(let i=staticCnt;i<Math.min(APT_DB.length,staticCnt+3000);i++){
-      const a=APT_DB[i];if(!a||!a.n||seen.has(a.n))continue;
-      const sc=_scoreAC(a,qn,tokens);if(sc>0){seen.add(a.n);a._score=sc;res.push(a);}
     }
-  }
   res.sort((a,b)=>(b._score||0)-(a._score||0)||(a.n.length-b.n.length));
   return res.slice(0,12);
 }
@@ -2884,9 +3097,12 @@ function backToSearch(){
 let rbState={city:null,gu:null};
 
 function initRegionBrowser(){
+  // 이전 버전 호환성 - initSidoChips로 대체됨
   const cityEl=document.getElementById('rb-city');
-  const cities=Object.keys(REGION.cities).sort();
-  cityEl.innerHTML=cities.map(c=>`<button class="rb-chip" onclick="rbSelectCity('${c}')">${c}</button>`).join('');
+  if(cityEl){
+    const cities=Object.keys(REGION.cities).sort();
+    cityEl.innerHTML=cities.map(c=>`<button class="rb-chip" onclick="rbSelectCity('${c}')">${c}</button>`).join('');
+  }
 }
 
 function rbSelectCity(city){
@@ -3033,6 +3249,7 @@ async function doSearch(){
   const g=id=>document.getElementById(id);
   g('ac').classList.remove('open');
   g('result').classList.remove('show');
+  document.body.classList.remove('result-visible');
   g('not-found-panel')&&(g('not-found-panel').style.display='none');
   g('err-box')&&g('err-box').classList.remove('show');
   g('loading').classList.remove('show');
@@ -3083,6 +3300,7 @@ async function runAnalyze(apt){
     render(R);
     afterRender(R);
     document.getElementById('result').classList.add('show');
+    document.body.classList.add('result-visible');
     window.scrollTo({top:0,behavior:'smooth'});
     toast(`✅ ${R.name} 분석 완료!`,'ok');
   }catch(err){
@@ -3132,22 +3350,44 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 
 // ── 등급 예측 (analyze 기준 동일: S≥80, A≥70, B≥60, C≥50) ──
-function estimateGrade(a){
-  if(!a||!a.n)return 'D';
-  let s=50;
-  const yr=a.yr||0;
-  if(yr>=2020)s+=22;else if(yr>=2015)s+=15;else if(yr>=2010)s+=8;else if(yr>0&&yr<2000)s-=10;
-  const hh=a.hh||0;
-  if(hh>=2000)s+=10;else if(hh>=1000)s+=8;else if(hh>=500)s+=5;else if(hh>0&&hh<100)s-=8;
-  if(a.st&&a.sd<300)s+=15;else if(a.st&&a.sd<600)s+=10;else if(a.st&&a.sd<1000)s+=5;
-  const BRANDS=['래미안','자이','아이파크','힐스테이트','푸르지오','롯데캐슬','더샵','SK뷰','리센츠','헬리오','디에이치','포레나'];
-  if(BRANDS.some(b=>(a.n||'').includes(b)))s+=8;
-  const pr=a.price||0;
-  if(pr>10000)s+=10;else if(pr>5000)s+=6;else if(pr>3000)s+=3;
-  s=Math.min(100,Math.max(0,s));
-  if(s>=80)return 'S';if(s>=70)return 'A';if(s>=60)return 'B';if(s>=50)return 'C';return 'D';
-}
-let _gradeFilter = null;
+function estimateGrade(a) {
+  // analyze()와 동일한 기준: S≥80, A≥70, B≥60, C≥50, D<50
+  // 기본 점수 추정: 신축(yr≥2015)+역세권(sd<500)+대단지(hh≥500) 조합
+  if (!a) return 'C';
+  let score = 50; // 기본값
+  const yr = a.yr || 0;
+  const sd = a.sd || 9999;
+  const hh = a.hh || 0;
+  const price = a.price || 0;
+  // 연식 점수 (최대 +20)
+  if (yr >= 2020) score += 20;
+  else if (yr >= 2015) score += 15;
+  else if (yr >= 2010) score += 10;
+  else if (yr >= 2000) score += 5;
+  else if (yr >= 1990) score += 0;
+  else if (yr > 0) score -= 5;
+  // 역세권 (최대 +15)
+  if (sd <= 300) score += 15;
+  else if (sd <= 500) score += 10;
+  else if (sd <= 800) score += 5;
+  else if (sd <= 1500) score += 2;
+  // 세대수 (최대 +10)
+  if (hh >= 2000) score += 10;
+  else if (hh >= 1000) score += 7;
+  else if (hh >= 500) score += 4;
+  else if (hh >= 200) score += 2;
+  // 단가 (높을수록 입지 좋다고 추정 - 최대 +10, 최소 -5)
+  if (price >= 10000) score += 10;
+  else if (price >= 5000) score += 5;
+  else if (price > 0 && price < 1000) score -= 5;
+  // 클램프
+  score = Math.max(5, Math.min(97, score));
+  if (score >= 80) return 'S';
+  if (score >= 70) return 'A';
+  if (score >= 60) return 'B';
+  if (score >= 50) return 'C';
+  return 'D';
+}let _gradeFilter = null;
 function searchByGrade(grade){
   _gradeFilter = (_gradeFilter===grade) ? null : grade;
   document.querySelectorAll('.grade-btn').forEach(b=>{
@@ -3557,6 +3797,7 @@ function afterRender(R) {
 function goHome() {
   const g=id=>document.getElementById(id);
   g('result').classList.remove('show');
+  document.body.classList.remove('result-visible');
   if(g('not-found-panel')) g('not-found-panel').style.display='none';
   if(g('loading')) g('loading').classList.remove('show');
   // regionSection은 상시 노출
@@ -3978,73 +4219,170 @@ function updateDotSafe() {
 function shareBattleImage() {
   if(!_battleA||!_battleB) return;
   const rA=_battleResults[_battleA.n], rB=_battleResults[_battleB.n];
-  if(!rA||!rB) { toast('두 단지 모두 분석 후 공유 가능합니다','ng'); return; }
+  if(!rA&&!rB) { toast('분석하기 버튼을 눌러 먼저 점수를 계산해 주세요','ng'); return; }
 
+  const W=820, H=520;
   const canvas = document.createElement('canvas');
-  canvas.width=800; canvas.height=360;
+  canvas.width=W; canvas.height=H;
   const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=true;
 
-  // 배경
-  const grd = ctx.createLinearGradient(0,0,800,360);
-  grd.addColorStop(0,'#07090f'); grd.addColorStop(1,'#0f1a2e');
-  ctx.fillStyle=grd; ctx.fillRect(0,0,800,360);
-  ctx.strokeStyle='rgba(201,168,76,.4)'; ctx.lineWidth=2;
-  ctx.strokeRect(8,8,784,344);
+  // 배경 그라디언트
+  const grd = ctx.createLinearGradient(0,0,W,H);
+  grd.addColorStop(0,'#07090f'); grd.addColorStop(1,'#0d1526');
+  ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
 
-  // 제목
-  ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 13px sans-serif';
-  ctx.fillText('⚔️ AptScore 라이벌 배틀', 30, 38);
+  // 테두리
+  ctx.strokeStyle='rgba(201,168,76,.5)'; ctx.lineWidth=2;
+  ctx.strokeRect(8,8,W-16,H-16);
+
+  // 헤더
+  ctx.fillStyle='rgba(201,168,76,.9)'; ctx.font='bold 14px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('⚔️ AptScore 라이벌 배틀 결과', W/2, 36);
 
   const GRADE_COLORS = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
-  const gradeA = rA.total>=80?'S':rA.total>=70?'A':rA.total>=60?'B':rA.total>=50?'C':'D';
-  const gradeB = rB.total>=80?'S':rB.total>=70?'A':rB.total>=60?'B':rB.total>=50?'C':'D';
-  const winner = rA.total>rB.total?'A':rB.total>rA.total?'B':'tie';
+  const getGrade = (r,a) => r?(r.total>=80?'S':r.total>=70?'A':r.total>=60?'B':r.total>=50?'C':'D'):estimateGrade(a);
+  const getScore = (r) => r?r.total:null;
 
-  // 단지 A
-  ctx.fillStyle='rgba(212,166,84,.1)'; ctx.fillRect(20,55,340,260);
-  ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font='12px sans-serif';
-  ctx.fillText('단지 A', 30, 80);
-  ctx.fillStyle='#fff'; ctx.font='bold 18px "Noto Sans KR",sans-serif';
-  const nameA = _battleA.n.length>10?_battleA.n.substring(0,10)+'…':_battleA.n;
-  ctx.fillText(nameA, 30, 108);
-  ctx.fillStyle=GRADE_COLORS[gradeA]; ctx.font='bold 72px serif';
-  ctx.fillText(rA.total, 30, 210);
-  ctx.font='bold 40px serif';
-  ctx.fillText(gradeA, 200, 210);
-  if(winner==='A') { ctx.fillStyle='#d4a654'; ctx.font='bold 16px sans-serif'; ctx.fillText('🏆 승리', 30, 290); }
+  const scoreA=getScore(rA), scoreB=getScore(rB);
+  const gradeA=getGrade(rA,_battleA), gradeB=getGrade(rB,_battleB);
+  const winner = scoreA!=null&&scoreB!=null ? (scoreA>scoreB?'A':scoreB>scoreA?'B':'tie') : 'tie';
 
+  const drawCard = (x, w, name, score, grade, color, detail, isWinner) => {
+    // 카드 배경
+    ctx.fillStyle = isWinner?`rgba(${color},0.12)`:'rgba(255,255,255,.03)';
+    ctx.fillRect(x, 52, w, 240);
+    if(isWinner) {
+      ctx.strokeStyle=`rgba(${color},0.5)`;
+      ctx.lineWidth=2; ctx.strokeRect(x,52,w,240);
+    }
+    ctx.textAlign='center';
+    // 단지명
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='11px sans-serif';
+    ctx.fillText(name.length>12?name.substring(0,11)+'…':name, x+w/2, 80);
+    // 점수
+    if(score!=null) {
+      ctx.fillStyle=GRADE_COLORS[grade]; ctx.font='bold 68px sans-serif';
+      ctx.fillText(score, x+w/2, 180);
+    } else {
+      ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='bold 36px sans-serif';
+      ctx.fillText('미분석', x+w/2, 160);
+    }
+    // 등급
+    ctx.fillStyle=GRADE_COLORS[grade]; ctx.font='bold 28px sans-serif';
+    ctx.fillText(grade+'등급', x+w/2, 220);
+    // 승자 표시
+    if(isWinner && score!=null) {
+      ctx.fillStyle='#fbbf24'; ctx.font='bold 14px sans-serif';
+      ctx.fillText('🏆 승리', x+w/2, 270);
+    }
+    // 세부 정보
+    ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='11px sans-serif';
+    let dy = 310;
+    if(detail) {
+      for(const line of detail) {
+        ctx.fillText(line, x+w/2, dy);
+        dy += 18;
+      }
+    }
+  };
+
+  const makeDetail = (apt, r) => {
+    const lines = [];
+    if(apt.yr) lines.push(`준공: ${apt.yr}년`);
+    if(apt.hh) lines.push(`세대: ${apt.hh.toLocaleString()}세대`);
+    if(apt.st&&apt.sd<9000) lines.push(`${apt.st} ${apt.sd}m`);
+    if(r&&r.items) {
+      // 상위 항목들
+      const sorted = Object.entries(r.items).sort((a2,b2)=>b2[1]-a2[1]);
+      if(sorted.length>0) lines.push(`최고: ${sorted[0][0]} ${sorted[0][1]}점`);
+      if(sorted.length>1) lines.push(`최저: ${sorted[sorted.length-1][0]} ${sorted[sorted.length-1][1]}점`);
+    }
+    return lines;
+  };
+
+  const colW = (W-80)/2;
+  drawCard(20, colW, _battleA.n, scoreA, gradeA, '212,166,84', makeDetail(_battleA,rA), winner==='A');
   // VS
-  ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 32px serif';
-  ctx.textAlign='center'; ctx.fillText('VS', 400, 195); ctx.textAlign='left';
+  ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 26px serif';
+  ctx.textAlign='center'; ctx.fillText('VS', W/2, 180);
+  drawCard(W/2+20, colW, _battleB.n, scoreB, gradeB, '59,130,246', makeDetail(_battleB,rB), winner==='B');
 
-  // 단지 B
-  ctx.fillStyle='rgba(59,130,246,.1)'; ctx.fillRect(440,55,340,260);
-  ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font='12px sans-serif';
-  ctx.fillText('단지 B', 450, 80);
-  ctx.fillStyle='#fff'; ctx.font='bold 18px "Noto Sans KR",sans-serif';
-  const nameB = _battleB.n.length>10?_battleB.n.substring(0,10)+'…':_battleB.n;
-  ctx.fillText(nameB, 450, 108);
-  ctx.fillStyle=GRADE_COLORS[gradeB]; ctx.font='bold 72px serif';
-  ctx.fillText(rB.total, 450, 210);
-  ctx.font='bold 40px serif';
-  ctx.fillText(gradeB, 620, 210);
-  if(winner==='B') { ctx.fillStyle='#3b82f6'; ctx.font='bold 16px sans-serif'; ctx.fillText('🏆 승리', 450, 290); }
+  // 구분선
+  ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(20,302); ctx.lineTo(W-20,302); ctx.stroke();
 
-  // URL
-  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='11px sans-serif';
-  ctx.textAlign='center'; ctx.fillText('stock-predictor-dx2.pages.dev', 400, 348); ctx.textAlign='left';
+  // 점수 근거 섹션
+  ctx.textAlign='left';
+  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='bold 12px sans-serif';
+  ctx.fillText('📊 점수 산출 기준', 24, 325);
 
-  // 클립보드 공유 시도
-  canvas.toBlob(blob=>{
+  const scoreItems = [
+    {label:'실거래 가격지수', weight:'20점'},
+    {label:'교통 접근성', weight:'15점'},
+    {label:'학군', weight:'15점'},
+    {label:'건물 신축도', weight:'10점'},
+    {label:'편의시설', weight:'10점'},
+    {label:'핵심시설', weight:'20점'},
+    {label:'가격 수준', weight:'10점'},
+  ];
+  ctx.font='11px sans-serif';
+  let bx=24, by=345;
+  for(const item of scoreItems) {
+    ctx.fillStyle='rgba(255,255,255,.4)';
+    ctx.fillText(`• ${item.label}`, bx, by);
+    ctx.fillStyle='rgba(201,168,76,.7)';
+    ctx.fillText(item.weight, bx+130, by);
+    bx += 175;
+    if(bx > W-170) { bx=24; by+=18; }
+  }
+
+  // 결론 텍스트
+  if(scoreA!=null&&scoreB!=null) {
+    ctx.textAlign='center';
+    ctx.fillStyle='rgba(255,255,255,.6)'; ctx.font='bold 13px sans-serif';
+    const conclusionText = winner==='A'
+      ? `${_battleA.n}이 ${scoreA-scoreB}점 더 높습니다`
+      : winner==='B'
+      ? `${_battleB.n}이 ${scoreB-scoreA}점 더 높습니다`
+      : '두 단지가 동점입니다';
+    ctx.fillText(conclusionText, W/2, by+24);
+  }
+
+  // 하단 URL
+  ctx.fillStyle='rgba(255,255,255,.25)'; ctx.font='10px sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText('stock-predictor-dx2.pages.dev · AptScore', W/2, H-14);
+
+  // 저장 + 공유
+  canvas.toBlob(async blob => {
     if(!blob) return;
+    const fileName = `배틀_${_battleA.n}_vs_${_battleB.n}.png`;
+
+    // navigator.share 지원 시 공유
+    if(navigator.canShare && navigator.canShare({files:[new File([blob],fileName,{type:'image/png'})]})) {
+      try {
+        await navigator.share({
+          title: `AptScore 배틀: ${_battleA.n} vs ${_battleB.n}`,
+          text: `${_battleA.n}(${scoreA??'?'}점) vs ${_battleB.n}(${scoreB??'?'}점) · AptScore`,
+          files: [new File([blob], fileName, {type:'image/png'})]
+        });
+        toast('공유 완료!','ok');
+        return;
+      } catch(e) { /* 취소 또는 미지원 */ }
+    }
+    // 폴백: 다운로드
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href=url; a.download=`배틀_${_battleA.n}_vs_${_battleB.n}.png`;
-    a.click();
+    a.href=url; a.download=fileName; a.click();
     URL.revokeObjectURL(url);
-    toast('배틀 결과 이미지 저장됨! SNS에 공유하세요','ok');
+    toast('이미지 저장 완료! SNS에 직접 공유하세요','ok');
   },'image/png');
 }
+
+
+
 
 
 </script>
