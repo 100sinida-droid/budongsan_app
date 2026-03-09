@@ -1059,7 +1059,7 @@ body::after{
 <!-- ══ API MODAL ══ -->
 
 <!-- ══ LOADING ══ -->
-<section class="region-section" id="regionSection">
+<section class="region-section" id="regionSection" style="display:none;">
   <div class="rs-inner">
     <div class="rs-title">
       <span class="rs-icon">🔎</span>
@@ -1929,12 +1929,188 @@ body::after{
 }
 .nav-tab:hover{color:#fff;background:rgba(255,255,255,.07);}
 .nav-tab.active{color:var(--gold);background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.25);}
+
+/* ── 필터 섹션 (독립 페이지) ── */
+.region-section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 80px 0 60px;
+  background: var(--bg);
+}
+.rs-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.rs-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+}
+.rs-icon { font-size: 22px; }
+.rs-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,.45);
+  font-family: var(--sans);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+/* ── 필터 바 ── */
+.filter-bar {
+  background: rgba(13,17,23,.8);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filter-label {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.filter-sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.filter-slide-item { display: flex; flex-direction: column; gap: 6px; }
+.range-wrap { position: relative; }
+.range-display {
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  text-align: right;
+  margin-top: 4px;
+}
+.range-wrap input[type=range] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.15);
+  outline: none;
+  cursor: pointer;
+}
+.range-wrap input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(201,168,76,.5);
+}
+
+/* ── 시도/구군 칩 ── */
+.rs-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rs-chip {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.65);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--sans);
+  white-space: nowrap;
+}
+.rs-chip:hover { border-color: var(--gold); color: var(--gold); }
+.rs-chip.on {
+  background: rgba(201,168,76,.15);
+  border-color: rgba(201,168,76,.5);
+  color: var(--gold);
+}
+
+/* ── 아파트 카드 그리드 ── */
+#rs-apt-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+.apt-card {
+  background: rgba(13,17,23,.85);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all .18s;
+}
+.apt-card:hover {
+  border-color: rgba(201,168,76,.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+.apt-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.apt-card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+.apt-card-addr {
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+  margin-top: 3px;
+}
+.apt-card-grade {
+  font-size: 28px;
+  font-weight: 900;
+  font-family: var(--serif);
+  flex-shrink: 0;
+}
+.apt-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.apt-card-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.apt-card-tag.yr { background: rgba(99,102,241,.15); color: #818cf8; }
+.apt-card-tag.transit { background: rgba(16,185,129,.15); color: #34d399; }
+.apt-card-tag.price { background: rgba(245,158,11,.12); color: #fbbf24; }
+.apt-card-tag.hh { background: rgba(255,255,255,.07); color: rgba(255,255,255,.5); }
+
+@media (max-width: 640px) {
+  .filter-sliders { grid-template-columns: 1fr; }
+  #rs-apt-list { grid-template-columns: 1fr; }
+}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
+
+
 
 
 
@@ -2901,9 +3077,22 @@ function newSearch(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('molit-in').value=CFG.molit;
+  const molitIn = document.getElementById('molit-in');
+  if(molitIn) molitIn.value=CFG.molit;
   updateDot();
   initRegionBrowser();
+  // 전국 DB 백그라운드 로딩 시작
+  loadFullAptDb().then(()=>{
+    const el = document.getElementById('total-apt-count');
+    if(el) el.textContent = APT_DB.length.toLocaleString();
+    if(typeof buildAcIndex==='function') buildAcIndex();
+  });
+  // Enter 키
+  const si2 = document.getElementById('si2');
+  if(si2) si2.addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch2(); });
+  // regionSection 기본 숨김 확인
+  const rs = document.getElementById('regionSection');
+  if(rs && !rs.style.display) rs.style.display='none';
 });
 
 
@@ -3312,19 +3501,6 @@ function afterRender(R) {
 
 
 // ── 페이지 탭 전환 ──
-function showPage(page) {
-  document.querySelectorAll('.nav-tab').forEach(b=>{
-    b.classList.toggle('active', b.id==='tab-'+page);
-  });
-  const heroSec = document.getElementById('heroSec');
-  const regionSec = document.getElementById('regionSection');
-  if(page==='filter') {
-    if(heroSec) heroSec.style.display='none';
-    if(regionSec) { regionSec.style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); }
-  } else if(page==='home') {
-    goHome();
-  }
-}
 
 
 
@@ -3341,6 +3517,314 @@ function goHome() {
   // 탭 활성화
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.toggle('active', b.id==='tab-home'));
 }
+
+
+// ════════════════════════════════════════════════════════════════
+//  전국 DB 필터 시스템 (완전 재작성)
+// ════════════════════════════════════════════════════════════════
+
+// ── 전역 상태 ──
+let fullDbApts = [];         // 전국 DB 아파트 배열
+let _aptFullLoaded = false;  // 전국 DB 로딩 완료 여부
+let _filteredApts = [];      // 현재 필터 결과
+let _filterPage = 0;         // 페이지네이션
+const FILTER_PAGE_SIZE = 30;
+
+// 필터 상태
+let _filterSido = null;
+let _filterGu = null;
+
+// ── 전국 DB 로딩 (gzip base64 → APT_DB에 추가) ──
+async function loadFullAptDb() {
+  if (_aptFullLoaded) return;
+  try {
+    const raw = document.getElementById('apt-raw')?.textContent?.trim();
+    if (!raw) { _aptFullLoaded = true; return; }
+    // base64 decode
+    const binStr = atob(raw.replace(/\s/g,''));
+    const bytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+    // gzip decompress
+    const ds = new DecompressionStream('gzip');
+    const writer = ds.writable.getWriter();
+    writer.write(bytes); writer.close();
+    const chunks = [];
+    const reader = ds.readable.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break; chunks.push(value);
+    }
+    const totalLen = chunks.reduce((s,c2)=>s+c2.length,0);
+    const result = new Uint8Array(totalLen);
+    let off = 0;
+    for (const ch of chunks) { result.set(ch,off); off+=ch.length; }
+    const text = new TextDecoder('utf-8').decode(result);
+    // CSV 파싱: 단지코드,단지명,시도,시군구,읍면동,도로명주소,위도,경도,준공연도,세대수
+    const lines = text.split('\n');
+    const staticNames = new Set(APT_DB.map(a=>a.n));
+    let added = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',');
+      if (cols.length < 10) continue;
+      const [code, name, si, gu, dong, addr, lat, lng, yr, hh] = cols;
+      if (!name || !lat || !lng || staticNames.has(name)) continue;
+      const la = parseFloat(lat), lo = parseFloat(lng);
+      if (!la || !lo) continue;
+      APT_DB.push({
+        n: name.trim(),
+        city: si.trim()||'',
+        gu: gu.trim()||'',
+        dong: dong.trim()||'',
+        a: addr.trim()||`${si} ${gu} ${dong}`,
+        la, lo,
+        yr: parseInt(yr)||0,
+        hh: parseInt(hh)||0,
+        k: []
+      });
+      added++;
+    }
+    fullDbApts = APT_DB.slice(typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:500);
+    _aptFullLoaded = true;
+    console.log(`[AptScore] 전국DB 로드 완료: +${added}개, 총${APT_DB.length}개`);
+    // AC 인덱스 빌드
+    if(typeof buildAcIndex === 'function') buildAcIndex();
+    // 카운트 배지 업데이트
+    const el = document.getElementById('total-apt-count');
+    if(el) el.textContent = APT_DB.length.toLocaleString();
+  } catch(e) {
+    console.warn('[AptScore] 전국DB 로드 오류:', e);
+    _aptFullLoaded = true;
+  }
+}
+
+// ── 시·도 칩 초기화 ──
+function initSidoChips() {
+  const el = document.getElementById('rs-sido-chips');
+  if (!el) return;
+  const cities = Object.keys(REGION.cities).sort();
+  el.innerHTML = `<button class="rs-chip on" onclick="filterBySido(null)" data-sido="">전체</button>` +
+    cities.map(c2=>`<button class="rs-chip" onclick="filterBySido('${c2}')" data-sido="${c2}">${c2}</button>`).join('');
+}
+
+// ── 시·도 필터 ──
+function filterBySido(sido) {
+  _filterSido = sido;
+  _filterGu = null;
+  // 칩 활성화
+  document.querySelectorAll('#rs-sido-chips .rs-chip').forEach(b=>{
+    b.classList.toggle('on', (!sido && b.dataset.sido==='') || b.dataset.sido===sido);
+  });
+  // 구군 숨기기/보이기
+  const guEl = document.getElementById('rs-gugun');
+  const guChips = document.getElementById('rs-gugun-chips');
+  if (sido && REGION.cities[sido]) {
+    const gus = [...REGION.cities[sido]].sort();
+    guChips.innerHTML = `<button class="rs-chip on" onclick="filterByGu(null)" data-gu="">전체</button>` +
+      gus.map(g=>`<button class="rs-chip" onclick="filterByGu('${g}')" data-gu="${g}">${g}</button>`).join('');
+    guEl.style.display = 'block';
+  } else {
+    guEl.style.display = 'none';
+  }
+  applyFilters();
+}
+
+// ── 구·군 필터 ──
+function filterByGu(gu) {
+  _filterGu = gu;
+  document.querySelectorAll('#rs-gugun-chips .rs-chip').forEach(b=>{
+    b.classList.toggle('on', (!gu && b.dataset.gu==='') || b.dataset.gu===gu);
+  });
+  applyFilters();
+}
+
+// ── 핵심: applyFilters ──
+function applyFilters() {
+  const yrMin = parseInt(document.getElementById('f-yr-min')?.value||1960);
+  const yrMax = parseInt(document.getElementById('f-yr-max')?.value||2025);
+  const prMin = parseInt(document.getElementById('f-price-min')?.value||0);
+  const prMax = parseInt(document.getElementById('f-price-max')?.value||50000);
+  const hhMin = parseInt(document.getElementById('f-hh-min')?.value||0);
+  const hhMax = parseInt(document.getElementById('f-hh-max')?.value||10000);
+  const nameQ = (document.getElementById('f-name')?.value||'').trim().replace(/\s/g,'');
+  const sortBy = document.getElementById('f-sort')?.value||'name';
+
+  // 슬라이더 표시값 업데이트
+  const sv = (id,v,fmt)=>{const e=document.getElementById(id);if(e)e.textContent=fmt(v);};
+  sv('f-yr-min-v',yrMin,v=>v);
+  sv('f-yr-max-v',yrMax,v=>v);
+  sv('f-price-min-v',prMin,v=>v===0?'제한없음':v.toLocaleString()+'만');
+  sv('f-price-max-v',prMax,v=>v>=50000?'제한없음':v.toLocaleString()+'만');
+  sv('f-hh-min-v',hhMin,v=>v===0?'제한없음':v.toLocaleString());
+  sv('f-hh-max-v',hhMax,v=>v>=10000?'제한없음':v.toLocaleString());
+
+  let pool = APT_DB;
+
+  // 지역 필터
+  if (_filterSido) pool = pool.filter(a=>a.city===_filterSido);
+  if (_filterGu)   pool = pool.filter(a=>a.gu===_filterGu);
+
+  // 슬라이더 필터
+  pool = pool.filter(a=>{
+    if (a.yr && (a.yr < yrMin || a.yr > yrMax)) return false;
+    if (a.price && prMax < 50000 && a.price > prMax) return false;
+    if (a.price && prMin > 0 && a.price < prMin) return false;
+    if (a.hh && hhMax < 10000 && a.hh > hhMax) return false;
+    if (a.hh && hhMin > 0 && a.hh < hhMin) return false;
+    return true;
+  });
+
+  // 이름 검색
+  if (nameQ) pool = pool.filter(a=>a.n&&a.n.replace(/\s/g,'').includes(nameQ));
+
+  // 등급 필터
+  if (typeof _gradeFilter !== 'undefined' && _gradeFilter) {
+    pool = pool.filter(a=>estimateGrade(a)===_gradeFilter);
+  }
+
+  // 정렬
+  pool = [...pool].sort((a,b)=>{
+    if(sortBy==='name') return (a.n||'').localeCompare(b.n||'','ko');
+    if(sortBy==='yr_desc') return (b.yr||0)-(a.yr||0);
+    if(sortBy==='yr_asc') return (a.yr||0)-(b.yr||0);
+    if(sortBy==='price_desc') return (b.price||0)-(a.price||0);
+    if(sortBy==='price_asc') return (a.price||0)-(b.price||0);
+    if(sortBy==='hh_desc') return (b.hh||0)-(a.hh||0);
+    return 0;
+  });
+
+  _filteredApts = pool;
+  _filterPage = 0;
+  renderAptCards(true);
+
+  // 카운트 레이블
+  const lbl = document.getElementById('rs-count-label');
+  if(lbl){
+    const gradeStr = (typeof _gradeFilter!=='undefined'&&_gradeFilter) ? ` (예상 ${_gradeFilter}등급)` : '';
+    lbl.textContent = `${pool.length.toLocaleString()}개${gradeStr}`;
+  }
+}
+
+// alias
+function applyFiltersWithGrade() { applyFilters(); }
+
+// ── 아파트 카드 렌더링 ──
+function renderAptCards(reset) {
+  const el = document.getElementById('rs-apt-list');
+  if (!el) return;
+  const start = reset ? 0 : _filterPage * FILTER_PAGE_SIZE;
+  const slice = _filteredApts.slice(start, start + FILTER_PAGE_SIZE);
+  
+  if (reset) el.innerHTML = '';
+  
+  if (reset && _filteredApts.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px;">조건에 맞는 아파트가 없습니다</div>';
+    const lm = document.getElementById('rs-load-more');
+    if(lm) lm.style.display='none';
+    return;
+  }
+
+  const GRADE_C = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
+  const html = slice.map(a => {
+    const grade = estimateGrade(a);
+    const tags = [];
+    if(a.yr) tags.push(`<span class="apt-card-tag yr">${a.yr}년</span>`);
+    if(a.st&&a.sd<1500) tags.push(`<span class="apt-card-tag transit">${a.st} ${a.sd}m</span>`);
+    if(a.price) tags.push(`<span class="apt-card-tag price">${a.price.toLocaleString()}만/㎡</span>`);
+    if(a.hh) tags.push(`<span class="apt-card-tag hh">${a.hh.toLocaleString()}세대</span>`);
+    const safeName = a.n.replace(/'/g,'&apos;');
+    return `<div class="apt-card" onclick="pickByKey('${safeName}')">
+      <div class="apt-card-top">
+        <div>
+          <div class="apt-card-name">${a.n}</div>
+          <div class="apt-card-addr">${a.city||''} ${a.gu||''} ${a.dong||''}</div>
+        </div>
+        <div class="apt-card-grade" style="color:${GRADE_C[grade]};">${grade}</div>
+      </div>
+      <div class="apt-card-tags">${tags.join('')}</div>
+    </div>`;
+  }).join('');
+
+  if(reset) el.innerHTML = html;
+  else el.insertAdjacentHTML('beforeend', html);
+
+  _filterPage++;
+  const lm = document.getElementById('rs-load-more');
+  if(lm) lm.style.display = (_filterPage * FILTER_PAGE_SIZE < _filteredApts.length) ? 'block' : 'none';
+}
+
+// ── 더보기 ──
+function loadMoreApts() { renderAptCards(false); }
+
+// ── 필터 초기화 ──
+function resetFilters() {
+  _filterSido = null; _filterGu = null;
+  if(typeof _gradeFilter !== 'undefined') _gradeFilter = null;
+  document.querySelectorAll('.grade-btn').forEach(b=>{ b.classList.remove('grade-active'); b.style.opacity='1'; });
+  const gs = document.getElementById('grade-search-status'); if(gs) gs.textContent='';
+  const fields = ['f-yr-min','f-yr-max','f-price-min','f-price-max','f-hh-min','f-hh-max'];
+  const defaults = {
+    'f-yr-min':'1960','f-yr-max':'2025',
+    'f-price-min':'0','f-price-max':'50000',
+    'f-hh-min':'0','f-hh-max':'10000'
+  };
+  fields.forEach(id=>{ const e=document.getElementById(id); if(e) e.value=defaults[id]; });
+  const fn = document.getElementById('f-name'); if(fn) fn.value='';
+  const fs = document.getElementById('f-sort'); if(fs) fs.value='name';
+  // 칩 초기화
+  initSidoChips();
+  document.getElementById('rs-gugun').style.display='none';
+  applyFilters();
+}
+
+// ── _aptIdx 헬퍼 (배틀용) ──
+const _AMAP = {};
+function _aptIdx(a) {
+  const idx = APT_DB.indexOf(a);
+  if(idx>=0) { _AMAP[idx]=a; return idx; }
+  const k = Object.keys(_AMAP).length;
+  _AMAP[k]=a; return k;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  regionSection 필터 페이지 전환 개선
+// ════════════════════════════════════════════════════════════════
+// showPage 재정의 (filter 탭 클릭 시 DB 로딩 + 필터 초기화)
+const _origShowPage = typeof showPage === 'function' ? showPage : null;
+function showPage(page) {
+  document.querySelectorAll('.nav-tab').forEach(b=>{
+    b.classList.toggle('active', b.id==='tab-'+page);
+  });
+  const heroSec = document.getElementById('heroSec');
+  const regionSec = document.getElementById('regionSection');
+  if(page==='filter') {
+    if(heroSec) heroSec.style.display='none';
+    if(regionSec) {
+      regionSec.style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    // DB 로딩 후 필터 초기화
+    if(!_aptFullLoaded) {
+      loadFullAptDb().then(()=>{
+        initSidoChips();
+        applyFilters();
+      });
+    } else {
+      initSidoChips();
+      applyFilters();
+    }
+  } else if(page==='home') {
+    if(regionSec) regionSec.style.display='none';
+    const result = document.getElementById('result');
+    if(result && result.classList.contains('show')) {
+      // 결과 화면 유지
+    } else {
+      if(heroSec) heroSec.style.display='flex';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  }
+}
+
+
 
 </script>
 <script type="text/plain" id="apt-gu">
