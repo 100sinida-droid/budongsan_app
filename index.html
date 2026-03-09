@@ -605,6 +605,7 @@ body::after{
   .h-kpi:last-child{border-bottom:none;}
 }
 </style>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cdab16e154b37e68a32ae0e6d9d91b9d&libraries=services"></script>
 </head>
 <body>
 
@@ -949,6 +950,13 @@ body::after{
         <div class="r-addr"><span>📍</span><span id="r-addr">주소</span></div>
         <div class="mini-bars" id="mini-bars"></div>
         <div class="r-meta">📅 분석일시: <span id="r-date"></span> &nbsp;·&nbsp; 데이터: 자체 DB + 국토교통부</div>
+        <div id="kakao-map-wrap" style="margin-top:16px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08);display:none;">
+          <div id="kakao-map" style="width:100%;height:260px;"></div>
+          <div style="padding:10px 14px;background:rgba(13,17,23,.9);font-size:11px;color:var(--g3);">
+            🗺️ <span id="map-addr-lbl"></span>
+            &nbsp;·&nbsp; <a id="kakao-map-link" href="#" target="_blank" style="color:var(--gold);text-decoration:none;">카카오맵에서 보기 →</a>
+          </div>
+        </div>
       </div>
       <div style="display:flex;gap:28px;align-items:center;flex-shrink:0;">
         <div class="score-ring-wrap">
@@ -2158,23 +2166,25 @@ function recentMonths(n){
   return r;
 }
 async function fetchMolit(lawd,ym){
-  if(!CFG.ok()) return[];
-  // JSONP 방식: CORS 완전 우회 (공공데이터포털 공식 지원)
+  if(!CFG.ok()) return Promise.resolve([]);
+  // JSONP 방식 → 실패시 CORS 프록시 XML 폴백
   return new Promise(resolve=>{
     const cbName='_molit_'+lawd+'_'+ym+'_'+Date.now();
-    const timeout=setTimeout(()=>{
+    const timeout=setTimeout(async()=>{
       delete window[cbName];
-      const s=document.getElementById(cbName);
-      if(s) s.remove();
-      resolve([]);
-    },8000);
+      document.getElementById(cbName)?.remove();
+      // CORS 프록시 폴백
+      const data=await fetchMolitProxy(lawd,ym);
+      resolve(data);
+    },6000);
     window[cbName]=function(data){
       clearTimeout(timeout);
       delete window[cbName];
-      const s=document.getElementById(cbName);
-      if(s) s.remove();
+      document.getElementById(cbName)?.remove();
       try{
-        const items=(data?.response?.body?.items?.item)||[];
+        const items=(data?.response?.body?.items?.item)||
+                    (data?.body?.items?.item)||
+                    (data?.body?.items)||[];
         const arr=Array.isArray(items)?items:[items];
         resolve(arr.filter(i=>i&&i.dealAmount).map(i=>({
           name:(i.aptNm||'').trim(),
@@ -2290,7 +2300,21 @@ async function analyze(apt){
   const _gu=apt.gu,_city=apt.city;
   // 동명이구 처리: city 접두어 붙은 키 우선, 없으면 gu 직접
   const _cityPfx=_city.replace('특별시','').replace('광역시','').replace('특별자치시','').replace('도','').slice(0,2);
-  const lawd=LAWD[_cityPfx+_gu]||LAWD[_gu+'_서울']||LAWD[_gu]||'11680', recs=[];
+  // LAWD 코드 탐색 (우선순위: 시+구 → 구 직접 → 유사 매핑)
+  const _gu2=_gu.replace('시','').replace('군','').replace('구','');
+  const lawd=LAWD[_cityPfx+_gu]||LAWD[_cityPfx+_gu2+'구']||
+    LAWD[_gu+'_서울']||LAWD[_gu]||LAWD[_gu2+'구']||
+    // 성남 서브구
+    (_gu==='분당구'?'41135':_gu==='수정구'?'41131':_gu==='중원구'?'41133':
+    // 수원 서브구
+    _gu==='장안구'?'41111':_gu==='권선구'?'41113':_gu==='팔달구'?'41115':_gu==='영통구'?'41117':
+    // 고양 서브구
+    _gu==='덕양구'?'41281':_gu==='일산동구'?'41285':_gu==='일산서구'?'41287':
+    // 용인 서브구
+    _gu==='처인구'?'41461':_gu==='기흥구'?'41463':_gu==='수지구'?'41465':
+    // 화성시 서브구
+    _gu==='동탄'?'41590':
+    '11680'), recs=[];
   if(CFG.ok()){
     setMsg('📡 실거래가 병렬 수집 중…');
     const mons=recentMonths(6);
@@ -2324,6 +2348,7 @@ async function analyze(apt){
   const grade=total>=80?'S':total>=70?'A':total>=60?'B':total>=50?'C':'D';
 
   return{name:apt.n,addr:apt.a,recs,scores,total,grade,
+    lat:apt.la,lng:apt.lo,
     details:{'실거래가시세변동':p1.d,'핵심시설접근성':p2.d,'지하철버스교통':p3.d,
       '학군':p4.d,'편의시설':p5.d,'건물신축도':p6.d,'㎡당가격수준':p7.d},
     facs:p2.facs,chg:p1.chg||0};
@@ -2332,6 +2357,38 @@ async function analyze(apt){
 /* ══════════════════════════════════════════
    렌더링
 ══════════════════════════════════════════ */
+/* MOLIT CORS 프록시 폴백 */
+async function fetchMolitProxy(lawd,ym){
+  const base='https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade';
+  const url=`${base}?serviceKey=${CFG.molit}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
+  const proxies=[
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  ];
+  for(const proxy of proxies){
+    try{
+      const r=await fetch(proxy,{signal:AbortSignal.timeout(8000)});
+      if(!r.ok) continue;
+      const txt=await r.text();
+      if(!txt.includes('<item>')) continue;
+      const xml=new DOMParser().parseFromString(txt,'text/xml');
+      const items=[...xml.querySelectorAll('item')].map(el=>{
+        const g=n=>el.querySelector(n)?.textContent?.trim()||'';
+        const price=parseInt((g('거래금액')||'0').replace(/,/g,''),10)||0;
+        const area=parseFloat(g('전용면적')||'0')||0;
+        const year=parseInt(g('년')||'0',10)||0;
+        const month=parseInt(g('월')||'0',10)||0;
+        const day=parseInt(g('일')||'0',10)||0;
+        const floor=parseInt(g('층')||'0',10)||0;
+        const name=(g('아파트')||g('단지명')||'').trim();
+        return{name,price,area,year,month,day,floor,lawd};
+      }).filter(i=>i.name&&i.price>0&&i.area>0);
+      if(items.length) return items;
+    }catch(e){}
+  }
+  return[];
+}
+
 function render(R){
   const gc=GRADE[R.grade];
   document.getElementById('r-name').textContent=R.name;
@@ -2377,10 +2434,45 @@ function render(R){
 
   renderPC(R);renderInvest(R);
   drawRadar(R.scores,R.grade);drawHubs(R.facs);drawTrend(R.recs);renderTable(R.recs,'all');
+  drawKakaoMap(R.lat,R.lng,R.name,R.addr);
   document.querySelectorAll('.fc').forEach(btn=>{
     btn.onclick=()=>{document.querySelectorAll('.fc').forEach(b=>b.classList.remove('on'));
       btn.classList.add('on');renderTable(lastRecs,btn.dataset.a);};
   });
+}
+
+/* ── 카카오 지도 렌더링 ── */
+let _kakaoMap=null;
+function drawKakaoMap(lat,lng,name,addr){
+  const wrap=document.getElementById('kakao-map-wrap');
+  if(!lat||!lng||!window.kakao||!kakao.maps){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  document.getElementById('map-addr-lbl').textContent=addr||name;
+  document.getElementById('kakao-map-link').href=
+    `https://map.kakao.com/link/map/${encodeURIComponent(name)},${lat},${lng}`;
+  const container=document.getElementById('kakao-map');
+  const opts={center:new kakao.maps.LatLng(lat,lng),level:3};
+  if(!_kakaoMap){
+    _kakaoMap=new kakao.maps.Map(container,opts);
+  }else{
+    _kakaoMap.setCenter(new kakao.maps.LatLng(lat,lng));
+    _kakaoMap.setLevel(3);
+  }
+  // 기존 마커 제거
+  if(window._kakaoMarker) window._kakaoMarker.setMap(null);
+  const marker=new kakao.maps.Marker({
+    position:new kakao.maps.LatLng(lat,lng),
+    map:_kakaoMap,
+    title:name,
+  });
+  window._kakaoMarker=marker;
+  // 인포윈도우
+  const iw=new kakao.maps.InfoWindow({
+    content:`<div style="padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap;">${name}</div>`,
+  });
+  iw.open(_kakaoMap,marker);
+  // 지도 크기 재계산 (hidden→visible 전환 후 필요)
+  setTimeout(()=>_kakaoMap.relayout(),100);
 }
 
 function renderPC(R){
@@ -2816,31 +2908,69 @@ async function doSearch(){
   if(!name){toast('아파트 이름을 입력하세요','ng');return;}
   document.getElementById('ac').classList.remove('open');
 
-  // 1단계: 정적 DB 검색 (빠른 경로)
+  // 1단계: 정적 DB (407개, 즉시)
   const apt=findApt(name);
   if(apt){runAnalyze(apt);return;}
 
-  // 2단계: 수집된 전국 DB에서 검색 (fullDbApts)
+  // 2단계: 수집된 전국 DB (최대 6857개)
   if(fullDbApts.length>0){
+    const qn=name.replace(/\s/g,'');
     const fromFull=fullDbApts.find(a=>{
-      const an=a.n.replace(/\s/g,''), qn=name.replace(/\s/g,'');
+      const an=a.n.replace(/\s/g,'');
       return an===qn||an.includes(qn)||qn.includes(an);
     });
-    if(fromFull){ runAnalyze(fromFull); return; }
+    if(fromFull){runAnalyze(fromFull);return;}
   }
 
-  // 3단계: 실시간 지오코딩 → 즉시 분석 (DB 불필요)
-  setLoadingVisible(true);
-  setMsg('🔍 전국 검색 중…');
-  const extApt=await geoSearchApt(name);
-  if(extApt){
-    toast(`📍 ${extApt.n} — 실시간 분석`,'inf');
-    runAnalyze(extApt);
+  // 3단계: 카카오 API 검색 (실시간 좌표 포함)
+  document.getElementById('heroSec').style.display='none';
+  document.getElementById('loading').classList.add('show');
+  setMsg(`🔍 "${name}" 전국 검색 중…`);
+  const kakaoApt=await kakaoSearchApt(name);
+  if(kakaoApt){
+    document.getElementById('loading').classList.remove('show');
+    toast(`📍 ${kakaoApt.n} 검색됨 — 분석 시작`,'inf');
+    runAnalyze(kakaoApt);
     return;
   }
-  setLoadingVisible(false);
+
+  // 4단계: OSM 폴백
+  const osmApt=await osmSearchApt(name);
+  if(osmApt){
+    document.getElementById('loading').classList.remove('show');
+    runAnalyze(osmApt);
+    return;
+  }
+
+  document.getElementById('loading').classList.remove('show');
+  document.getElementById('heroSec').style.display='flex';
   showNotFound(name);
-  toast(`"${name}" — 검색 결과 없음`,'ng');
+}
+
+/* OSM Nominatim 폴백 검색 */
+async function osmSearchApt(query){
+  try{
+    const q=encodeURIComponent(query+' 아파트 대한민국');
+    const r=await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${q}&format=json&addressdetails=1&limit=3&accept-language=ko`,
+      {headers:{'User-Agent':'AptScore/1.0'},signal:AbortSignal.timeout(8000)}
+    );
+    if(!r.ok) return null;
+    const data=await r.json();
+    const item=data[0];
+    if(!item) return null;
+    const a=item.address||{};
+    const city=normCity(a.city||a.province||a.state||'기타');
+    const gu=a.city_district||a.suburb||a.county||city;
+    const dong=a.quarter||a.neighbourhood||'';
+    return{
+      n:item.display_name.split(',')[0].trim()||query,
+      a:`${city} ${gu} ${dong}`.trim(),
+      city,gu,dong,
+      la:parseFloat(item.lat),lo:parseFloat(item.lon),
+      yr:0,st:'',sd:9999,price:0,k:[query],isKakao:true,
+    };
+  }catch(e){return null;}
 }
 
 /* 지오코딩 통합 함수: 카카오 → OSM → 공공데이터 순 */
