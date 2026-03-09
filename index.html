@@ -1059,7 +1059,7 @@ body::after{
 <!-- ══ API MODAL ══ -->
 
 <!-- ══ LOADING ══ -->
-<section class="region-section" id="regionSection" style="display:none;">
+<section class="region-section" id="regionSection" style="display:block;">
   <div class="rs-inner">
     <div class="rs-title">
       <span class="rs-icon">🔎</span>
@@ -2102,12 +2102,35 @@ body::after{
   .filter-sliders { grid-template-columns: 1fr; }
   #rs-apt-list { grid-template-columns: 1fr; }
 }
+
+/* ── 메인+필터 통합 레이아웃 ── */
+.hero {
+  min-height: calc(100vh - 62px) !important;
+  padding: 80px 24px 40px !important;
+}
+.region-section {
+  position: relative !important;
+  z-index: 1 !important;
+  padding: 0 0 60px 0 !important;
+  background: linear-gradient(180deg, var(--bg) 0%, rgba(13,17,23,0.95) 100%) !important;
+  border-top: 1px solid rgba(255,255,255,.06) !important;
+}
+/* 필터 섹션 헤더 */
+.rs-title {
+  padding-top: 40px !important;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
+
 
 
 
@@ -2266,6 +2289,8 @@ const APT_DB=[
   {k:['상무자이','광주상무'],n:'상무자이',city:'광주',gu:'서구',dong:'치평동',a:'광주 서구 치평동',la:35.1521,lo:126.8526,yr:2013,st:'상무역',sd:300},
   {k:['울산삼산자이'],n:'울산삼산자이',city:'울산',gu:'남구',dong:'삼산동',a:'울산 남구 삼산동',la:35.5362,lo:129.3286,yr:2012,st:'울산역',sd:2000},
 ];
+const STATIC_DB_COUNT=APT_DB.length; // 정적 DB 개수
+
 
 /* ══════════════════════════════════════════
    지역 분류 (지역 브라우저용)
@@ -2375,7 +2400,7 @@ function findSimilar(q){
 /* 자동완성 검색 */
 
 let _acIdx=null,_acIdxReady=false;
-const STATIC_DB_COUNT_VAL=(()=>{const m=typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:500;return m;})();
+// STATIC_DB_COUNT_VAL는 STATIC_DB_COUNT 선언 후 자동 갱신
 
 function buildAcIndex(){
   if(_acIdxReady)return;
@@ -2415,7 +2440,7 @@ function _scoreAC(a,qn,tokens){
 function searchAC(q){
   if(!q||q.length<1)return[];
   const qn=q.replace(/\s+/g,''),tokens=q.trim().split(/\s+/).filter(Boolean),seen=new Set(),res=[];
-  const staticCnt=typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:500;
+  const staticCnt=typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:Math.min(APT_DB.length,500);
   for(const a of APT_DB.slice(0,staticCnt)){
     if(!a||!a.n||seen.has(a.n))continue;
     const sc=_scoreAC(a,qn,tokens);
@@ -2928,9 +2953,16 @@ function openModal(){document.getElementById('modalBg').classList.add('open');}
 function closeModal(){document.getElementById('modalBg').classList.remove('open');}
 function saveKeys(){CFG.save(document.getElementById('molit-in').value);updateDot();toast('💾 저장 완료','ok');closeModal();}
 function updateDot(){
-  const dot=document.getElementById('ndot'),stat=document.getElementById('nstat');
-  if(CFG.ok()){dot.className='nav-dot on';stat.textContent='MOLIT 연결됨';}
-  else{dot.className='nav-dot';stat.textContent='API 설정';}
+  const dot=document.getElementById('db-dot');
+  const lbl=document.getElementById('db-label');
+  if(!dot) return;
+  if(CFG.molit&&CFG.molit.length>10){
+    dot.style.background='#10b981';
+    if(lbl) lbl.textContent='MOLIT 연결됨';
+  } else {
+    dot.style.background='rgba(255,255,255,.3)';
+    if(lbl) lbl.textContent='API 설정';
+  }
 }
 let toastTm;
 function toast(msg,type='inf'){
@@ -3091,8 +3123,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   const si2 = document.getElementById('si2');
   if(si2) si2.addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch2(); });
   // regionSection 기본 숨김 확인
-  const rs = document.getElementById('regionSection');
-  if(rs && !rs.style.display) rs.style.display='none';
+  // 전국DB 로드 완료 후 필터 섹션 초기화
+  loadFullAptDb().then(()=>{
+    initSidoChips();
+    applyFilters();
+  });
 });
 
 
@@ -3336,43 +3371,57 @@ function renderBattleModal() {
   const nameA = _battleA?.n||'단지 A 선택', nameB = _battleB?.n||'단지 B 선택';
   const gradeA = _battleA?estimateGrade(_battleA):'-', gradeB = _battleB?estimateGrade(_battleB):'-';
   const GRADE_C = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
-  
+  const scoreA = _battleResults[_battleA?.n]?.total ?? null;
+  const scoreB = _battleResults[_battleB?.n]?.total ?? null;
+  const scoreGradeA = scoreA!=null?(scoreA>=80?'S':scoreA>=70?'A':scoreA>=60?'B':scoreA>=50?'C':'D'):gradeA;
+  const scoreGradeB = scoreB!=null?(scoreB>=80?'S':scoreB>=70?'A':scoreB>=60?'B':scoreB>=50?'C':'D'):gradeB;
+
   const items = [
     {label:'예상 등급', va:gradeA, vb:gradeB, higher:(gradeA<gradeB)?'A':(gradeA>gradeB)?'B':'tie'},
-    {label:'준공연도', va:_battleA?.yr||'-', vb:_battleB?.yr||'-', higher:(_battleA?.yr>_battleB?.yr)?'A':(_battleA?.yr<_battleB?.yr)?'B':'tie'},
-    {label:'세대수', va:(_battleA?.hh||0)+'세대', vb:(_battleB?.hh||0)+'세대', higher:(_battleA?.hh>_battleB?.hh)?'A':(_battleA?.hh<_battleB?.hh)?'B':'tie'},
-    {label:'역까지', va:_battleA?.sd<9000?_battleA.sd+'m':'-', vb:_battleB?.sd<9000?_battleB.sd+'m':'-', higher:(_battleA?.sd<_battleB?.sd)?'A':(_battleA?.sd>_battleB?.sd)?'B':'tie'},
-    {label:'㎡단가', va:_battleA?.price?_battleA.price+'만':'-', vb:_battleB?.price?_battleB.price+'만':'-', higher:'tie'},
+    {label:'준공연도', va:(_battleA?.yr||'-')+'', vb:(_battleB?.yr||'-')+'', higher:((_battleA?.yr||0)>(_battleB?.yr||0))?'A':((_battleA?.yr||0)<(_battleB?.yr||0))?'B':'tie'},
+    {label:'세대수', va:(_battleA?.hh||0)+'세대', vb:(_battleB?.hh||0)+'세대', higher:((_battleA?.hh||0)>(_battleB?.hh||0))?'A':((_battleA?.hh||0)<(_battleB?.hh||0))?'B':'tie'},
+    {label:'역까지', va:(_battleA?.sd&&_battleA.sd<9000)?_battleA.sd+'m':'-', vb:(_battleB?.sd&&_battleB.sd<9000)?_battleB.sd+'m':'-', higher:((_battleA?.sd||9999)<(_battleB?.sd||9999))?'A':((_battleA?.sd||9999)>(_battleB?.sd||9999))?'B':'tie'},
+    {label:'㎡단가', va:(_battleA?.price&&_battleA.price>0)?_battleA.price+'만':'-', vb:(_battleB?.price&&_battleB.price>0)?_battleB.price+'만':'-', higher:'tie'},
   ];
-  
-  const scoreA = _battleResults[_battleA?.n]?.total || null;
-  const scoreB = _battleResults[_battleB?.n]?.total || null;
-  
+  if(scoreA!=null && scoreB!=null) {
+    items.unshift({label:'실제 점수', va:scoreA+'점', vb:scoreB+'점', higher:(scoreA>scoreB)?'A':(scoreA<scoreB)?'B':'tie'});
+  }
+
   el.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:0;background:rgba(255,255,255,.03);border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08);">
       <div style="padding:20px;text-align:center;background:rgba(212,166,84,.05);">
-        <div style="font-size:14px;color:var(--g2);margin-bottom:4px;">단지 A</div>
-        <div style="font-size:18px;font-weight:800;color:#fff;">${nameA}</div>
-        ${scoreA?`<div style="font-size:36px;font-weight:900;color:${GRADE_C[scoreA>=80?'S':scoreA>=70?'A':scoreA>=60?'B':scoreA>=50?'C':'D']};margin:8px 0;">${scoreA}점</div>`:'<div style="font-size:28px;color:var(--g3);margin:8px 0;">-</div>'}
-        ${_battleA?`<button onclick="battleAnalyze('A')" style="padding:6px 14px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">분석하기</button>`:''}
+        <div style="font-size:12px;color:var(--g2);margin-bottom:4px;">🔶 단지 A</div>
+        <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:8px;">${nameA}</div>
+        ${scoreA!=null
+          ? `<div style="font-size:42px;font-weight:900;color:${GRADE_C[scoreGradeA]};line-height:1;">${scoreA}</div><div style="font-size:11px;color:${GRADE_C[scoreGradeA]};font-weight:700;">${scoreGradeA}등급</div>`
+          : `<div style="font-size:28px;color:var(--g3);margin:8px 0;">예상 ${gradeA}</div>`}
+        ${_battleA?`<button onclick="battleAnalyze('A')" style="margin-top:10px;padding:7px 16px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🔍 분석하기</button>`:''}
       </div>
-      <div style="display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--gold);">VS</div>
+      <div style="display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--gold);">VS</div>
       <div style="padding:20px;text-align:center;background:rgba(59,130,246,.05);">
-        <div style="font-size:14px;color:var(--g2);margin-bottom:4px;">단지 B</div>
-        <div style="font-size:18px;font-weight:800;color:#fff;">${nameB}</div>
-        ${scoreB?`<div style="font-size:36px;font-weight:900;color:${GRADE_C[scoreB>=80?'S':scoreB>=70?'A':scoreB>=60?'B':scoreB>=50?'C':'D']};margin:8px 0;">${scoreB}점</div>`:'<div style="font-size:28px;color:var(--g3);margin:8px 0;">-</div>'}
-        ${_battleB?`<button onclick="battleAnalyze('B')" style="padding:6px 14px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">분석하기</button>`:''}
+        <div style="font-size:12px;color:var(--g2);margin-bottom:4px;">🔷 단지 B</div>
+        <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:8px;">${nameB}</div>
+        ${scoreB!=null
+          ? `<div style="font-size:42px;font-weight:900;color:${GRADE_C[scoreGradeB]};line-height:1;">${scoreB}</div><div style="font-size:11px;color:${GRADE_C[scoreGradeB]};font-weight:700;">${scoreGradeB}등급</div>`
+          : `<div style="font-size:28px;color:var(--g3);margin:8px 0;">예상 ${gradeB}</div>`}
+        ${_battleB?`<button onclick="battleAnalyze('B')" style="margin-top:10px;padding:7px 16px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🔍 분석하기</button>`:''}
       </div>
     </div>
-    <div style="margin-top:12px;">
+    <div style="margin-top:10px;background:rgba(255,255,255,.02);border-radius:10px;overflow:hidden;">
       ${items.map(item=>`
-        <div style="display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.05);">
+        <div style="display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);">
           <div style="text-align:right;font-weight:${item.higher==='A'?'800':'400'};color:${item.higher==='A'?'#d4a654':'var(--g2)'};">${item.va}</div>
-          <div style="text-align:center;font-size:11px;color:var(--g3);">${item.label}</div>
+          <div style="text-align:center;font-size:11px;color:var(--g3);font-weight:600;">${item.label}</div>
           <div style="text-align:left;font-weight:${item.higher==='B'?'800':'400'};color:${item.higher==='B'?'#3b82f6':'var(--g2)'};">${item.vb}</div>
         </div>`).join('')}
     </div>
-    ${scoreA&&scoreB?`<button onclick="shareBattle()" style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#d4a654,#a8722a);color:#000;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;">⚔️ 배틀 결과 공유하기</button>`:''}
+    ${scoreA!=null&&scoreB!=null?`
+      <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,.03);border-radius:10px;text-align:center;">
+        <span style="font-size:14px;font-weight:800;color:${scoreA>scoreB?'#d4a654':scoreB>scoreA?'#3b82f6':'var(--g2)'};">
+          ${scoreA>scoreB?`🏆 ${nameA} 승!`:scoreB>scoreA?`🏆 ${nameB} 승!`:'🤝 무승부'}
+        </span>
+      </div>
+      <button onclick="shareBattleImage()" style="width:100%;margin-top:10px;padding:12px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;">⚔️ 배틀 결과 이미지로 공유하기</button>`:''}
   `;
 }
 
@@ -3510,7 +3559,7 @@ function goHome() {
   g('result').classList.remove('show');
   if(g('not-found-panel')) g('not-found-panel').style.display='none';
   if(g('loading')) g('loading').classList.remove('show');
-  if(g('regionSection')) g('regionSection').style.display='none';
+  // regionSection은 상시 노출
   g('heroSec').style.display='flex';
   g('si').value='';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -3538,12 +3587,16 @@ let _filterGu = null;
 async function loadFullAptDb() {
   if (_aptFullLoaded) return;
   try {
-    const raw = document.getElementById('apt-raw')?.textContent?.trim();
+    const rawEl = document.getElementById('apt-raw');
+    if (!rawEl) { _aptFullLoaded = true; return; }
+    const raw = rawEl.textContent.trim();
     if (!raw) { _aptFullLoaded = true; return; }
+
     // base64 decode
     const binStr = atob(raw.replace(/\s/g,''));
     const bytes = new Uint8Array(binStr.length);
     for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+
     // gzip decompress
     const ds = new DecompressionStream('gzip');
     const writer = ds.writable.getWriter();
@@ -3554,43 +3607,54 @@ async function loadFullAptDb() {
       const { done, value } = await reader.read();
       if (done) break; chunks.push(value);
     }
-    const totalLen = chunks.reduce((s,c2)=>s+c2.length,0);
+    const totalLen = chunks.reduce((s,ch)=>s+ch.length,0);
     const result = new Uint8Array(totalLen);
     let off = 0;
     for (const ch of chunks) { result.set(ch,off); off+=ch.length; }
     const text = new TextDecoder('utf-8').decode(result);
-    // CSV 파싱: 단지코드,단지명,시도,시군구,읍면동,도로명주소,위도,경도,준공연도,세대수
-    const lines = text.split('\n');
+
+    // apt-gu 인덱스 로드 (guIdx → city|gu)
+    const guEl = document.getElementById('apt-gu');
+    let guList = [];
+    if (guEl) {
+      try { guList = JSON.parse('['+guEl.textContent.trim()+']'); } catch(e2) {}
+    }
+
+    // 파싱: 단지명,X(위도*10000),Y(경도*10000),준공연도,세대수,구인덱스
     const staticNames = new Set(APT_DB.map(a=>a.n));
+    const lines = text.split('\n');
     let added = 0;
     for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(',');
-      if (cols.length < 10) continue;
-      const [code, name, si, gu, dong, addr, lat, lng, yr, hh] = cols;
-      if (!name || !lat || !lng || staticNames.has(name)) continue;
-      const la = parseFloat(lat), lo = parseFloat(lng);
-      if (!la || !lo) continue;
-      APT_DB.push({
-        n: name.trim(),
-        city: si.trim()||'',
-        gu: gu.trim()||'',
-        dong: dong.trim()||'',
-        a: addr.trim()||`${si} ${gu} ${dong}`,
-        la, lo,
-        yr: parseInt(yr)||0,
-        hh: parseInt(hh)||0,
-        k: []
-      });
+      const ln = lines[i].trim();
+      if (!ln) continue;
+      const cols = ln.split(',');
+      if (cols.length < 5) continue;
+      const name = (cols[0]||'').trim();
+      if (!name || staticNames.has(name)) continue;
+      const la = parseFloat(cols[1]) / 10000;
+      const lo = parseFloat(cols[2]) / 10000;
+      if (!la || !lo || la < 33 || la > 39 || lo < 124 || lo > 132) continue;
+      const yr = parseInt(cols[3])||0;
+      const hh = parseInt(cols[4])||0;
+      const guIdx = parseInt(cols[5])||0;
+      let city = '', gu = '';
+      if (guList[guIdx]) {
+        const parts = guList[guIdx].split('|');
+        city = parts[0]||''; gu = parts[1]||'';
+      }
+      APT_DB.push({ n: name, city, gu, dong:'', a:`${city} ${gu}`, la, lo, yr, hh, k:[] });
       added++;
     }
-    fullDbApts = APT_DB.slice(typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:500);
+    fullDbApts = APT_DB.slice(typeof STATIC_DB_COUNT!=='undefined'?STATIC_DB_COUNT:96);
     _aptFullLoaded = true;
     console.log(`[AptScore] 전국DB 로드 완료: +${added}개, 총${APT_DB.length}개`);
-    // AC 인덱스 빌드
-    if(typeof buildAcIndex === 'function') buildAcIndex();
-    // 카운트 배지 업데이트
     const el = document.getElementById('total-apt-count');
-    if(el) el.textContent = APT_DB.length.toLocaleString();
+    if (el) el.textContent = APT_DB.length.toLocaleString();
+    if (typeof buildAcIndex === 'function') buildAcIndex();
+    // REGION 갱신
+    if (typeof buildRegionIndex === 'function') {
+      window._REGION_BUILT = buildRegionIndex();
+    }
   } catch(e) {
     console.warn('[AptScore] 전국DB 로드 오류:', e);
     _aptFullLoaded = true;
@@ -3601,7 +3665,9 @@ async function loadFullAptDb() {
 function initSidoChips() {
   const el = document.getElementById('rs-sido-chips');
   if (!el) return;
-  const cities = Object.keys(REGION.cities).sort();
+  // 전국 DB 로딩 완료 후 APT_DB 기반으로 동적 city 목록 생성
+  const citySet = new Set(APT_DB.map(a=>a.city).filter(Boolean));
+  const cities = [...citySet].sort();
   el.innerHTML = `<button class="rs-chip on" onclick="filterBySido(null)" data-sido="">전체</button>` +
     cities.map(c2=>`<button class="rs-chip" onclick="filterBySido('${c2}')" data-sido="${c2}">${c2}</button>`).join('');
 }
@@ -3617,8 +3683,9 @@ function filterBySido(sido) {
   // 구군 숨기기/보이기
   const guEl = document.getElementById('rs-gugun');
   const guChips = document.getElementById('rs-gugun-chips');
-  if (sido && REGION.cities[sido]) {
-    const gus = [...REGION.cities[sido]].sort();
+  if (sido) {
+    const guSet = new Set(APT_DB.filter(a=>a.city===sido).map(a=>a.gu).filter(Boolean));
+    const gus = [...guSet].sort();
     guChips.innerHTML = `<button class="rs-chip on" onclick="filterByGu(null)" data-gu="">전체</button>` +
       gus.map(g=>`<button class="rs-chip" onclick="filterByGu('${g}')" data-gu="${g}">${g}</button>`).join('');
     guEl.style.display = 'block';
@@ -3797,33 +3864,187 @@ function showPage(page) {
   const heroSec = document.getElementById('heroSec');
   const regionSec = document.getElementById('regionSection');
   if(page==='filter') {
-    if(heroSec) heroSec.style.display='none';
+    // 필터 섹션으로 스크롤
     if(regionSec) {
-      regionSec.style.display='block';
-      window.scrollTo({top:0,behavior:'smooth'});
+      const top = regionSec.getBoundingClientRect().top + window.scrollY - 70;
+      window.scrollTo({top, behavior:'smooth'});
     }
-    // DB 로딩 후 필터 초기화
     if(!_aptFullLoaded) {
-      loadFullAptDb().then(()=>{
-        initSidoChips();
-        applyFilters();
-      });
+      loadFullAptDb().then(()=>{ initSidoChips(); applyFilters(); });
     } else {
-      initSidoChips();
-      applyFilters();
+      initSidoChips(); applyFilters();
     }
   } else if(page==='home') {
-    if(regionSec) regionSec.style.display='none';
-    const result = document.getElementById('result');
-    if(result && result.classList.contains('show')) {
-      // 결과 화면 유지
+    // 홈으로 스크롤
+    const result2 = document.getElementById('result');
+    if(result2 && result2.classList.contains('show')) {
+      window.scrollTo({top:0, behavior:'smooth'});
     } else {
       if(heroSec) heroSec.style.display='flex';
-      window.scrollTo({top:0,behavior:'smooth'});
+      window.scrollTo({top:0, behavior:'smooth'});
     }
   }
 }
 
+
+
+
+// ── 공공데이터 아파트 검색 (JSONP 폴백) ──
+async function searchAptByName(name) {
+  try {
+    const key = CFG.molit;
+    if (!key) return null;
+    const url = `https://apis.data.go.kr/1613000/AptBasisInfoServiceV3/getAptBasisInfo?serviceKey=${encodeURIComponent(key)}&kaptName=${encodeURIComponent(name)}&numOfRows=5&pageNo=1&_type=json`;
+    const res = await fetch(url, {signal:AbortSignal.timeout(4000)}).catch(()=>null);
+    if (!res || !res.ok) return null;
+    const data = await res.json().catch(()=>null);
+    const items = data?.response?.body?.items?.item;
+    if (!items) return null;
+    const item = Array.isArray(items) ? items[0] : items;
+    if (!item) return null;
+    return {
+      n: item.kaptName||name,
+      city: item.sidoNm||'',
+      gu: item.sggNm||'',
+      dong: item.umdNm||'',
+      a: `${item.sidoNm||''} ${item.sggNm||''} ${item.umdNm||''}`.trim(),
+      la: parseFloat(item.latitude)||0,
+      lo: parseFloat(item.longitude)||0,
+      yr: parseInt(item.kaptUsedate)||0,
+      hh: parseInt(item.kaptMgrno)||0,
+      k: []
+    };
+  } catch(e) { return null; }
+}
+
+// ── 카카오 지도 검색 폴백 ──
+async function kakaoSearchApt(name) {
+  try {
+    const key = CFG.kakao;
+    if (!key) return null;
+    const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(name+' 아파트')}&size=5`;
+    const res = await fetch(url, {headers:{'Authorization':'KakaoAK '+key},signal:AbortSignal.timeout(4000)}).catch(()=>null);
+    if (!res || !res.ok) return null;
+    const data = await res.json().catch(()=>null);
+    const docs = data?.documents;
+    if (!docs||!docs.length) return null;
+    const apt = docs.find(d=>d.category_name&&d.category_name.includes('아파트')) || docs[0];
+    if (!apt) return null;
+    const parts = apt.address_name.split(' ');
+    return {
+      n: apt.place_name.replace(/\s*(아파트|APT)$/i,'').trim(),
+      city: parts[0]||'',
+      gu: parts[1]||'',
+      dong: parts[2]||'',
+      a: apt.address_name||'',
+      la: parseFloat(apt.y)||0,
+      lo: parseFloat(apt.x)||0,
+      yr: 0, hh: 0, k: []
+    };
+  } catch(e) { return null; }
+}
+
+// ── OSM Nominatim 폴백 ──
+async function osmSearchApt(name) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name+' 아파트 한국')}&format=json&limit=3&accept-language=ko`;
+    const res = await fetch(url, {headers:{'User-Agent':'AptScore/1.0'},signal:AbortSignal.timeout(4000)}).catch(()=>null);
+    if (!res || !res.ok) return null;
+    const data = await res.json().catch(()=>null);
+    if (!data||!data.length) return null;
+    const r = data[0];
+    const addr = r.display_name||'';
+    const parts = addr.split(', ').reverse();
+    return {
+      n: name,
+      city: parts[2]||'',
+      gu: parts[1]||'',
+      dong: parts[0]||'',
+      a: addr,
+      la: parseFloat(r.lat)||0,
+      lo: parseFloat(r.lon)||0,
+      yr: 0, hh: 0, k: []
+    };
+  } catch(e) { return null; }
+}
+
+// ── updateDot 안전 버전 ──
+function updateDotSafe() {
+  const dot = document.getElementById('db-dot');
+  const lbl = document.getElementById('db-label');
+  if (dot) dot.className = 'db-dot' + (CFG.ok?.()?'':' ');
+}
+
+function shareBattleImage() {
+  if(!_battleA||!_battleB) return;
+  const rA=_battleResults[_battleA.n], rB=_battleResults[_battleB.n];
+  if(!rA||!rB) { toast('두 단지 모두 분석 후 공유 가능합니다','ng'); return; }
+
+  const canvas = document.createElement('canvas');
+  canvas.width=800; canvas.height=360;
+  const ctx = canvas.getContext('2d');
+
+  // 배경
+  const grd = ctx.createLinearGradient(0,0,800,360);
+  grd.addColorStop(0,'#07090f'); grd.addColorStop(1,'#0f1a2e');
+  ctx.fillStyle=grd; ctx.fillRect(0,0,800,360);
+  ctx.strokeStyle='rgba(201,168,76,.4)'; ctx.lineWidth=2;
+  ctx.strokeRect(8,8,784,344);
+
+  // 제목
+  ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 13px sans-serif';
+  ctx.fillText('⚔️ AptScore 라이벌 배틀', 30, 38);
+
+  const GRADE_COLORS = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
+  const gradeA = rA.total>=80?'S':rA.total>=70?'A':rA.total>=60?'B':rA.total>=50?'C':'D';
+  const gradeB = rB.total>=80?'S':rB.total>=70?'A':rB.total>=60?'B':rB.total>=50?'C':'D';
+  const winner = rA.total>rB.total?'A':rB.total>rA.total?'B':'tie';
+
+  // 단지 A
+  ctx.fillStyle='rgba(212,166,84,.1)'; ctx.fillRect(20,55,340,260);
+  ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font='12px sans-serif';
+  ctx.fillText('단지 A', 30, 80);
+  ctx.fillStyle='#fff'; ctx.font='bold 18px "Noto Sans KR",sans-serif';
+  const nameA = _battleA.n.length>10?_battleA.n.substring(0,10)+'…':_battleA.n;
+  ctx.fillText(nameA, 30, 108);
+  ctx.fillStyle=GRADE_COLORS[gradeA]; ctx.font='bold 72px serif';
+  ctx.fillText(rA.total, 30, 210);
+  ctx.font='bold 40px serif';
+  ctx.fillText(gradeA, 200, 210);
+  if(winner==='A') { ctx.fillStyle='#d4a654'; ctx.font='bold 16px sans-serif'; ctx.fillText('🏆 승리', 30, 290); }
+
+  // VS
+  ctx.fillStyle='rgba(201,168,76,.8)'; ctx.font='bold 32px serif';
+  ctx.textAlign='center'; ctx.fillText('VS', 400, 195); ctx.textAlign='left';
+
+  // 단지 B
+  ctx.fillStyle='rgba(59,130,246,.1)'; ctx.fillRect(440,55,340,260);
+  ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font='12px sans-serif';
+  ctx.fillText('단지 B', 450, 80);
+  ctx.fillStyle='#fff'; ctx.font='bold 18px "Noto Sans KR",sans-serif';
+  const nameB = _battleB.n.length>10?_battleB.n.substring(0,10)+'…':_battleB.n;
+  ctx.fillText(nameB, 450, 108);
+  ctx.fillStyle=GRADE_COLORS[gradeB]; ctx.font='bold 72px serif';
+  ctx.fillText(rB.total, 450, 210);
+  ctx.font='bold 40px serif';
+  ctx.fillText(gradeB, 620, 210);
+  if(winner==='B') { ctx.fillStyle='#3b82f6'; ctx.font='bold 16px sans-serif'; ctx.fillText('🏆 승리', 450, 290); }
+
+  // URL
+  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='11px sans-serif';
+  ctx.textAlign='center'; ctx.fillText('stock-predictor-dx2.pages.dev', 400, 348); ctx.textAlign='left';
+
+  // 클립보드 공유 시도
+  canvas.toBlob(blob=>{
+    if(!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download=`배틀_${_battleA.n}_vs_${_battleB.n}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('배틀 결과 이미지 저장됨! SNS에 공유하세요','ok');
+  },'image/png');
+}
 
 
 </script>
