@@ -2288,12 +2288,16 @@ body.result-visible .region-section { display: none !important; }
   inset: 0 !important;
   background: rgba(0,0,0,.75) !important;
   z-index: 9999 !important;
-  display: flex !important;
+  /* display는 JS로 제어 - 여기서 지정 안 함 */
   align-items: center !important;
   justify-content: center !important;
   padding: 16px !important;
   box-sizing: border-box !important;
   overflow-y: auto !important;
+}
+/* 모달이 열릴 때만 flex */
+.modal-overlay[style*="flex"] {
+  display: flex !important;
 }
 .modal-box {
   background: #0f1623 !important;
@@ -2339,12 +2343,62 @@ body.result-visible .region-section { display: none !important; }
 @media (max-width: 560px) {
   .battle-input-row { grid-template-columns: 1fr !important; }
 }
+
+/* ══ 모달 수정 ══ */
+.modal-close {
+  position: relative !important;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  color: rgba(255,255,255,.7) !important;
+  border-radius: 8px !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: all .15s !important;
+}
+.modal-close:hover {
+  background: rgba(255,80,80,.2) !important;
+  border-color: rgba(255,80,80,.4) !important;
+  color: #fff !important;
+}
+.modal-hd {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+}
+.modal-title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+.modal-box {
+  background: #0f1623 !important;
+  border: 1px solid rgba(201,168,76,.2) !important;
+  border-radius: 20px !important;
+  padding: 24px !important;
+  width: 100% !important;
+  max-width: 680px !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
 
 
 
@@ -3518,7 +3572,11 @@ function generateScoreCard() {
   ctx.fillText('stock-predictor-dx2.pages.dev', 450, 400);
   
   const modal = document.getElementById('score-card-modal');
-  if(modal) modal.style.display='flex';
+  if(modal) {
+    modal.style.display='flex';
+    // canvas 렌더링
+    setTimeout(()=>generateScoreCard(), 50);
+  }
 }
 
 function downloadScoreCard() {
@@ -4380,6 +4438,7 @@ function shareBattleImage() {
     toast('이미지 저장 완료! SNS에 직접 공유하세요','ok');
   },'image/png');
 }
+
 
 
 
