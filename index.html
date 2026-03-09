@@ -616,10 +616,15 @@ body::after{
 
 <!-- ══ NAV ══ -->
 <nav class="nav">
-  <a class="nav-logo" href="#">
+  <a class="nav-logo" href="#" onclick="goHome();return false;" style="cursor:pointer;">
     <div class="nav-logo-mark">🏙️</div>
     <span>Apt<span>Score</span></span>
   </a>
+  <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;">
+    <button class="nav-tab active" id="tab-home" onclick="showPage('home')">🏠 홈</button>
+    <button class="nav-tab" id="tab-filter" onclick="showPage('filter')">🔍 필터</button>
+    <button class="nav-tab" id="tab-battle" onclick="openBattle()" style="background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.3);color:#a78bfa;">⚔️ 배틀</button>
+  </div>
   <div class="nav-db-status" id="nav-db-status" onclick="showDbPanel()" title="전국 DB 상태 클릭">
     <span class="db-dot" id="db-dot"></span>
     <span id="db-label">DB 초기화 중…</span>
@@ -872,8 +877,18 @@ body::after{
     <div class="ac" id="ac"></div>
   </div>
 
+  <!-- ── 내 상황 페르소나 ── -->
+  <div class="hero-persona-row">
+    <span class="hero-persona-label">내 상황:</span>
+    <button class="persona-btn" data-persona="학부모" onclick="applyPersona('학부모')">👨‍👧 학부모</button>
+    <button class="persona-btn" data-persona="직장인" onclick="applyPersona('직장인')">💼 직장인</button>
+    <button class="persona-btn" data-persona="은퇴세대" onclick="applyPersona('은퇴세대')">🌿 은퇴세대</button>
+    <button class="persona-btn" data-persona="투자자" onclick="applyPersona('투자자')">📈 투자자</button>
+    <button class="persona-btn" data-persona="" onclick="applyPersona(null)" style="opacity:.6;">🔄 기본</button>
+  </div>
+
   <!-- ── 검색 가능 단지 수 배지 ── -->
-  <div id="apt-count-badge" style="margin-top:14px;text-align:center;">
+  <div id="apt-count-badge" style="margin-top:12px;text-align:center;">
     <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(212,166,84,.1);border:1px solid rgba(212,166,84,.3);border-radius:20px;padding:7px 20px;cursor:default;">
       <span style="font-size:13px;">🏢</span>
       <span style="color:rgba(255,255,255,.6);font-size:12px;">검색 가능</span>
@@ -884,28 +899,16 @@ body::after{
   </div>
 
   <!-- ── 인기 검색 ── -->
-  <!-- 페르소나 선택 -->
-  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-    <span style="font-size:12px;color:rgba(255,255,255,.4);align-self:center;">내 상황:</span>
-    <button class="persona-btn" data-persona="학부모" onclick="applyPersona('학부모')">👨‍👧 학부모</button>
-    <button class="persona-btn" data-persona="직장인" onclick="applyPersona('직장인')">💼 직장인</button>
-    <button class="persona-btn" data-persona="은퇴세대" onclick="applyPersona('은퇴세대')">🌿 은퇴세대</button>
-    <button class="persona-btn" data-persona="투자자" onclick="applyPersona('투자자')">📈 투자자</button>
-    <button class="persona-btn" data-persona="" onclick="applyPersona(null)">🔄 기본</button>
-  </div>
   <div class="quick">
-    <span class="q-txt">인기</span>
-    <button class="q-chip" onclick="pickByKey('래미안퍼스티지')">래미안퍼스티지</button>
-    <button class="q-chip" onclick="pickByKey('반포자이')">반포자이</button>
-    <button class="q-chip" onclick="pickByKey('헬리오시티')">헬리오시티</button>
-    <button class="q-chip" onclick="pickByKey('잠실엘스')">잠실엘스</button>
-    <button class="q-chip" onclick="pickByKey('마포래미안푸르지오')">마포래미안푸르지오</button>
-  </div>
-    <div class="rb-chips" id="rb-city"></div>
-    <div class="rb-chips" id="rb-gu" style="display:none"></div>
-    <div class="rb-apt-grid" id="rb-list" style="display:none"></div>
+    <span class="q-label">인기</span>
+    <button class="q-item" onclick="pickByKey('래미안퍼스티지')">래미안퍼스티지</button>
+    <button class="q-item" onclick="pickByKey('반포자이')">반포자이</button>
+    <button class="q-item" onclick="pickByKey('헬리오시티')">헬리오시티</button>
+    <button class="q-item" onclick="pickByKey('잠실엘스')">잠실엘스</button>
+    <button class="q-item" onclick="pickByKey('마포래미안푸르지오')">마포래미안푸르지오</button>
   </div>
 
+  <!-- ── KPI 스탯 바 ── -->
   <div class="hero-kpi">
     <div class="h-kpi"><div class="kpi-n">7개</div><div class="kpi-l">평가 항목</div></div>
     <div class="h-kpi"><div class="kpi-n">100점</div><div class="kpi-l">종합 점수</div></div>
@@ -913,6 +916,7 @@ body::after{
     <div class="h-kpi"><div class="kpi-n">즉시</div><div class="kpi-l">결과 확인</div></div>
   </div>
 </section>
+
 <!-- ══════════════════════════════════
      지역으로 찾기 — 독립 섹션
 ══════════════════════════════════ -->
@@ -1894,12 +1898,45 @@ body::after{
   background:radial-gradient(circle,rgba(201,168,76,.08),transparent);
   pointer-events:none;
 }
+
+/* ── 히어로 페르소나 행 ── */
+.hero-persona-row{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+  margin-top:16px;max-width:600px;width:100%;
+}
+.hero-persona-label{font-size:12px;color:rgba(255,255,255,.4);}
+
+/* ── 배틀 자동완성 드롭다운 ── */
+.battle-ac-list{
+  position:absolute;top:100%;left:0;right:0;z-index:100;
+  background:#1a2235;border:1px solid rgba(255,255,255,.12);
+  border-radius:0 0 10px 10px;max-height:200px;overflow-y:auto;
+}
+.battle-slot{position:relative;}
+.battle-ac-item{
+  padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05);
+  transition:background .12s;
+}
+.battle-ac-item:hover{background:rgba(201,168,76,.12);}
+.battle-ac-item:last-child{border-bottom:none;}
+
+/* ── nav 탭 개선 ── */
+.nav{padding:0 20px;}
+.nav-tab{
+  padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.6);cursor:pointer;border:1px solid transparent;
+  background:transparent;font-family:var(--sans);transition:all .18s;white-space:nowrap;
+}
+.nav-tab:hover{color:#fff;background:rgba(255,255,255,.07);}
+.nav-tab.active{color:var(--gold);background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.25);}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
+
 
 
 
@@ -2836,6 +2873,7 @@ async function runAnalyze(apt){
     const R=await analyze(apt);
     document.getElementById('loading').classList.remove('show');
     render(R);
+    afterRender(R);
     document.getElementById('result').classList.add('show');
     window.scrollTo({top:0,behavior:'smooth'});
     toast(`✅ ${R.name} 분석 완료!`,'ok');
@@ -3045,16 +3083,62 @@ let _battleResults = {};
 
 function openBattle() {
   const modal = document.getElementById('battle-modal');
-  if(modal) { modal.style.display='flex'; renderBattleModal(); }
+  if(!modal) return;
+  modal.style.display='flex';
+  renderBattleModal();
+  // 배틀 AC 이벤트 등록
+  setupBattleAC('A');
+  setupBattleAC('B');
+}
+
+function setupBattleAC(slot) {
+  const inp = document.getElementById('battle-si-'+slot.toLowerCase());
+  const acEl = document.getElementById('battle-ac-'+slot.toLowerCase());
+  if(!inp || !acEl) return;
+  inp.oninput = () => {
+    clearTimeout(inp._t);
+    inp._t = setTimeout(()=>{
+      const v = inp.value.trim();
+      if(!v){ acEl.innerHTML=''; acEl.style.display='none'; return; }
+      const results = searchAC(v).slice(0,8);
+      if(!results.length){ acEl.innerHTML=''; acEl.style.display='none'; return; }
+      acEl.innerHTML = results.map(a=>`
+        <div class="battle-ac-item" onclick="selectBattleApt('${slot}',${_aptIdx(a)})">
+          <strong>${a.n}</strong>
+          <span style="font-size:11px;color:rgba(255,255,255,.4);margin-left:6px;">${a.city||''} ${a.gu||''}</span>
+        </div>`).join('');
+      acEl.style.display='block';
+    }, 150);
+  };
+  inp.addEventListener('keydown', e=>{
+    if(e.key==='Enter') { clearTimeout(inp._t); setBattleAptByName(slot, inp.value.trim()); }
+  });
+}
+
+function selectBattleApt(slot, idx) {
+  const apt = _AMAP[idx] || APT_DB[idx];
+  if(!apt) return;
+  const inp = document.getElementById('battle-si-'+slot.toLowerCase());
+  const acEl = document.getElementById('battle-ac-'+slot.toLowerCase());
+  if(inp) inp.value = apt.n;
+  if(acEl){ acEl.innerHTML=''; acEl.style.display='none'; }
+  if(slot==='A') _battleA=apt; else _battleB=apt;
+  renderBattleModal();
+  toast(`${apt.n} 선택됨`,'ok');
+}
+
+function setBattleAptByName(slot, name) {
+  if(!name) return;
+  const apt = APT_DB.find(a=>a&&a.n&&(a.n===name||a.n.replace(/\s/g,'').includes(name.replace(/\s/g,''))));
+  if(!apt) { toast('해당 아파트를 찾을 수 없습니다. 자동완성 목록에서 선택하세요','ng'); return; }
+  if(slot==='A') _battleA=apt; else _battleB=apt;
+  renderBattleModal();
 }
 
 function setBattleApt(slot) {
-  const name = (slot==='A' ? document.getElementById('battle-si-a') : document.getElementById('battle-si-b'))?.value?.trim();
-  if(!name) return;
-  const apt = APT_DB.find(a=>a&&a.n&&(a.n===name||a.n.includes(name)));
-  if(!apt) { toast('아파트를 찾을 수 없습니다','ng'); return; }
-  if(slot==='A') _battleA=apt; else _battleB=apt;
-  renderBattleModal();
+  const inp = document.getElementById('battle-si-'+slot.toLowerCase());
+  if(!inp) return;
+  setBattleAptByName(slot, inp.value.trim());
 }
 
 function renderBattleModal() {
@@ -3211,9 +3295,8 @@ async function castVote(aptName, item, type) {
 // ════════════════════════════════════════════════════
 // render() 후처리: 바이럴 기능 연동
 // ════════════════════════════════════════════════════
-const _origRender = typeof render !== 'undefined' ? render : null;
-function render(R) {
-  if(_origRender) _origRender(R);
+// afterRender: render() 완료 후 바이럴 기능 업데이트
+function afterRender(R) {
   _lastR = R;
   if(_personaWeights) recalcWithPersona(R); else renderPersonaScore(R.total, R.grade);
   renderVoteSection(R.name);
@@ -3222,7 +3305,6 @@ function render(R) {
   if(mbtiEl) { mbtiEl.textContent = mbti.tag+' '+mbti.emoji; mbtiEl.style.color = mbti.color; }
   const mbtiTitle = document.getElementById('apt-mbti-title');
   if(mbtiTitle) mbtiTitle.textContent = '"'+mbti.title+'"';
-  // 패널 보이기
   const mc=document.getElementById('mbti-card'); if(mc)mc.style.display='flex';
   const pp=document.getElementById('persona-panel'); if(pp)pp.style.display='block';
   const vw=document.getElementById('vote-section-wrap'); if(vw)vw.style.display='block';
@@ -3232,20 +3314,32 @@ function render(R) {
 // ── 페이지 탭 전환 ──
 function showPage(page) {
   document.querySelectorAll('.nav-tab').forEach(b=>{
-    b.classList.toggle('active', b.textContent.includes(page==='home'?'홈':page==='filter'?'필터':'배틀'));
+    b.classList.toggle('active', b.id==='tab-'+page);
   });
   const heroSec = document.getElementById('heroSec');
   const regionSec = document.getElementById('regionSection');
   if(page==='filter') {
     if(heroSec) heroSec.style.display='none';
-    if(regionSec) regionSec.style.display='block';
-  } else {
-    if(heroSec) heroSec.style.display='flex';
-    if(regionSec) regionSec.style.display='none';
-    // result 화면 중에도 홈탭 클릭 시 처리
-    const result = document.getElementById('result');
-    if(result && result.classList.contains('show')) return; // 결과 유지
+    if(regionSec) { regionSec.style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); }
+  } else if(page==='home') {
+    goHome();
   }
+}
+
+
+
+// ── 메인으로 이동 ──
+function goHome() {
+  const g=id=>document.getElementById(id);
+  g('result').classList.remove('show');
+  if(g('not-found-panel')) g('not-found-panel').style.display='none';
+  if(g('loading')) g('loading').classList.remove('show');
+  if(g('regionSection')) g('regionSection').style.display='none';
+  g('heroSec').style.display='flex';
+  g('si').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+  // 탭 활성화
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.toggle('active', b.id==='tab-home'));
 }
 
 </script>
@@ -3267,16 +3361,18 @@ H4sIAKJcrmkC/5S9W49dx5Em+u5fUU8zJaB4sPKycuV6pNQ6ttry2LD6gp63AY6AMzieGaAbPedtQFFF
       <div class="battle-slot">
         <div class="battle-slot-label" style="color:#d4a654;">🔶 단지 A</div>
         <div class="battle-input-wrap">
-          <input id="battle-si-a" type="text" placeholder="아파트명 입력…">
+          <input id="battle-si-a" type="text" placeholder="아파트명 입력 후 목록 선택…" autocomplete="off">
           <button onclick="setBattleApt('A')" style="background:rgba(212,166,84,.2);color:#d4a654;border:1px solid rgba(212,166,84,.3);">선택</button>
         </div>
+        <div id="battle-ac-a" class="battle-ac-list" style="display:none;"></div>
       </div>
       <div class="battle-slot">
         <div class="battle-slot-label" style="color:#3b82f6;">🔷 단지 B</div>
         <div class="battle-input-wrap">
-          <input id="battle-si-b" type="text" placeholder="아파트명 입력…">
+          <input id="battle-si-b" type="text" placeholder="아파트명 입력 후 목록 선택…" autocomplete="off">
           <button onclick="setBattleApt('B')" style="background:rgba(59,130,246,.2);color:#3b82f6;border:1px solid rgba(59,130,246,.3);">선택</button>
         </div>
+        <div id="battle-ac-b" class="battle-ac-list" style="display:none;"></div>
       </div>
     </div>
     <div id="battle-result" style="min-height:100px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:14px;">
