@@ -3677,6 +3677,7 @@ body.result-visible #regionSection{display:none!important}
 
 
 
+
 /* ══════════════════════════════════════════════════════════════
    AptScore v5 — DB 등록 아파트만 분석 / 임의 점수 없음
 ══════════════════════════════════════════════════════════════ */
@@ -4289,80 +4290,46 @@ function recentMonths(n){
 async function fetchMolit(lawd,ym){
   if(!CFG.ok()) return Promise.resolve([]);
   const key = CFG.molit;
+  const apiUrl = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade`
+    + `?serviceKey=${encodeURIComponent(key)}`
+    + `&LAWD_CD=${lawd}&DEAL_YMD=${ym}`
+    + `&numOfRows=1000&pageNo=1&_type=json`;
 
-  return new Promise((resolve) => {
-    const cbName = `_aptCb${lawd}${ym}`;   // 단순한 이름
-    const script = document.createElement('script');
-    let settled = false;
+  // CORS 프록시 2개를 경쟁적으로 요청 → 먼저 성공한 것 사용
+  const PROXIES = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(apiUrl)}`,
+  ];
 
-    // 타임아웃 12초 (공공데이터 API 응답 느릴 때 대비)
-    const timer = setTimeout(() => {
-      if(settled) return;
-      settled = true;
-      cleanup();
-      console.warn(`[AptScore] JSONP 타임아웃: LAWD=${lawd} YM=${ym}`);
-      resolve([]);
-    }, 12000);
-
-    function cleanup(){
-      clearTimeout(timer);
-      delete window[cbName];
-      try{ if(script.parentNode) script.parentNode.removeChild(script); }catch(e){}
-    }
-
-    window[cbName] = function(data){
-      if(settled) return;
-      settled = true;
-      cleanup();
-      try{
-        // 응답 구조 다중 파싱 시도
-        let items = null;
-        if(data?.response?.body?.items?.item) {
-          items = data.response.body.items.item;
-        } else if(data?.body?.items?.item) {
-          items = data.body.items.item;
-        } else if(Array.isArray(data?.response?.body?.items)) {
-          items = data.response.body.items;
-        } else if(data?.items?.item) {
-          items = data.items.item;
-        }
-
-        if(!items){ 
-          console.warn(`[AptScore] JSONP 데이터 없음: LAWD=${lawd} YM=${ym}`, data);
-          return resolve([]);
-        }
-        const arr = Array.isArray(items) ? items : [items];
-        console.log(`[AptScore] JSONP 수신: LAWD=${lawd} YM=${ym} → ${arr.length}건`);
-        resolve(arr.map(i => ({
-          name:  (i.aptNm||'').trim(),
-          price: parseInt((i.dealAmount||'0').replace(/,/g,''), 10)||0,
-          area:  parseFloat(i.excluUseAr||0)||0,
-          floor: String(i.floor||''),
-          year:  parseInt(i.dealYear||0, 10)||0,
-          month: parseInt(i.dealMonth||0, 10)||0,
-          day:   parseInt(i.dealDay||0, 10)||0,
-        })).filter(r => r.price > 0 && r.area > 0));
-      } catch(e){
-        console.error('[AptScore] JSONP 파싱 오류:', e);
-        resolve([]);
-      }
-    };
-
-    const url = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade`
-      + `?serviceKey=${key}`
-      + `&LAWD_CD=${lawd}&DEAL_YMD=${ym}`
-      + `&numOfRows=1000&pageNo=1&_type=json&_callback=${cbName}`;
-    
-    script.src = url;
-    script.onerror = (e) => {
-      if(settled) return;
-      settled = true;
-      cleanup();
-      console.error(`[AptScore] JSONP script 로드 실패: ${url.slice(0,100)}`);
-      resolve([]);
-    };
-    document.head.appendChild(script);
-    console.log(`[AptScore] JSONP 요청: LAWD=${lawd} YM=${ym}`);
+  // Promise.any: 하나라도 성공하면 즉시 반환, 둘 다 실패하면 []
+  return Promise.any(
+    PROXIES.map(proxyUrl =>
+      fetch(proxyUrl, {signal: AbortSignal.timeout(8000)})
+        .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+        .then(data => {
+          // JSON 응답 구조 파싱
+          let items = data?.response?.body?.items?.item
+            ?? data?.body?.items?.item
+            ?? data?.items?.item
+            ?? null;
+          if(!items) throw new Error('no items');
+          const arr = Array.isArray(items) ? items : [items];
+          const result = arr.map(i => ({
+            name:  (i.aptNm||'').trim(),
+            price: parseInt((i.dealAmount||'0').replace(/,/g,''), 10)||0,
+            area:  parseFloat(i.excluUseAr||0)||0,
+            floor: String(i.floor||''),
+            year:  parseInt(i.dealYear||0, 10)||0,
+            month: parseInt(i.dealMonth||0, 10)||0,
+            day:   parseInt(i.dealDay||0, 10)||0,
+          })).filter(r => r.price > 0 && r.area > 0);
+          console.log(`[AptScore] ✅ 실거래 수신: ${lawd}/${ym} → ${result.length}건`);
+          return result;
+        })
+    )
+  ).catch(() => {
+    console.warn(`[AptScore] ⚠️ 실거래 실패: ${lawd}/${ym}`);
+    return [];
   });
 }
 
@@ -4381,7 +4348,7 @@ async function analyze(apt){
   if(CFG.ok()){
     const mons=recentMonths(6);
     const pfx=apt.n.replace(/\s/g,'').slice(0,4);
-    setMsg('📡 실거래가 수집 중… (병렬)');
+    setMsg('📡 실거래가 수집 중…');
     // 6개월 동시 병렬 요청 (순차 대비 6배 빠름)
     const results = await Promise.all(mons.map(ym => fetchMolit(lawd,ym)));
     results.forEach(d => {
@@ -6259,6 +6226,7 @@ function resetBattle() {
   // 인풋 포커스
   if(ia) ia.focus();
 }
+
 
 
 
