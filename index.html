@@ -4262,6 +4262,10 @@ const LOCATION_PREFERENCE = {
 const GRADE={S:'#059669',A:'#2563eb',B:'#d97706',C:'#ea580c',D:'#dc2626'};
 const GRADE_NM={S:'최우수',A:'우수',B:'양호',C:'보통',D:'미흡'};
 
+// 배틀용 색상 (전역)
+const GRADE_COLORS = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
+const GRADE_COLOR = GRADE_COLORS; // alias for compatibility
+
 /* ── 유틸 ── */
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function hav(la1,lo1,la2,lo2){
@@ -5326,19 +5330,40 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ── 등급 예측 (analyze 기준 동일: S≥80, A≥70, B≥60, C≥50) ──
 function estimateGrade(a) {
   // ── analyze() 결과와 최대한 일치하는 예상 등급 ──
-  // 7개 항목 가중 평균: 시세변동20 + 핵심시설20 + 교통15 + 학군15 + 편의10 + 신축10 + 가격10
+  // 7개 항목 가중 평균: 지역선호도20 + 핵심시설20 + 교통15 + 학군15 + 편의10 + 신축10 + 가격10
   if (!a) return 'D';
 
   const yr = a.yr || 0;
   const hh = a.hh || 0;
   const sd = a.sd || 9999; // 역까지 거리(m)
   const pr = a.price || 0; // ㎡당 가격
+  const addr = a.a || '';
+  const gu = a.gu || '';
+  const dong = a.dong || '';
 
-  // 1. 시세변동 점수 (데이터 없으면 55점 기본)
-  const p1 = 55;
+  // 1. 지역선호도 점수 (NEW!)
+  let p1 = 70; // 기본값
+  for (let region in LOCATION_PREFERENCE) {
+    if (dong && dong.includes(region)) {
+      p1 = LOCATION_PREFERENCE[region];
+      break;
+    }
+  }
+  if (p1 === 70) {
+    for (let region in LOCATION_PREFERENCE) {
+      if (gu && gu.includes(region)) {
+        p1 = LOCATION_PREFERENCE[region];
+        break;
+      }
+    }
+  }
+  if (p1 === 70 && (addr.includes('서울') || gu.includes('서울'))) {
+    p1 = 80;
+  } else if (p1 === 70 && (addr.includes('경기') || gu.includes('경기'))) {
+    p1 = 75;
+  }
 
   // 2. 핵심시설/업무지구 접근성 (역거리로 간접 추정)
-  // 역세권이면 업무지구도 가까운 경향
   let p2;
   if      (sd <= 300)  p2 = 85;
   else if (sd <= 500)  p2 = 75;
@@ -5347,7 +5372,7 @@ function estimateGrade(a) {
   else if (sd <= 3000) p2 = 40;
   else                 p2 = 25;
 
-  // 3. 교통 점수 (scoreTransit과 동일 기준: 4km 생활권)
+  // 3. 교통 점수
   let p3;
   if      (sd <= 300)  p3 = 100;
   else if (sd <= 500)  p3 = 90;
@@ -5358,10 +5383,10 @@ function estimateGrade(a) {
   else if (sd <= 4000) p3 = 25;
   else                 p3 = 10;
 
-  // 4. 학군 (구 평균 기반, 데이터 없으면 50점)
+  // 4. 학군
   const p4 = 50;
 
-  // 5. 편의시설 (기본 55점)
+  // 5. 편의시설
   const p5 = 55;
 
   // 6. 신축도 점수
@@ -5375,9 +5400,9 @@ function estimateGrade(a) {
   else if (yr >= 2003) p6 = 33;
   else if (yr >= 1998) p6 = 25;
   else if (yr > 0)     p6 = 15;
-  else                 p6 = 50; // 데이터 없음
+  else                 p6 = 50;
 
-  // 7. 가격 점수 (지역 평균 대비, 데이터 없으면 50점)
+  // 7. 가격 점수
   const guBase = PRICE_MAP[a.gu] || 2500;
   let p7;
   if (pr > 0) {
@@ -5387,7 +5412,7 @@ function estimateGrade(a) {
     p7 = 50;
   }
 
-  // 가중 합산 (SCORE_META 가중치와 동일)
+  // 가중 합산 (지역선호도20 + 핵심시설20 + 교통15 + 학군15 + 편의10 + 신축10 + 가격10)
   const total = Math.round((p1*20 + p2*20 + p3*15 + p4*15 + p5*10 + p6*10 + p7*10) / 100 * 10) / 10;
 
   // 등급 판정
@@ -5403,10 +5428,10 @@ function estimateGrade(a) {
 // 🎯 바이럴 기능 1: 페르소나 가중치 시뮬레이터
 // ════════════════════════════════════════════════════
 const PERSONA_PRESETS = {
-  학부모: {시세변동:0.8, 핵심시설:1.0, 교통:0.9, 학군:2.0, 편의시설:1.2, 신축도:1.0, 가격:0.8},
-  직장인: {시세변동:1.2, 핵심시설:1.5, 교통:2.0, 학군:0.5, 편의시설:1.2, 신축도:0.8, 가격:1.2},
-  은퇴세대:{시세변동:0.5, 핵심시설:1.3, 교통:0.8, 학군:0.3, 편의시설:1.5, 신축도:1.2, 가격:1.5},
-  투자자: {시세변동:2.0, 핵심시설:1.2, 교통:1.3, 학군:0.8, 편의시설:0.8, 신축도:0.6, 가격:1.5},
+  학부모: {지역선호도:1.5, 핵심시설:1.0, 교통:0.9, 학군:2.0, 편의시설:1.2, 신축도:1.0, 가격:0.8},
+  직장인: {지역선호도:0.8, 핵심시설:1.5, 교통:2.0, 학군:0.5, 편의시설:1.2, 신축도:0.8, 가격:1.2},
+  은퇴세대:{지역선호도:1.2, 핵심시설:1.3, 교통:0.8, 학군:0.3, 편의시설:1.5, 신축도:1.2, 가격:1.5},
+  투자자: {지역선호도:1.8, 핵심시설:1.2, 교통:1.3, 학군:0.8, 편의시설:0.8, 신축도:0.6, 가격:1.5},
 };
 let _personaWeights = null; // null = 기본값
 const _scoreCache = new Map();
@@ -6133,9 +6158,6 @@ function shareBattleImage() {
   ctx.fillStyle='rgba(201,168,76,.9)'; ctx.font='bold 14px sans-serif';
   ctx.textAlign='center';
   ctx.fillText('⚔️ AptScore 라이벌 배틀 결과', W/2, 36);
-
-  const GRADE_COLORS = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
-const GRADE_COLOR = GRADE_COLORS; // alias
 
   const getGrade = (r,a) => r?(r.total>=80?'S':r.total>=70?'A':r.total>=60?'B':r.total>=50?'C':'D'):(_scoreCache.get(a.n)?.grade || estimateGrade(a));
   const getScore = (r) => r?r.total:null;
