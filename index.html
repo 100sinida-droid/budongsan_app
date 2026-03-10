@@ -1,9 +1,4 @@
-<div class="nav-right">
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('home')">🏠 홈</button>
-    <button class="nav-tab" onclick="showPage('filter')">🔍 필터 검색</button>
-    <button class="nav-tab" onclick="openBattle()">⚔️ 배틀</button>
-  </div><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -858,129 +853,124 @@ body::after{
 </div>
 <section id="heroSec">
 
-  <!-- ══ PC 레이아웃 ══ -->
-  <div class="hs-wrap">
-
-    <!-- 왼쪽: 타이틀 + 태그 + 랭킹 -->
-    <div class="hs-left">
-      <div class="hs-tabs">
-        <button class="hs-tab active" onclick="hsTab(this,'score')">🏆 APT 스코어</button>
-        <button class="hs-tab" onclick="hsTab(this,'wish')">❤️ 주가심 랭킹</button>
+  <!-- ══ PART 1: 검색 ══ -->
+  <div class="hs-search-section">
+    <div class="hs-search-inner">
+      <div class="hs-search-label">🏢 전국 아파트 실시간 점수 산출</div>
+      <div class="hs-search-box" id="hs-search-box">
+        <span class="hs-search-icon">🔍</span>
+        <input id="si" type="text" class="hs-search-input"
+          placeholder="아파트명·동·지역 입력 (예: 헬리오시티, 강남, 반포자이…)"
+          autocomplete="off">
+        <button class="hs-search-btn" id="go-btn" onclick="doSearch()">검색하기</button>
       </div>
-
-      <h1 class="hs-h1">당신의 아파트,<br><em>진짜 가치는<br>몇 점입니까?</em></h1>
-
-      <div class="hs-tags">
-        <span class="hs-tag">📚 학군</span>
-        <span class="hs-tag">🚇 역세권</span>
-        <span class="hs-tag">🏥 편의시설</span>
-        <span class="hs-tag">💰 투자 가치</span>
-        <span class="hs-tag">🏢 편의시설</span>
-        <span class="hs-tag">🕍 편하시고</span>
-      </div>
-
-      <!-- 주간 랭킹 TOP 3 -->
-      <div class="hs-ranking">
-        <div class="hs-ranking-title">주간 랭킹 TOP 3</div>
-        <div class="hs-rank-list">
-          <div class="hs-rank-card gold" onclick="pickByKey('래미안퍼스티지')">
-            <span class="rank-badge">🥇</span>
-            <div class="rank-info">
-              <div class="rank-name">래미안퍼스티지</div>
-              <div class="rank-score">98<span>/100</span></div>
-            </div>
-          </div>
-          <div class="hs-rank-card silver" onclick="pickByKey('반포자이')">
-            <span class="rank-badge">🥈</span>
-            <div class="rank-info">
-              <div class="rank-name">반포자이</div>
-              <div class="rank-score">93<span>/100</span></div>
-            </div>
-          </div>
-          <div class="hs-rank-card bronze" onclick="pickByKey('헬리오시티')">
-            <span class="rank-badge">🥉</span>
-            <div class="rank-info">
-              <div class="rank-name">헬리오시티</div>
-              <div class="rank-score">77<span>/100</span></div>
-            </div>
-          </div>
-        </div>
+      <div class="ac" id="ac"></div>
+      <!-- 인기 검색 -->
+      <div class="hs-quick">
+        <span>인기</span>
+        <button onclick="pickByKey('래미안퍼스티지')">래미안퍼스티지</button>
+        <button onclick="pickByKey('반포자이')">반포자이</button>
+        <button onclick="pickByKey('헬리오시티')">헬리오시티</button>
+        <button onclick="pickByKey('잠실엘스')">잠실엘스</button>
       </div>
     </div>
-
-    <!-- 가운데: 점수 링 + 레이더 -->
-    <div class="hs-center">
-      <div class="hs-radar-wrap">
-        <canvas id="hs-radar" width="260" height="260"></canvas>
-        <div class="hs-score-ring">
-          <div class="hs-score-num" id="hs-demo-score">96</div>
-          <div class="hs-score-label">/ 100</div>
-        </div>
-      </div>
-      <div class="hs-apt-label" id="hs-apt-label">강남 퍼스트 아이파크</div>
-
-      <!-- 검색창 -->
-      <div class="hs-search-wrap">
-        <div class="hs-search-box">
-          <span class="hs-search-icon">🔍</span>
-          <input id="si" type="text" class="hs-search-input"
-            placeholder="단지명 또는 지역 검색"
-            autocomplete="off">
-          <button class="hs-search-btn" onclick="doSearch()">지금 검색하기</button>
-        </div>
-        <div class="ac" id="ac"></div>
-      </div>
-
-      <!-- TOP 3 Tags -->
-      <div class="hs-top-tags">
-        <span class="hs-toptag-label">TOP 3 Tags</span>
-        <span class="hs-toptag">#학군최고</span>
-        <span class="hs-toptag">#역세권</span>
-        <span class="hs-toptag">#한강뷰</span>
-      </div>
-    </div>
-
-    <!-- 오른쪽: 페르소나 + 점수카드 -->
-    <div class="hs-right">
-      <div class="hs-persona-panel">
-        <div class="hs-persona-title">나의 페르소나</div>
-        <div class="hs-persona-list">
-          <button class="hs-persona-btn" onclick="applyPersona('학부모')">
-            <span>초등 학부모</span>
-            <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:85%"></div></div>
-          </button>
-          <button class="hs-persona-btn" onclick="applyPersona('직장인')">
-            <span>직장인</span>
-            <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:70%"></div></div>
-          </button>
-          <button class="hs-persona-btn" onclick="applyPersona('은퇴세대')">
-            <span>은퇴 세대</span>
-            <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:60%"></div></div>
-          </button>
-          <button class="hs-persona-btn" onclick="applyPersona('투자자')">
-            <span>투자자</span>
-            <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:75%"></div></div>
-          </button>
-        </div>
-      </div>
-
-      <!-- 스코어 카드 버튼 -->
-      <div class="hs-score-badge">
-        <div class="hs-score-badge-num" id="hs-side-score">96</div>
-      </div>
-      <button class="hs-card-btn" onclick="doSearch()">
-        나만의 점수 카드 만들기 &nbsp;↗
-      </button>
-
-      <!-- 필터 버튼 -->
-      <button class="hs-filter-btn" onclick="openFilterSection()">
-        🔎 전국 <strong id="filter-btn-count">46,542</strong>개 아파트 필터 검색
-      </button>
-    </div>
-
   </div>
 
-  <!-- ══ 모바일 전용 하단 ══ -->
+  <!-- ══ PART 2: APT스코어 히어로 ══ -->
+  <div class="hs-hero-section">
+    <div class="hs-wrap">
+
+      <!-- 왼쪽: 타이틀 + 태그 + 랭킹 -->
+      <div class="hs-left">
+        <div class="hs-tabs">
+          <button class="hs-tab active" onclick="hsTab(this,'score')">🏆 APT 스코어</button>
+          <button class="hs-tab" onclick="hsTab(this,'wish')">❤️ 주가심 랭킹</button>
+        </div>
+        <h1 class="hs-h1">당신의 아파트,<br><em>진짜 가치는<br>몇 점입니까?</em></h1>
+        <div class="hs-tags">
+          <span class="hs-tag">📚 학군</span>
+          <span class="hs-tag">🚇 역세권</span>
+          <span class="hs-tag">🏥 편의시설</span>
+          <span class="hs-tag">💰 투자 가치</span>
+          <span class="hs-tag">🏢 핵심시설</span>
+          <span class="hs-tag">🏗️ 신축도</span>
+        </div>
+        <!-- 주간 랭킹 TOP 3 -->
+        <div class="hs-ranking">
+          <div class="hs-ranking-title">주간 랭킹 TOP 3</div>
+          <div class="hs-rank-list">
+            <div class="hs-rank-card gold" onclick="pickByKey('래미안퍼스티지')">
+              <span class="rank-badge">🥇</span>
+              <div class="rank-info"><div class="rank-name">래미안퍼스티지</div><div class="rank-score">98<span>/100</span></div></div>
+            </div>
+            <div class="hs-rank-card silver" onclick="pickByKey('반포자이')">
+              <span class="rank-badge">🥈</span>
+              <div class="rank-info"><div class="rank-name">반포자이</div><div class="rank-score">93<span>/100</span></div></div>
+            </div>
+            <div class="hs-rank-card bronze" onclick="pickByKey('헬리오시티')">
+              <span class="rank-badge">🥉</span>
+              <div class="rank-info"><div class="rank-name">헬리오시티</div><div class="rank-score">77<span>/100</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 가운데: 레이더 차트 -->
+      <div class="hs-center">
+        <div class="hs-radar-wrap">
+          <canvas id="hs-radar" width="260" height="260"></canvas>
+          <div class="hs-score-ring">
+            <div class="hs-score-num" id="hs-demo-score">96</div>
+            <div class="hs-score-label">/ 100</div>
+          </div>
+        </div>
+        <div class="hs-apt-label" id="hs-apt-label">강남 퍼스트 아이파크</div>
+        <div class="hs-top-tags">
+          <span class="hs-toptag-label">TOP 3 Tags</span>
+          <span class="hs-toptag">#학군최고</span>
+          <span class="hs-toptag">#역세권</span>
+          <span class="hs-toptag">#한강뷰</span>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 페르소나 + 버튼들 -->
+      <div class="hs-right">
+        <div class="hs-persona-panel">
+          <div class="hs-persona-title">나의 페르소나</div>
+          <div class="hs-persona-list">
+            <button class="hs-persona-btn" onclick="applyPersona('학부모')">
+              <span>초등 학부모</span>
+              <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:85%"></div></div>
+            </button>
+            <button class="hs-persona-btn" onclick="applyPersona('직장인')">
+              <span>직장인</span>
+              <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:70%"></div></div>
+            </button>
+            <button class="hs-persona-btn" onclick="applyPersona('은퇴세대')">
+              <span>은퇴 세대</span>
+              <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:60%"></div></div>
+            </button>
+            <button class="hs-persona-btn" onclick="applyPersona('투자자')">
+              <span>투자자</span>
+              <div class="hs-persona-bar"><div class="hs-persona-fill" style="width:75%"></div></div>
+            </button>
+          </div>
+        </div>
+        <div class="hs-score-badge">
+          <div class="hs-score-badge-num" id="hs-side-score">96</div>
+        </div>
+        <button class="hs-card-btn" onclick="pickByKey('래미안퍼스티지')">
+          나만의 점수 카드 만들기 &nbsp;↗
+        </button>
+        <button class="hs-filter-btn" onclick="openFilterSection()">
+          🔎 전국 <strong id="filter-btn-count">46,542</strong>개 아파트 필터 검색
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 모바일 하단 ══ -->
   <div class="hs-mobile-bottom">
     <div class="hs-mb-persona">
       <span class="hs-mb-label">내 상황:</span>
@@ -998,6 +988,7 @@ body::after{
   </div>
 
 </section>
+
 
 
 
@@ -3236,12 +3227,139 @@ body.result-visible #regionSection { display: none !important; }
   #filter-cta-wrap { display: none !important; }
   .hs-apt-label { font-size: 12px; }
 }
+
+/* ════ 검색 섹션 (상단 풀스크린) ════ */
+.hs-search-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 60px;
+  box-sizing: border-box;
+  position: relative;
+}
+.hs-search-inner {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.hs-search-label {
+  font-size: 13px;
+  color: rgba(255,255,255,.4);
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+.hs-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.18);
+  border-radius: 16px;
+  padding: 10px 10px 10px 18px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color .2s, background .2s;
+}
+.hs-search-box:focus-within {
+  border-color: rgba(59,130,246,.6);
+  background: rgba(255,255,255,.11);
+}
+.hs-search-icon { font-size: 16px; color: rgba(255,255,255,.4); flex-shrink:0; }
+.hs-search-input {
+  flex: 1; min-width: 0;
+  background: transparent; border: none; outline: none;
+  font-size: 16px; color: #fff; font-family: var(--sans);
+}
+.hs-search-input::placeholder { color: rgba(255,255,255,.28); }
+.hs-search-btn {
+  flex-shrink: 0;
+  padding: 10px 22px;
+  background: #2563eb;
+  color: #fff; border: none; border-radius: 12px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  white-space: nowrap; font-family: var(--sans);
+  transition: all .2s;
+}
+.hs-search-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+.hs-quick {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center; justify-content: center;
+}
+.hs-quick span { font-size: 11px; color: rgba(255,255,255,.35); font-weight:700; }
+.hs-quick button {
+  padding: 5px 13px; border-radius: 14px; font-size: 12px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05); color: rgba(255,255,255,.65);
+  cursor: pointer; font-family: var(--sans); transition: all .15s;
+}
+.hs-quick button:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ════ 히어로 섹션 ════ */
+.hs-hero-section {
+  padding: 60px 0 80px;
+  background: rgba(0,0,0,.2);
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.hs-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 0;
+  align-items: start;
+  padding: 0 40px;
+  box-sizing: border-box;
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ════ 필터 섹션 센터 정렬 강제 ════ */
+#regionSection {
+  display: none;
+  width: 100% !important;
+  position: static !important;
+  float: none !important;
+  clear: both !important;
+  box-sizing: border-box !important;
+  left: auto !important; right: auto !important;
+}
+.region-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.rs-inner {
+  max-width: 960px !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  box-sizing: border-box !important;
+}
+
+/* ════ 모바일 ════ */
+@media (max-width: 900px) {
+  .hs-search-section { padding: 70px 20px 48px; }
+  .hs-hero-section { padding: 32px 0 48px; }
+  .hs-wrap { grid-template-columns: 1fr; padding: 0 20px; gap: 32px; }
+  .hs-left { padding-right: 0; }
+  .hs-right { display: none; }
+  .hs-center { align-items: center; }
+  .hs-search-btn { padding: 10px 16px; font-size: 13px; }
+}
+@media (max-width: 560px) {
+  .hs-search-input { font-size: 14px; }
+  .hs-quick button { font-size: 11px; padding: 4px 10px; }
+}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
 
 
 
@@ -4158,7 +4276,7 @@ async function doSearch(){
   g('not-found-panel')&&(g('not-found-panel').style.display='none');
   g('err-box')&&g('err-box').classList.remove('show');
   g('loading').classList.remove('show');
-  g('heroSec').style.display='flex';  // 항상 복구
+  g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}  // 항상 복구
   try{
   const apt=findApt(name);
   if(apt){await runAnalyze(apt);return;}
@@ -4166,7 +4284,7 @@ async function doSearch(){
     setMsg('📦 전국 DB 로딩 중…');
     g('heroSec').style.display='none';g('loading').classList.add('show');
     await loadFullAptDb();
-    g('loading').classList.remove('show');g('heroSec').style.display='flex';
+    g('loading').classList.remove('show');g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}
     const apt2=findApt(name);
     if(apt2){await runAnalyze(apt2);return;}
   }
@@ -4182,12 +4300,12 @@ async function doSearch(){
   setMsg(`🔍 "${name}" 검색 중…`);
   g('heroSec').style.display='none';g('loading').classList.add('show');
   const pubApt=await searchAptByName(name);
-  if(pubApt&&pubApt.n){g('loading').classList.remove('show');g('heroSec').style.display='flex';toast(`📍 ${pubApt.n} 검색됨`,'inf');await runAnalyze(pubApt);return;}
+  if(pubApt&&pubApt.n){g('loading').classList.remove('show');g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}toast(`📍 ${pubApt.n} 검색됨`,'inf');await runAnalyze(pubApt);return;}
   const kakaoApt=await kakaoSearchApt(name);
-  if(kakaoApt){g('loading').classList.remove('show');g('heroSec').style.display='flex';await runAnalyze(kakaoApt);return;}
+  if(kakaoApt){g('loading').classList.remove('show');g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}await runAnalyze(kakaoApt);return;}
   const osmApt=await osmSearchApt(name);
-  if(osmApt){g('loading').classList.remove('show');g('heroSec').style.display='flex';await runAnalyze(osmApt);return;}
-  g('loading').classList.remove('show');g('heroSec').style.display='flex';
+  if(osmApt){g('loading').classList.remove('show');g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}await runAnalyze(osmApt);return;}
+  g('loading').classList.remove('show');g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}
   showNotFound(name);
   }finally{if(typeof _searching!=='undefined')_searching=false;}
 }
@@ -4728,7 +4846,7 @@ function goHome() {
   // 필터 섹션 닫기
   const rsGH = document.getElementById('regionSection');
   if(rsGH) rsGH.style.display='none';
-  g('heroSec').style.display='flex';
+  g('heroSec').style.display='flex'; const gb=document.getElementById('go-btn'); if(gb){gb.disabled=false;}
   g('si').value='';
   window.scrollTo({top:0,behavior:'smooth'});
   // 탭 활성화
@@ -5524,6 +5642,7 @@ function initHero() {
 document.addEventListener('DOMContentLoaded', ()=>{
   initHero();
 });
+
 
 </script>
 <script type="text/plain" id="apt-gu">
