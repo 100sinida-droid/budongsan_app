@@ -3620,6 +3620,7 @@ body.result-visible #regionSection{display:none!important}
 
 
 
+
 /* ══════════════════════════════════════════════════════════════
    AptScore v5 — DB 등록 아파트만 분석 / 임의 점수 없음
 ══════════════════════════════════════════════════════════════ */
@@ -4230,32 +4231,58 @@ function recentMonths(n){
   return r;
 }
 async function fetchMolit(lawd,ym){
+  // 공공데이터포털 JSONP 방식 - CORS 프록시 없이 직접 호출
   if(!CFG.ok()) return Promise.resolve([]);
-  // API키: 일반(디코딩)키 → encodeURIComponent 적용
-  const svcKey = encodeURIComponent(CFG.molit);
-  const url = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade?serviceKey=${svcKey}&LAWD_CD=${lawd}&DEAL_YMD=${ym}&numOfRows=1000&pageNo=1`;
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  const key = CFG.molit; // hex 키는 인코딩 불필요
 
-  return fetch(proxyUrl, {signal: AbortSignal.timeout(5000)})
-    .then(r => r.ok ? r.text() : '')
-    .then(text => {
-      if(!text || text.length < 100) return [];
-      const xml = new DOMParser().parseFromString(text, 'text/xml');
-      const items = Array.from(xml.querySelectorAll('item'));
-      return items.map(i => {
-        const g = t => (i.querySelector(t)?.textContent||'').trim();
-        return {
-          name: g('aptNm'),
-          price: parseInt(g('dealAmount').replace(/,/g,''),10)||0,
-          area: parseFloat(g('excluUseAr'))||0,
-          floor: g('floor'),
-          year: parseInt(g('dealYear'),10)||0,
-          month: parseInt(g('dealMonth'),10)||0,
-          day: parseInt(g('dealDay'),10)||0,
-        };
-      }).filter(r => r.price > 0 && r.area > 0);
-    })
-    .catch(() => []);
+  return new Promise((resolve) => {
+    const cbName = `_aptCb_${lawd}_${ym}_${Date.now()}`;
+    const script = document.createElement('script');
+    let settled = false;
+
+    // 타임아웃 4초
+    const timer = setTimeout(() => {
+      if(settled) return;
+      settled = true;
+      cleanup();
+      resolve([]);
+    }, 4000);
+
+    function cleanup(){
+      clearTimeout(timer);
+      delete window[cbName];
+      if(script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = function(data){
+      if(settled) return;
+      settled = true;
+      cleanup();
+      try{
+        const items = data?.response?.body?.items?.item;
+        if(!items) return resolve([]);
+        const arr = Array.isArray(items) ? items : [items];
+        resolve(arr.map(i => ({
+          name:  (i.aptNm||'').trim(),
+          price: parseInt((i.dealAmount||'0').replace(/,/g,''), 10)||0,
+          area:  parseFloat(i.excluUseAr||0)||0,
+          floor: String(i.floor||''),
+          year:  parseInt(i.dealYear||0, 10)||0,
+          month: parseInt(i.dealMonth||0, 10)||0,
+          day:   parseInt(i.dealDay||0, 10)||0,
+        })).filter(r => r.price > 0 && r.area > 0));
+      }catch(e){
+        resolve([]);
+      }
+    };
+
+    script.src = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade`
+      + `?serviceKey=${key}`
+      + `&LAWD_CD=${lawd}&DEAL_YMD=${ym}`
+      + `&numOfRows=1000&pageNo=1&_type=json&_callback=${cbName}`;
+    script.onerror = () => { if(!settled){ settled=true; cleanup(); resolve([]); } };
+    document.head.appendChild(script);
+  });
 }
 
 /* ══════════════════════════════════════════
@@ -6134,6 +6161,7 @@ function resetBattle() {
   // 인풋 포커스
   if(ia) ia.focus();
 }
+
 
 
 
