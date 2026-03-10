@@ -4043,6 +4043,10 @@ const HUBS=[
   // ── 인천 ──
   {n:'인천시청',  la:37.4563,lo:126.7052, region:'인천', gu:'남동구'},
   {n:'인천송도',  la:37.3825,lo:126.6566, region:'인천', gu:'연수구'},
+  {n:'검단신도시',la:37.6130,lo:126.6749, region:'인천', gu:'서구'},
+  {n:'인천서구청',la:37.5456,lo:126.6761, region:'인천', gu:'서구'},
+  {n:'청라국제도시',la:37.5397,lo:126.6444, region:'인천', gu:'서구'},
+  {n:'부평역',    la:37.4888,lo:126.7222, region:'인천', gu:'부평구'},
 
   // ── 부산 ──
   {n:'부산서면',  la:35.1579,lo:129.0598, region:'부산', gu:'부산진구'},
@@ -4768,7 +4772,7 @@ async function fetchMolit(lawd,ym){
 
   return (async () => {
     // Workers: 6초, 공개프록시: 3초씩 시도
-    const timeouts = WORKERS_URL ? [6000] : [3000, 4000];
+    const timeouts = WORKERS_URL ? [3000] : [2000, 2500];
     for(let i=0; i<proxies.length; i++){
       try {
         const result = await tryFetch(proxies[i], timeouts[i]||3000);
@@ -4792,7 +4796,7 @@ let lastRecs=[], currentApt=null;
 async function analyze(apt, mode){
   currentApt=apt;
   setMsg(`✅ DB 매칭: ${apt.n}`);
-  await sleep(100);
+  await sleep(50);
 
   // 실거래 수집
   const lawd=LAWD[apt.gu]||'11680', recs=[];
