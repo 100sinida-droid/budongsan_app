@@ -3554,12 +3554,24 @@ body.result-visible #regionSection{display:none!important}
   margin-top: 6px;
   text-align: center;
 }
+
+/* 점수카드 모달 닫기 버튼 확실히 */
+#score-card-modal .modal-close {
+  position: relative !important;
+  z-index: 10 !important;
+  cursor: pointer !important;
+  pointer-events: all !important;
+}
+#score-card-modal {
+  z-index: 2000 !important;
+}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
 
 
 
@@ -3598,13 +3610,30 @@ const CFG={
 };
 
 const HUBS=[
-  {n:'강남역',    la:37.4980,lo:127.0276,w:3},
-  {n:'광화문',    la:37.5752,lo:126.9769,w:3},
-  {n:'시청',      la:37.5666,lo:126.9779,w:2},
-  {n:'여의도',    la:37.5219,lo:126.9245,w:2},
-  {n:'판교테크노',la:37.3943,lo:127.1112,w:2},
-  {n:'잠실',      la:37.5133,lo:127.1001,w:1},
-  {n:'종로3가',   la:37.5717,lo:126.9920,w:1},
+  // ── 서울 핵심 업무지구 ──
+  {n:'강남역',     la:37.4980,lo:127.0276,w:4, region:'서울'},
+  {n:'광화문',     la:37.5752,lo:126.9769,w:4, region:'서울'},
+  {n:'여의도',     la:37.5219,lo:126.9245,w:3, region:'서울'},
+  {n:'시청',       la:37.5666,lo:126.9779,w:3, region:'서울'},
+  {n:'종로',       la:37.5717,lo:126.9920,w:2, region:'서울'},
+  {n:'잠실',       la:37.5133,lo:127.1001,w:2, region:'서울'},
+  {n:'구로디지털', la:37.4853,lo:126.9012,w:2, region:'서울'},
+  {n:'마포홍대',   la:37.5572,lo:126.9253,w:2, region:'서울'},
+  // ── 경기/수도권 업무지구 ──
+  {n:'판교테크노', la:37.3943,lo:127.1112,w:3, region:'경기'},
+  {n:'분당정자',   la:37.3595,lo:127.1154,w:2, region:'경기'},
+  {n:'수원삼성',   la:37.2635,lo:127.0286,w:2, region:'경기'},
+  {n:'인천송도',   la:37.3830,lo:126.6565,w:2, region:'인천'},
+  // ── 부산 업무지구 ──
+  {n:'부산서면',   la:35.1579,lo:129.0597,w:3, region:'부산'},
+  {n:'해운대센텀', la:35.1693,lo:129.1299,w:3, region:'부산'},
+  {n:'부산남포동', la:35.0981,lo:129.0314,w:2, region:'부산'},
+  // ── 대구/광주/대전 업무지구 ──
+  {n:'대구동성로', la:35.8694,lo:128.5950,w:2, region:'대구'},
+  {n:'대구수성구', la:35.8571,lo:128.6309,w:2, region:'대구'},
+  {n:'광주충장로', la:35.1481,lo:126.9140,w:2, region:'광주'},
+  {n:'대전둔산',   la:36.3504,lo:127.3845,w:2, region:'대전'},
+  {n:'세종정부청사',la:36.4800,lo:127.2890,w:2, region:'세종'},
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -3933,18 +3962,44 @@ const PRICE_MAP={
 };
 
 function scoreHubs(la,lo){
-  const facs={};let tw=0,ws=0;
+  // ── 핵심 업무지구 접근성 점수 ──
+  // 전국 어디서나 자기 지역 업무지구 기준으로 공정하게 평가
+  // 가장 가까운 업무지구까지 거리 기준:
+  //   1km 이내: 100점 / 3km: 85점 / 5km: 70점 / 10km: 50점 / 20km: 20점 / 30km+: 0점
+  const facs={};
   for(const h of HUBS){
-    tw+=h.w;const dist=hav(la,lo,h.la,h.lo);
-    let sc=dist<=1000?100:dist<=3000?100-(dist-1000)/2000*30:
-           dist<=7000?70-(dist-3000)/4000*30:
-           dist<=15000?40-(dist-7000)/8000*40:0;
-    facs[h.n]=dist;ws+=h.w*Math.max(0,sc);
+    facs[h.n] = hav(la,lo,h.la,h.lo);
   }
-  const sorted=Object.entries(facs).sort((a,b)=>a[1]-b[1]);
-  return{s:Math.round(ws/tw*10)/10,
-    d:{'가장가까운':sorted[0]?.[0],'거리':fd(sorted[0]?.[1]||0),
-       '강남역':fd(facs['강남역']),'광화문':fd(facs['광화문'])},facs};
+
+  // 가장 가까운 업무지구 TOP3
+  const sorted = Object.entries(facs).sort((a,b)=>a[1]-b[1]);
+  const nearest = sorted[0];
+  const dist = nearest?.[1] || 99999;
+
+  // 가장 가까운 업무지구 기준 점수 (거리에 따른 점수)
+  let mainScore;
+  if      (dist <= 1000)  mainScore = 100;
+  else if (dist <= 3000)  mainScore = 100 - (dist-1000)/2000*15;  // 100→85
+  else if (dist <= 5000)  mainScore = 85  - (dist-3000)/2000*15;  // 85→70
+  else if (dist <= 10000) mainScore = 70  - (dist-5000)/5000*20;  // 70→50
+  else if (dist <= 20000) mainScore = 50  - (dist-10000)/10000*30;// 50→20
+  else if (dist <= 30000) mainScore = 20  - (dist-20000)/10000*20;// 20→0
+  else                    mainScore = 0;
+
+  // 2,3번째 업무지구도 가중 반영 (20%)
+  const d2 = sorted[1]?.[1] || 99999;
+  const d3 = sorted[2]?.[1] || 99999;
+  const bonus2 = d2 <= 5000 ? 5 : d2 <= 10000 ? 3 : 0;
+  const bonus3 = d3 <= 5000 ? 3 : d3 <= 10000 ? 1 : 0;
+
+  const finalScore = Math.round(Math.max(0, Math.min(100, mainScore + bonus2 + bonus3)) * 10) / 10;
+
+  return{s:finalScore, d:{
+    '가장가까운': nearest?.[0] || '-',
+    '거리': fd(dist),
+    '2위업무지구': sorted[1]?.[0] || '-',
+    '2위거리': fd(d2),
+  }, facs};
 }
 
 function scoreTransit(apt){
@@ -4015,20 +4070,42 @@ function scorePrice(recs){
 }
 
 function scorePriceLevel(apt,recs){
+  // ── 가격 점수 기준 ──
+  // 해당 동/구 평균 ㎡당 시세 대비, 이 단지가 얼마나 저렴한지 평가
+  // 구매자 관점: 지역 평균보다 저렴할수록 HIGH SCORE
+  // (평균 대비 -30% 이하 = 100점 / 평균 = 50점 / +30% 이상 = 0점)
+  const guBase = PRICE_MAP[apt.gu] || 2500; // 구 기준 평균 ㎡당 만원
+
   if(recs.length){
-    const vals=recs.filter(r=>r.area>0).map(r=>r.price/r.area);
+    const vals = recs.filter(r=>r.area>0).map(r=>r.price/r.area);
     if(vals.length){
-      const avg=vals.reduce((a,b)=>a+b)/vals.length;
-      const avgT=recs.reduce((a,r)=>a+r.price,0)/recs.length;
-      return{s:Math.round(Math.max(0,Math.min(100,(4500-avg)/4000*100))*10)/10,d:{
-        '㎡당평균':Math.round(avg).toLocaleString()+'만','평균거래가':fp(Math.round(avgT)),
+      const actualAvg = vals.reduce((a,b)=>a+b)/vals.length; // 실거래 ㎡당 평균
+      const avgT = recs.reduce((a,r)=>a+r.price,0)/recs.length;
+
+      // 지역(구) 평균 대비 이 단지의 ㎡당 가격 비율
+      const ratio = actualAvg / guBase; // 1.0 = 지역 평균, <1 = 저렴, >1 = 비쌈
+      // 점수: ratio 0.7(-30%) → 100점, ratio 1.0 → 50점, ratio 1.3(+30%) → 0점
+      const score = Math.round(Math.max(0, Math.min(100,
+        (1.3 - ratio) / 0.6 * 100
+      )) * 10) / 10;
+
+      const diffPct = Math.round((ratio - 1) * 100);
+      const diffLabel = diffPct > 0 ? `지역평균 대비 +${diffPct}% (고가)` :
+                        diffPct < 0 ? `지역평균 대비 ${diffPct}% (저렴)` : '지역평균 수준';
+      return{s:score, d:{
+        '단지㎡당평균': Math.round(actualAvg).toLocaleString()+'만원',
+        '구기준평균': guBase.toLocaleString()+'만원',
+        '가격평가': diffLabel,
+        '평균거래가': fp(Math.round(avgT)),
+        '안내': score >= 70 ? '지역 대비 가성비 양호' : score >= 50 ? '지역 평균 수준' : '지역 대비 고가 단지',
       }};
     }
   }
-  const base=PRICE_MAP[apt.gu]||2500;
-  return{s:Math.round(Math.max(0,Math.min(100,(4500-base)/4000*100))*10)/10,d:{
-    '지역㎡단가(추정)':base.toLocaleString()+'만 (추정)',
-    '안내':'MOLIT API 키 입력 시 실거래가 반영',
+
+  // 실거래 데이터 없을 때: 구 기준으로만 추정 (중간값 50점 부여)
+  return{s:50, d:{
+    '지역㎡기준(추정)': guBase.toLocaleString()+'만원 (구 평균)',
+    '안내': 'MOLIT API 키 입력 시 실거래가 반영 · 현재 지역평균 기준 50점',
   }};
 }
 
@@ -4579,61 +4656,76 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 // ── 등급 예측 (analyze 기준 동일: S≥80, A≥70, B≥60, C≥50) ──
 function estimateGrade(a) {
-  // ── 등급 기준 (analyze() 실제 점수 체계와 동일) ──
-  // S 최우수: 80점 이상
-  // A 우수:   70~79점
-  // B 양호:   60~69점
-  // C 보통:   50~59점
-  // D 미흡:   49점 이하
+  // ── analyze() 결과와 최대한 일치하는 예상 등급 ──
+  // 7개 항목 가중 평균: 시세변동20 + 핵심시설20 + 교통15 + 학군15 + 편의10 + 신축10 + 가격10
   if (!a) return 'D';
 
   const yr = a.yr || 0;
   const hh = a.hh || 0;
-  const sd = a.sd || 9999;
-  const pr = a.price || 0;
+  const sd = a.sd || 9999; // 역까지 거리(m)
+  const pr = a.price || 0; // ㎡당 가격
 
-  // 기본 점수 40점 (중간값)
-  let score = 40;
+  // 1. 시세변동 점수 (데이터 없으면 55점 기본)
+  const p1 = 55;
 
-  // 연식 (최대 +25)
-  if      (yr >= 2022) score += 25;
-  else if (yr >= 2020) score += 20;
-  else if (yr >= 2018) score += 16;
-  else if (yr >= 2015) score += 12;
-  else if (yr >= 2010) score += 7;
-  else if (yr >= 2005) score += 2;
-  else if (yr >= 2000) score -= 2;
-  else if (yr >= 1995) score -= 5;
-  else if (yr > 0)     score -= 8;
+  // 2. 핵심시설/업무지구 접근성 (역거리로 간접 추정)
+  // 역세권이면 업무지구도 가까운 경향
+  let p2;
+  if      (sd <= 300)  p2 = 85;
+  else if (sd <= 500)  p2 = 75;
+  else if (sd <= 800)  p2 = 65;
+  else if (sd <= 1500) p2 = 55;
+  else if (sd <= 3000) p2 = 40;
+  else                 p2 = 25;
 
-  // 세대수 (최대 +18)
-  if      (hh >= 3000) score += 18;
-  else if (hh >= 2000) score += 14;
-  else if (hh >= 1000) score += 10;
-  else if (hh >= 500)  score += 6;
-  else if (hh >= 200)  score += 3;
-  else if (hh > 0 && hh < 50) score -= 4;
+  // 3. 교통 점수 (역거리 기반)
+  let p3;
+  if      (sd <= 300)  p3 = 95;
+  else if (sd <= 500)  p3 = 85;
+  else if (sd <= 800)  p3 = 75;
+  else if (sd <= 1200) p3 = 62;
+  else if (sd <= 2000) p3 = 48;
+  else if (sd <= 3000) p3 = 35;
+  else                 p3 = 20;
 
-  // 역세권 (최대 +20, 정적DB만)
-  if      (sd <= 300)  score += 20;
-  else if (sd <= 500)  score += 15;
-  else if (sd <= 800)  score += 9;
-  else if (sd <= 1500) score += 4;
+  // 4. 학군 (구 평균 기반, 데이터 없으면 50점)
+  const p4 = 50;
 
-  // 단가 (최대 +12, 정적DB만)
-  if      (pr >= 15000) score += 12;
-  else if (pr >= 8000)  score += 8;
-  else if (pr >= 4000)  score += 4;
-  else if (pr > 0 && pr < 1000) score -= 4;
+  // 5. 편의시설 (기본 55점)
+  const p5 = 55;
 
-  score = Math.max(5, Math.min(97, score));
+  // 6. 신축도 점수
+  let p6;
+  if      (yr >= 2023) p6 = 95;
+  else if (yr >= 2020) p6 = 85;
+  else if (yr >= 2018) p6 = 75;
+  else if (yr >= 2015) p6 = 63;
+  else if (yr >= 2012) p6 = 52;
+  else if (yr >= 2008) p6 = 42;
+  else if (yr >= 2003) p6 = 33;
+  else if (yr >= 1998) p6 = 25;
+  else if (yr > 0)     p6 = 15;
+  else                 p6 = 50; // 데이터 없음
 
-  // ── 등급 판정 (analyze() 결과와 동일 기준) ──
-  if (score >= 80) return 'S'; // 최우수
-  if (score >= 70) return 'A'; // 우수
-  if (score >= 60) return 'B'; // 양호
-  if (score >= 50) return 'C'; // 보통
-  return 'D';                  // 미흡
+  // 7. 가격 점수 (지역 평균 대비, 데이터 없으면 50점)
+  const guBase = PRICE_MAP[a.gu] || 2500;
+  let p7;
+  if (pr > 0) {
+    const ratio = pr / guBase;
+    p7 = Math.max(0, Math.min(100, Math.round((1.3 - ratio) / 0.6 * 100)));
+  } else {
+    p7 = 50;
+  }
+
+  // 가중 합산 (SCORE_META 가중치와 동일)
+  const total = Math.round((p1*20 + p2*20 + p3*15 + p4*15 + p5*10 + p6*10 + p7*10) / 100 * 10) / 10;
+
+  // 등급 판정
+  if (total >= 80) return 'S';
+  if (total >= 70) return 'A';
+  if (total >= 60) return 'B';
+  if (total >= 50) return 'C';
+  return 'D';
 }
 
 
@@ -5929,6 +6021,7 @@ function resetBattle() {
   if(ia) ia.focus();
 }
 
+
 </script>
 <script type="text/plain" id="apt-gu">
 "강원|강릉시","강원|고성군","강원|동해시","강원|삼척시","강원|속초시","강원|양구군","강원|양양군","강원|영월군","강원|원주시","강원|인제군","강원|정선군","강원|철원군","강원|춘천시","강원|태백시","강원|평창군","강원|홍천군","강원|화천군","강원|횡성군","경기|가평군","경기|고양시","경기|과천시","경기|광명시","경기|광주시","경기|구리시","경기|군포시","경기|김포시","경기|남양주시","경기|동두천시","경기|부천시","경기|성남시","경기|수원시","경기|시흥시","경기|안산시","경기|안성시","경기|안양시","경기|양주시","경기|양평군","경기|여주시","경기|연천군","경기|오산시","경기|용인시","경기|의왕시","경기|의정부시","경기|이천시","경기|파주시","경기|평택시","경기|포천시","경기|하남시","경기|화성시","경남|거제시","경남|거창군","경남|고성군","경남|김해시","경남|남해군","경남|밀양시","경남|사천시","경남|산청군","경남|양산시","경남|의령군","경남|진주시","경남|창녕군","경남|창원시","경남|통영시","경남|하동군","경남|함안군","경남|함양군","경남|합천군","경북|경산시","경북|경주시","경북|고령군","경북|구미시","경북|김천시","경북|문경시","경북|봉화군","경북|상주시","경북|성주군","경북|안동시","경북|영덕군","경북|영양군","경북|영주시","경북|영천시","경북|예천군","경북|울릉군","경북|울진군","경북|의성군","경북|청도군","경북|청송군","경북|칠곡군","경북|포항시","광주|광산구","광주|남구","광주|동구","광주|북구","광주|서구","대구|군위군","대구|남구","대구|달서구","대구|달성군","대구|동구","대구|북구","대구|서구","대구|수성구","대구|중구","대전|대덕구","대전|동구","대전|서구","대전|유성구","대전|중구","부산|강서구","부산|금정구","부산|기장군","부산|남구","부산|동구","부산|동래구","부산|부산진구","부산|북구","부산|사상구","부산|사하구","부산|서구","부산|수영구","부산|연제구","부산|영도구","부산|중구","부산|해운대구","서울|강남구","서울|강동구","서울|강북구","서울|강서구","서울|관악구","서울|광진구","서울|구로구","서울|금천구","서울|노원구","서울|도봉구","서울|동대문구","서울|동작구","서울|마포구","서울|서대문구","서울|서초구","서울|성동구","서울|성북구","서울|송파구","서울|양천구","서울|영등포구","서울|용산구","서울|은평구","서울|종로구","서울|중구","서울|중랑구","세종|가름로","세종|가온로","세종|갈매로","세종|국세청로","세종|국책연구원1로","세종|국책연구원3로","세종|군청로","세종|나리1로","세종|나리로","세종|나성북1로","세종|나성북로","세종|남세종로","세종|내창3길","세종|노을1로","세종|노을3로","세종|누리로","세종|다솜1로","세종|다솜로","세종|다정남로","세종|다정북로","세종|다정서로","세종|다정중앙로","세종|달빛1로","세종|달빛로","세종|당산로","세종|대평1길","세종|대평로","세종|대학길","세종|도움1로","세종|도움3로","세종|도원1로","세종|도원로","세종|도장말길","세종|동교동촌2길","세종|동신길","세종|마음로","세종|마음안1로","세종|마음안로","세종|만남로","세종|반곡1길","세종|반곡2길","세종|반곡로","세종|밝은뜰로","세종|보듬1로","세종|보듬2로","세종|보듬3로","세종|보듬4로","세종|보듬6로","세종|보람1길","세종|보람동로","세종|보람로","세종|봉산로","세종|부강3길","세종|부강금호로","세종|부강로","세종|부강신대길","세종|부촌길","세종|산막2길","세종|산막길","세종|산울2로","세종|산울3로","세종|산울7로","세종|산책2길","세종|새내10길","세종|새내12길","세종|새내17길","세종|새내7길","세종|새내8길","세종|새내로","세종|새롬남로","세종|새롬로","세종|새롬북로","세종|새롬중앙1로","세종|새롬중앙로","세종|섭골길","세종|세종로","세종|소담3로","세종|소담8로","세종|소정샘골길","세종|시장1길","세종|시청대로","세종|신안새동네길","세종|용포2길","세종|운주산로","세종|이화1로","세종|이화로","세종|장안1길","세종|장안길","세종|절재로","세종|조치원4길","세종|조치원5길","세종|조치원읍","세종|조치원중고길","세종|죽림본로","세종|중앙공원서로","세종|집현북로","세종|집현서2로","세종|집현서로","세종|충현로","세종|태산로","세종|평안로","세종|하노장4길","세종|한누리대로","세종|해밀3로","울산|남구","울산|동구","울산|북구","울산|울주군","울산|중구","인천|강화군","인천|계양구","인천|남동구","인천|동구","인천|미추홀구","인천|부평구","인천|서구","인천|연수구","인천|옹진군","인천|중구","전남|강진군","전남|고흥군","전남|곡성군","전남|광양시","전남|구례군","전남|나주시","전남|담양군","전남|목포시","전남|무안군","전남|보성군","전남|순천시","전남|신안군","전남|여수시","전남|영광군","전남|영암군","전남|완도군","전남|장성군","전남|장흥군","전남|진도군","전남|함평군","전남|해남군","전남|화순군","전북|고창군","전북|군산시","전북|김제시","전북|남원시","전북|무주군","전북|부안군","전북|순창군","전북|완주군","전북|익산시","전북|임실군","전북|장수군","전북|전주시","전북|정읍시","전북|진안군","제주|서귀포시","제주|제주시","충남|계룡시","충남|공주시","충남|금산군","충남|논산시","충남|당진시","충남|보령시","충남|부여군","충남|서산시","충남|서천군","충남|아산시","충남|예산군","충남|천안시","충남|청양군","충남|태안군","충남|홍성군","충북|괴산군","충북|단양군","충북|보은군","충북|영동군","충북|옥천군","충북|음성군","충북|제천시","충북|증평군","충북|진천군","충북|청주시","충북|충주시"
@@ -5979,7 +6072,7 @@ H4sIAKJcrmkC/5S9W49dx5Em+u5fUU8zJaB4sPKycuV6pNQ6ttry2LD6gp63AY6AMzieGaAbPedtQFFF
   <div class="modal-box" style="max-width:860px;">
     <div class="modal-hd">
       <div class="modal-title">📸 나만의 점수 카드</div>
-      <button class="modal-close" onclick="closeScoreCard()">✕</button>
+      <button class="modal-close" onclick="document.getElementById('score-card-modal').style.display='none'" style="font-size:20px;padding:4px 10px;">✕</button>
     </div>
     <canvas id="score-card-canvas" style="width:100%;border-radius:12px;"></canvas>
     <div style="display:flex;gap:10px;margin-top:16px;">
