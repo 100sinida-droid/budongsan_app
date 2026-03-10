@@ -1020,7 +1020,8 @@ body::after{
 <div class="rw">
   <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px;padding:16px 20px;background:rgba(13,17,23,.85);border:1px solid var(--border);border-radius:var(--r2);backdrop-filter:blur(10px);" class="anim">
     <div style="font-size:13px;color:var(--g2);flex-shrink:0;">🔍 다른 아파트</div>
-    <div style="flex:1;"><input id="si2" type="text" placeholder="아파트 이름 입력…" autocomplete="off" style="width:100%;height:40px;background:rgba(255,255,255,.06);border:1px solid var(--border-gold);border-radius:var(--r);padding:0 14px;font-size:13px;color:var(--white);outline:none;font-family:var(--sans);"></div>
+    <div style="flex:1;"><input id="si2" type="text" placeholder="아파트 이름 입력…" autocomplete="off" style="width:100%;height:40px;background:rgba(255,255,255,.06);border:1px solid var(--border-gold);border-radius:var(--r);padding:0 14px;font-size:13px;color:var(--white);outline:none;font-family:var(--sans);">
+      <div class="ac" id="ac2"></div></div>
     <button id="go-btn2" onclick="doSearch2()" style="height:40px;padding:0 20px;background:linear-gradient(135deg,var(--gold),#a8722a);color:var(--bg);border:none;border-radius:var(--r);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--sans);white-space:nowrap;">분석</button>
     <button onclick="newSearch()" style="height:40px;padding:0 16px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:var(--r);color:var(--g2);font-size:13px;cursor:pointer;font-family:var(--sans);">← 처음으로</button>
   </div>
@@ -3579,12 +3580,38 @@ body.result-visible #regionSection{display:none!important}
   position: relative !important;
   z-index: 3002 !important;
 }
+
+/* 주소 전체 표시 */
+#r-addr {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  word-break: keep-all;
+}
+
+#score-card-modal { z-index:4000!important; }
+#score-card-modal .modal-box { z-index:4001!important; position:relative!important; }
+#sc-close-btn { position:relative!important; z-index:4002!important; pointer-events:auto!important; }
+
+
+#r-addr { white-space:normal!important; overflow:visible!important; text-overflow:clip!important; word-break:keep-all; }
+.r-addr { white-space:normal!important; overflow:visible!important; }
+
+
+#r-addr{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all;}
 </style>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d453822cb7cb33406a188d8890eb0bf3&libraries=services"></script>
 </head>
 <body>
 
 <script defer>
+
+
+
+
+
+
+
 
 
 
@@ -4233,7 +4260,7 @@ function recentMonths(n){
 async function fetchMolit(lawd,ym){
   // 공공데이터포털 JSONP 방식 - CORS 프록시 없이 직접 호출
   if(!CFG.ok()) return Promise.resolve([]);
-  const key = CFG.molit; // hex 키는 인코딩 불필요
+  const key = CFG.molit;
 
   return new Promise((resolve) => {
     const cbName = `_aptCb_${lawd}_${ym}_${Date.now()}`;
@@ -4261,6 +4288,7 @@ async function fetchMolit(lawd,ym){
       try{
         const items = data?.response?.body?.items?.item;
         if(!items) return resolve([]);
+        console.log('[AptScore JSONP] 응답 items:', items ? (Array.isArray(items)?items.length:1) : 0, '건');
         const arr = Array.isArray(items) ? items : [items];
         resolve(arr.map(i => ({
           name:  (i.aptNm||'').trim(),
@@ -4644,41 +4672,62 @@ function pickByKey(key){
   else{document.getElementById('si').value=key;doSearch();}
 }
 
-/* 자동완성 */
-let acFocusIdx=-1;
-document.getElementById('si').addEventListener('input',e=>{
-  clearTimeout(window._acTimer);window._acTimer=setTimeout(()=>{
-  const v=e.target.value;
-  const ac=document.getElementById('ac');
-  acFocusIdx=-1;
-  if(!v.trim()){ac.classList.remove('open');return;}
-  const results=searchAC(v);
-  if(!results.length){
-    ac.innerHTML='<div class="ac-empty">검색 결과 없음 — 지역명(풍무동, 김포)으로 시도해 보세요</div>';
-    ac.classList.add('open');return;
-  }
-  ac.innerHTML=results.map((a,i)=>`
-    <div class="ac-item" data-idx="${i}" onclick="pickApt(APT_DB.find(x=>x.n==='${a.n}'))">
-      <div class="ac-item-left">
-        <div class="ac-name">${highlight(a.n,v)}</div>
-        <div class="ac-sub">${a.a} · ${a.yr}년 · ${a.st} ${fd(a.sd)}</div>
-      </div>
-      <div class="ac-tag">${a.city}</div>
-    </div>`).join('');
-  ac.classList.add('open');
-  },150);
-});
+/* 자동완성 통합 */
+let acFocusIdx = -1;
 
-document.getElementById('si').addEventListener('keydown',e=>{
-  const items=document.querySelectorAll('#ac .ac-item');
-  if(e.key==='ArrowDown'){e.preventDefault();acFocusIdx=Math.min(acFocusIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('focused',i===acFocusIdx));}
-  else if(e.key==='ArrowUp'){e.preventDefault();acFocusIdx=Math.max(acFocusIdx-1,-1);items.forEach((el,i)=>el.classList.toggle('focused',i===acFocusIdx));}
-  else if(e.key==='Enter'){
-    if(acFocusIdx>=0&&items[acFocusIdx]){items[acFocusIdx].click();}
-    else doSearch();
-  }
-  else if(e.key==='Escape') document.getElementById('ac').classList.remove('open');
-});
+function bindAcToInput(inputId, acId) {
+  // 특정 input에 자동완성 바인딩
+  const inp = document.getElementById(inputId);
+  const acEl = document.getElementById(acId);
+  if(!inp || !acEl) return;
+
+  inp.addEventListener('input', e => {
+    clearTimeout(window._acTimer);
+    window._acTimer = setTimeout(() => {
+      const v = e.target.value;
+      acFocusIdx = -1;
+      if(!v.trim()) { acEl.classList.remove('open'); return; }
+      const results = searchAC(v);
+      if(!results.length) {
+        acEl.innerHTML = '<div class="ac-empty">검색 결과 없음 — 지역명(강남, 반포)으로 시도해 보세요</div>';
+        acEl.classList.add('open'); return;
+      }
+      acEl.innerHTML = results.map((a, i) => `
+        <div class="ac-item" data-idx="${i}" onclick="pickApt(APT_DB.find(x=>x.n==='${a.n.replace(/'/g,"\\\\'")}'))">
+          <div class="ac-item-left">
+            <div class="ac-name">${highlight(a.n, v)}</div>
+            <div class="ac-sub">${a.a} · ${a.yr||''}년 · ${a.st||''} ${a.sd ? fd(a.sd) : ''}</div>
+          </div>
+          <div class="ac-tag">${a.city||''}</div>
+        </div>`).join('');
+      acEl.classList.add('open');
+    }, 150);
+  });
+
+  inp.addEventListener('keydown', e => {
+    const items = acEl.querySelectorAll('.ac-item');
+    if(e.key === 'ArrowDown') {
+      e.preventDefault();
+      acFocusIdx = Math.min(acFocusIdx+1, items.length-1);
+      items.forEach((el,i) => el.classList.toggle('focused', i===acFocusIdx));
+    } else if(e.key === 'ArrowUp') {
+      e.preventDefault();
+      acFocusIdx = Math.max(acFocusIdx-1, -1);
+      items.forEach((el,i) => el.classList.toggle('focused', i===acFocusIdx));
+    } else if(e.key === 'Enter') {
+      if(acFocusIdx >= 0 && items[acFocusIdx]) items[acFocusIdx].click();
+      else { acEl.classList.remove('open'); if(inputId==='si') doSearch(); else doSearch2(); }
+    } else if(e.key === 'Escape') {
+      acEl.classList.remove('open');
+    }
+  });
+}
+
+function setupAllAC() {
+  bindAcToInput('si','ac');
+  bindAcToInput('si2','ac2');
+}
+
 document.addEventListener('click',e=>{
   if(!e.target.closest('.search-outer')) document.getElementById('ac').classList.remove('open');
 });
@@ -5480,7 +5529,7 @@ function applyFilters() {
   // 등급 필터 (다중 선택)
   if (typeof _gradeFilter !== 'undefined' && _gradeFilter) {
     const gf = _gradeFilter instanceof Set ? _gradeFilter : new Set([_gradeFilter]);
-    if (gf.size > 0) pool = pool.filter(a => gf.has(estimateGrade(a)));
+    if (gf.size > 0) pool = pool.filter(a => gf.has((_scoreCache.get(a.n)?.grade || estimateGrade(a))));
   }
 
   // 정렬
@@ -5529,7 +5578,7 @@ function renderAptCards(reset) {
   const html = slice
     .filter(a => /[가-힣]/.test(a.n || ''))  // 한글 없는 이름 제외
     .map(a => {
-    const grade = estimateGrade(a);
+    const grade = (_scoreCache.get(a.n)?.grade || estimateGrade(a));
     const tags = [];
     if(a.yr) tags.push(`<span class="apt-card-tag yr">${a.yr}년</span>`);
     if(a.st&&a.sd<1500) tags.push(`<span class="apt-card-tag transit">${a.st} ${a.sd}m</span>`);
@@ -5748,7 +5797,7 @@ function shareBattleImage() {
   ctx.fillText('⚔️ AptScore 라이벌 배틀 결과', W/2, 36);
 
   const GRADE_COLORS = {S:'#d4a654',A:'#3b82f6',B:'#f59e0b',C:'#f97316',D:'#ef4444'};
-  const getGrade = (r,a) => r?(r.total>=80?'S':r.total>=70?'A':r.total>=60?'B':r.total>=50?'C':'D'):estimateGrade(a);
+  const getGrade = (r,a) => r?(r.total>=80?'S':r.total>=70?'A':r.total>=60?'B':r.total>=50?'C':'D'):(_scoreCache.get(a.n)?.grade || estimateGrade(a));
   const getScore = (r) => r?r.total:null;
 
   const scoreA=getScore(rA), scoreB=getScore(rB);
@@ -6104,24 +6153,17 @@ function initHero() {
   }, 400);
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', () => {
   initHero();
-  // 필터 섹션 기본 오픈
+  setupAllAC();
   setTimeout(() => {
     const rs = document.getElementById('regionSection');
     if(rs) rs.style.display = 'block';
     if(!_aptFullLoaded) {
-      loadFullAptDb().then(() => { initSidoChips(); applyFilters();
-  // 필터 섹션 기본 오픈 (300ms 딜레이로 DB 로드 후)
-  setTimeout(() => {
-    const rs = document.getElementById('regionSection');
-    if (rs && rs.style.display === 'none') rs.style.display = 'block';
-  }, 500);
-});
+      loadFullAptDb().then(() => { initSidoChips(); applyFilters(); });
     }
   }, 300);
 });
-
 
 
 
@@ -6171,6 +6213,13 @@ function resetBattle() {
 
 
 
+
+
+
+
+
+
+
 </script>
 <script type="text/plain" id="apt-gu">
 "강원|강릉시","강원|고성군","강원|동해시","강원|삼척시","강원|속초시","강원|양구군","강원|양양군","강원|영월군","강원|원주시","강원|인제군","강원|정선군","강원|철원군","강원|춘천시","강원|태백시","강원|평창군","강원|홍천군","강원|화천군","강원|횡성군","경기|가평군","경기|고양시","경기|과천시","경기|광명시","경기|광주시","경기|구리시","경기|군포시","경기|김포시","경기|남양주시","경기|동두천시","경기|부천시","경기|성남시","경기|수원시","경기|시흥시","경기|안산시","경기|안성시","경기|안양시","경기|양주시","경기|양평군","경기|여주시","경기|연천군","경기|오산시","경기|용인시","경기|의왕시","경기|의정부시","경기|이천시","경기|파주시","경기|평택시","경기|포천시","경기|하남시","경기|화성시","경남|거제시","경남|거창군","경남|고성군","경남|김해시","경남|남해군","경남|밀양시","경남|사천시","경남|산청군","경남|양산시","경남|의령군","경남|진주시","경남|창녕군","경남|창원시","경남|통영시","경남|하동군","경남|함안군","경남|함양군","경남|합천군","경북|경산시","경북|경주시","경북|고령군","경북|구미시","경북|김천시","경북|문경시","경북|봉화군","경북|상주시","경북|성주군","경북|안동시","경북|영덕군","경북|영양군","경북|영주시","경북|영천시","경북|예천군","경북|울릉군","경북|울진군","경북|의성군","경북|청도군","경북|청송군","경북|칠곡군","경북|포항시","광주|광산구","광주|남구","광주|동구","광주|북구","광주|서구","대구|군위군","대구|남구","대구|달서구","대구|달성군","대구|동구","대구|북구","대구|서구","대구|수성구","대구|중구","대전|대덕구","대전|동구","대전|서구","대전|유성구","대전|중구","부산|강서구","부산|금정구","부산|기장군","부산|남구","부산|동구","부산|동래구","부산|부산진구","부산|북구","부산|사상구","부산|사하구","부산|서구","부산|수영구","부산|연제구","부산|영도구","부산|중구","부산|해운대구","서울|강남구","서울|강동구","서울|강북구","서울|강서구","서울|관악구","서울|광진구","서울|구로구","서울|금천구","서울|노원구","서울|도봉구","서울|동대문구","서울|동작구","서울|마포구","서울|서대문구","서울|서초구","서울|성동구","서울|성북구","서울|송파구","서울|양천구","서울|영등포구","서울|용산구","서울|은평구","서울|종로구","서울|중구","서울|중랑구","세종|가름로","세종|가온로","세종|갈매로","세종|국세청로","세종|국책연구원1로","세종|국책연구원3로","세종|군청로","세종|나리1로","세종|나리로","세종|나성북1로","세종|나성북로","세종|남세종로","세종|내창3길","세종|노을1로","세종|노을3로","세종|누리로","세종|다솜1로","세종|다솜로","세종|다정남로","세종|다정북로","세종|다정서로","세종|다정중앙로","세종|달빛1로","세종|달빛로","세종|당산로","세종|대평1길","세종|대평로","세종|대학길","세종|도움1로","세종|도움3로","세종|도원1로","세종|도원로","세종|도장말길","세종|동교동촌2길","세종|동신길","세종|마음로","세종|마음안1로","세종|마음안로","세종|만남로","세종|반곡1길","세종|반곡2길","세종|반곡로","세종|밝은뜰로","세종|보듬1로","세종|보듬2로","세종|보듬3로","세종|보듬4로","세종|보듬6로","세종|보람1길","세종|보람동로","세종|보람로","세종|봉산로","세종|부강3길","세종|부강금호로","세종|부강로","세종|부강신대길","세종|부촌길","세종|산막2길","세종|산막길","세종|산울2로","세종|산울3로","세종|산울7로","세종|산책2길","세종|새내10길","세종|새내12길","세종|새내17길","세종|새내7길","세종|새내8길","세종|새내로","세종|새롬남로","세종|새롬로","세종|새롬북로","세종|새롬중앙1로","세종|새롬중앙로","세종|섭골길","세종|세종로","세종|소담3로","세종|소담8로","세종|소정샘골길","세종|시장1길","세종|시청대로","세종|신안새동네길","세종|용포2길","세종|운주산로","세종|이화1로","세종|이화로","세종|장안1길","세종|장안길","세종|절재로","세종|조치원4길","세종|조치원5길","세종|조치원읍","세종|조치원중고길","세종|죽림본로","세종|중앙공원서로","세종|집현북로","세종|집현서2로","세종|집현서로","세종|충현로","세종|태산로","세종|평안로","세종|하노장4길","세종|한누리대로","세종|해밀3로","울산|남구","울산|동구","울산|북구","울산|울주군","울산|중구","인천|강화군","인천|계양구","인천|남동구","인천|동구","인천|미추홀구","인천|부평구","인천|서구","인천|연수구","인천|옹진군","인천|중구","전남|강진군","전남|고흥군","전남|곡성군","전남|광양시","전남|구례군","전남|나주시","전남|담양군","전남|목포시","전남|무안군","전남|보성군","전남|순천시","전남|신안군","전남|여수시","전남|영광군","전남|영암군","전남|완도군","전남|장성군","전남|장흥군","전남|진도군","전남|함평군","전남|해남군","전남|화순군","전북|고창군","전북|군산시","전북|김제시","전북|남원시","전북|무주군","전북|부안군","전북|순창군","전북|완주군","전북|익산시","전북|임실군","전북|장수군","전북|전주시","전북|정읍시","전북|진안군","제주|서귀포시","제주|제주시","충남|계룡시","충남|공주시","충남|금산군","충남|논산시","충남|당진시","충남|보령시","충남|부여군","충남|서산시","충남|서천군","충남|아산시","충남|예산군","충남|천안시","충남|청양군","충남|태안군","충남|홍성군","충북|괴산군","충북|단양군","충북|보은군","충북|영동군","충북|옥천군","충북|음성군","충북|제천시","충북|증평군","충북|진천군","충북|청주시","충북|충주시"
@@ -6180,51 +6229,43 @@ H4sIAKJcrmkC/5S9W49dx5Em+u5fUU8zJaB4sPKycuV6pNQ6ttry2LD6gp63AY6AMzieGaAbPedtQFFF
 </script>
 
 <!-- ══ 배틀 모달 ══ -->
-<div class="modal-overlay" id="battle-modal" onclick="if(event.target===this)closeBattle()">
-  <div class="modal-box">
+<div class="modal overlay" id="battle-modal" onclick="if(event.target===this)closeBattle()">
+  <div class="modal-box" style="max-width:900px;">
     <div class="modal-hd">
       <div class="modal-title">⚔️ 아파트 라이벌 배틀</div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button class="battle-reset-btn" onclick="resetBattle()" title="다시 시작">🔄 다시 시작</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button onclick="resetBattle()" style="background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;">🔄 다시 시작</button>
         <button class="modal-close" onclick="closeBattle()">✕</button>
       </div>
     </div>
-    <div class="battle-input-row">
-      <div class="battle-slot">
-        <div class="battle-slot-label" style="color:#d4a654;">🔶 단지 A</div>
-        <div class="battle-input-wrap">
-          <input id="battle-si-a" type="text" placeholder="아파트명 입력 후 목록 선택…" autocomplete="off">
-          <button onclick="setBattleApt('A')" style="background:rgba(212,166,84,.2);color:#d4a654;border:1px solid rgba(212,166,84,.3);">선택</button>
+    <div id="battle-body">
+      <div class="battle-slots">
+        <div class="battle-slot" id="slot-0">
+          <div class="slot-empty" onclick="setBattleApt(0)">
+            <div style="font-size:32px;">🏠</div>
+            <div style="margin-top:8px;font-size:14px;color:rgba(255,255,255,.4);">아파트 1 선택</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.25);margin-top:4px;">클릭하여 검색</div>
+          </div>
         </div>
-        <div id="battle-ac-a" class="battle-ac-list" style="display:none;"></div>
-      </div>
-      <div class="battle-slot">
-        <div class="battle-slot-label" style="color:#3b82f6;">🔷 단지 B</div>
-        <div class="battle-input-wrap">
-          <input id="battle-si-b" type="text" placeholder="아파트명 입력 후 목록 선택…" autocomplete="off">
-          <button onclick="setBattleApt('B')" style="background:rgba(59,130,246,.2);color:#3b82f6;border:1px solid rgba(59,130,246,.3);">선택</button>
+        <div class="battle-vs">VS</div>
+        <div class="battle-slot" id="slot-1">
+          <div class="slot-empty" onclick="setBattleApt(1)">
+            <div style="font-size:32px;">🏠</div>
+            <div style="margin-top:8px;font-size:14px;color:rgba(255,255,255,.4);">아파트 2 선택</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.25);margin-top:4px;">클릭하여 검색</div>
+          </div>
         </div>
-        <div id="battle-ac-b" class="battle-ac-list" style="display:none;"></div>
       </div>
-    </div>
-    <div id="battle-result" style="min-height:100px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:14px;">
-      두 단지를 선택하면 비교 결과가 표시됩니다
-    </div>
-    <div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.3);text-align:center;">
-      분석 버튼을 누르면 실제 점수로 비교됩니다 · 결과는 공유 가능합니다
+      <div id="battle-result" style="display:none;"></div>
     </div>
   </div>
 </div>
 
-<!-- ══ 점수 카드 모달 ══ -->
-<div class="modal-overlay" id="score-card-modal" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal-box" style="max-width:860px;overflow:visible;position:relative;">
-    <div class="modal-hd" style="position:sticky;top:0;z-index:100;background:#0d1223;">
+<div class="modal overlay" id="score-card-modal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-box" style="max-width:860px;">
+    <div class="modal-hd">
       <div class="modal-title">📸 나만의 점수 카드</div>
-      <button onclick="document.getElementById('score-card-modal').style.display='none'"
-        style="background:#ef4444;border:none;color:#fff;width:32px;height:32px;border-radius:50%;
-               font-size:18px;font-weight:900;cursor:pointer;line-height:1;flex-shrink:0;
-               display:flex;align-items:center;justify-content:center;z-index:200;position:relative;">✕</button>
+      <button id="sc-close-btn" onclick="document.getElementById('score-card-modal').style.display='none'" style="background:#ef4444;border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
     </div>
     <canvas id="score-card-canvas" style="width:100%;border-radius:12px;display:block;"></canvas>
     <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
