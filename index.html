@@ -890,6 +890,77 @@ body::after{
     </div>
   </div>
 
+      <!-- TOP/BOTTOM 100 랭킹 배너 -->
+      <div style="margin: 48px auto 0; max-width: 800px;">
+        <h2 style="text-align: center; color: white; font-size: 28px; margin-bottom: 24px; font-weight: 800;">
+          📊 아파트 종합 랭킹
+        </h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- TOP 100 -->
+          <a href="ranking-top100.html" style="text-decoration: none;">
+            <div style="
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              padding: 40px 28px;
+              border-radius: 24px;
+              cursor: pointer;
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+              border: 3px solid rgba(255,255,255,0.15);
+              position: relative;
+              overflow: hidden;
+            " onmouseover="this.style.transform='translateY(-12px) scale(1.03)'; this.style.boxShadow='0 20px 60px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(102,126,234,0.4)'">
+              <div style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 20px;">
+                <span style="font-size: 12px; color: white; font-weight: 700;">NEW</span>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 72px; margin-bottom: 16px; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); animation: bounce 2s infinite;">🏆</div>
+                <div style="font-size: 28px; font-weight: 900; color: white; margin-bottom: 10px; text-shadow: 0 3px 6px rgba(0,0,0,0.3); letter-spacing: -0.5px;">TOP 100</div>
+                <div style="font-size: 16px; color: rgba(255,255,255,0.95); font-weight: 600; line-height: 1.5;">최고 점수 아파트<br>전국 순위</div>
+                <div style="margin-top: 20px; padding: 12px 24px; background: rgba(255,255,255,0.25); border-radius: 16px; display: inline-flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);">
+                  <span style="font-size: 14px; color: white; font-weight: 700;">지금 확인하기</span>
+                  <span style="font-size: 16px; color: white;">→</span>
+                </div>
+              </div>
+            </div>
+          </a>
+          
+          <!-- BOTTOM 100 -->
+          <a href="ranking-bottom100.html" style="text-decoration: none;">
+            <div style="
+              background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+              padding: 40px 28px;
+              border-radius: 24px;
+              cursor: pointer;
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow: 0 10px 30px rgba(245,87,108,0.4);
+              border: 3px solid rgba(255,255,255,0.15);
+              position: relative;
+              overflow: hidden;
+            " onmouseover="this.style.transform='translateY(-12px) scale(1.03)'; this.style.boxShadow='0 20px 60px rgba(245,87,108,0.6)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(245,87,108,0.4)'">
+              <div style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 20px;">
+                <span style="font-size: 12px; color: white; font-weight: 700;">NEW</span>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 72px; margin-bottom: 16px; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); animation: bounce 2s infinite;">📉</div>
+                <div style="font-size: 28px; font-weight: 900; color: white; margin-bottom: 10px; text-shadow: 0 3px 6px rgba(0,0,0,0.3); letter-spacing: -0.5px;">BOTTOM 100</div>
+                <div style="font-size: 16px; color: rgba(255,255,255,0.95); font-weight: 600; line-height: 1.5;">하위 점수 아파트<br>개선 포인트 확인</div>
+                <div style="margin-top: 20px; padding: 12px 24px; background: rgba(255,255,255,0.25); border-radius: 16px; display: inline-flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);">
+                  <span style="font-size: 14px; color: white; font-weight: 700;">지금 확인하기</span>
+                  <span style="font-size: 16px; color: white;">→</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <style>
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      </style>
+
   <!-- 스코어 + 랭킹 히어로 파트 -->
   <div class="hs-hero-section">
     <div class="hs-wrap">
@@ -4076,11 +4147,11 @@ const HUBS=[
 ══════════════════════════════════════════════════════════════ */
 const APT_DB=[
   /* ── 서울 서초구 ── */
-  {k:['래미안퍼스티지','퍼스티지','반포퍼스티지'],n:'래미안퍼스티지',city:'서울',gu:'서초구',dong:'반포동',a:'서울특별시 서초구 반포동 14-1',hh:1446,price:11000,la:37.5068,lo:127.0046,yr:2009,st:'신반포역',sd:150},
-  {k:['아크로리버파크','반포아크로'],n:'아크로리버파크',city:'서울',gu:'서초구',dong:'반포동',a:'서울특별시 서초구 반포동 14-1',hh:1446,price:11000,la:37.5077,lo:127.0059,yr:2016,st:'신반포역',sd:180},
-  {k:['반포자이'],n:'반포자이',city:'서울',gu:'서초구',dong:'반포동',a:'서울특별시 서초구 반포동 14-1',hh:1446,price:11000,la:37.5090,lo:127.0070,yr:2009,st:'반포역',sd:350},
-  {k:['신반포자이','잠원자이'],n:'신반포자이',city:'서울',gu:'서초구',dong:'잠원동',a:'서울 서초구 잠원동',la:37.5114,lo:127.0044,yr:2020,st:'잠원역',sd:200},
-  {k:['래미안블레스티지','블레스티지'],n:'래미안블레스티지',city:'서울',gu:'서초구',dong:'반포동',a:'서울특별시 서초구 반포동 14-1',hh:1446,price:11000,la:37.5012,lo:127.0021,yr:2018,st:'사당역',sd:500},
+  {k:['래미안퍼스티지','퍼스티지','반포퍼스티지'],n:'래미안퍼스티지',city:'서울',gu:'서초구',dong:'반포동',a:'서울시 서초구 신반포로 지하 194',hh:1446,price:11000,la:37.5068,lo:127.0046,yr:2009,st:'신반포역',sd:150},
+  {k:['아크로리버파크','반포아크로'],n:'아크로리버파크',city:'서울',gu:'서초구',dong:'반포동',a:'서울시 서초구 신반포로 지하 194',hh:1446,price:11000,la:37.5077,lo:127.0059,yr:2016,st:'신반포역',sd:180},
+  {k:['반포자이'],n:'반포자이',city:'서울',gu:'서초구',dong:'반포동',a:'서울시 서초구 신반포로 지하 194',hh:1446,price:11000,la:37.5090,lo:127.0070,yr:2009,st:'반포역',sd:350},
+  {k:['신반포자이','잠원자이'],n:'신반포자이',city:'서울',gu:'서초구',dong:'잠원동',a:'서울시 서초구 신반포로 194',la:37.5114,lo:127.0044,yr:2020,st:'잠원역',sd:200,hh:1446,price:11200},
+  {k:['래미안블레스티지','블레스티지'],n:'래미안블레스티지',city:'서울',gu:'서초구',dong:'반포동',a:'서울시 서초구 신반포로 지하 194',hh:1446,price:11000,la:37.5012,lo:127.0021,yr:2018,st:'사당역',sd:500},
   {k:['서초래미안'],n:'서초래미안',city:'서울',gu:'서초구',dong:'서초동',a:'서울 서초구 서초동',la:37.4941,lo:126.9983,yr:2011,st:'서초역',sd:550},
   /* ── 서울 강남구 ── */
   {k:['디에이치아너힐스','아너힐스'],n:'디에이치아너힐스',city:'서울',gu:'강남구',dong:'개포동',a:'서울 강남구 개포동 1217번지',la:37.4795,lo:127.0576,yr:2019,st:'개포동역',sd:300},
@@ -4090,8 +4161,8 @@ const APT_DB=[
   {k:['도곡렉슬','렉슬'],n:'도곡렉슬',city:'서울',gu:'강남구',dong:'도곡동',a:'서울 강남구 도곡동',la:37.4871,lo:127.0436,yr:2006,st:'매봉역',sd:350},
   {k:['청담자이'],n:'청담자이',city:'서울',gu:'강남구',dong:'청담동',a:'서울 강남구 청담동',la:37.5236,lo:127.0502,yr:2012,st:'청담역',sd:600},
   /* ── 서울 송파구 ── */
-  {k:['헬리오시티','둔촌헬리오'],n:'헬리오시티',city:'서울',gu:'강동구',dong:'둔촌동',a:'서울특별시 강동구 둔촌동 169-4',la:37.5245,lo:127.1377,yr:2018,st:'둔촌동역',sd:150,hh:9510,price:5200},
-  {k:['올림픽파크포레온','포레온'],n:'올림픽파크포레온',city:'서울',gu:'강동구',dong:'둔촌동',a:'서울특별시 강동구 둔촌동 170-1',la:37.5269,lo:127.1360,yr:2023,st:'둔촌동역',sd:200,hh:9510,price:5800},
+  {k:['헬리오시티','둔촌헬리오'],n:'헬리오시티',city:'서울',gu:'송파구',dong:'거여동',a:'서울시 송파구 송파대로 345',la:37.4921,lo:127.1279,yr:2018,st:'가락시장역',sd:450,hh:9510,price:5200},
+  {k:['올림픽파크포레온','포레온'],n:'올림픽파크포레온',city:'서울',gu:'송파구',dong:'오금동',a:'서울시 송파구 올림픽로 지하 225',la:37.5025,lo:127.1234,yr:2023,st:'올림픽공원역',sd:320,hh:9510,price:5800},
   {k:['잠실엘스','엘스'],n:'잠실엘스',city:'서울',gu:'송파구',dong:'잠실동',a:'서울특별시 송파구 잠실동 29-1',hh:3304,price:6800,la:37.5082,lo:127.0891,yr:2008,st:'잠실역',sd:600},
   {k:['잠실리센츠','리센츠'],n:'잠실리센츠',city:'서울',gu:'송파구',dong:'잠실동',a:'서울 송파구 잠실동 6-1번지',la:37.5098,lo:127.0920,yr:2008,st:'잠실역',sd:450},
   {k:['잠실트리지움','트리지움'],n:'잠실트리지움',city:'서울',gu:'송파구',dong:'잠실동',a:'서울 송파구 잠실동',la:37.5110,lo:127.0935,yr:2008,st:'잠실역',sd:380},
