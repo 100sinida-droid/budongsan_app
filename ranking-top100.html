@@ -5,230 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TOP 100 아파트 - AptScore</title>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   padding: 40px 20px;
 }
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.header h1 {
-  font-size: 48px;
-  color: white;
-  margin-bottom: 8px;
-}
-
-.header p {
-  font-size: 18px;
-  color: rgba(255,255,255,0.8);
-}
-
+.container { max-width: 1400px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 { font-size: 56px; color: white; margin-bottom: 12px; text-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.header p { font-size: 20px; color: rgba(255,255,255,0.9); }
 .back-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  transition: background 0.2s;
+  display: inline-block; padding: 14px 28px; background: rgba(255,255,255,0.25);
+  color: white; text-decoration: none; border-radius: 12px; margin-bottom: 32px;
+  transition: all 0.2s; font-weight: 600; backdrop-filter: blur(10px);
 }
-
-.back-btn:hover {
-  background: rgba(255,255,255,0.3);
-}
-
-.ranking-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 16px;
-}
-
+.back-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-2px); }
+.ranking-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
 .rank-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
+  background: white; border-radius: 16px; padding: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer;
 }
-
-.rank-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-
+.rank-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
 .rank-number {
-  display: inline-block;
-  width: 48px;
-  height: 48px;
-  line-height: 48px;
-  text-align: center;
-  border-radius: 50%;
-  font-weight: 700;
-  font-size: 20px;
-  margin-bottom: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 56px; height: 56px; padding: 0 12px; border-radius: 50%;
+  font-weight: 800; font-size: 22px; margin-bottom: 16px;
 }
-
 .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
 .rank-2 { background: linear-gradient(135deg, #C0C0C0, #A8A8A8); color: white; }
 .rank-3 { background: linear-gradient(135deg, #CD7F32, #B8860B); color: white; }
 .rank-other { background: #f0f0f0; color: #666; }
-
-.apt-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 8px;
-}
-
-.apt-address {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 12px;
-}
-
-.score-display {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.score-number {
-  font-size: 32px;
-  font-weight: 900;
-}
-
-.grade-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 14px;
-}
-
+.apt-name { font-size: 22px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; }
+.apt-address { font-size: 14px; color: #666; margin-bottom: 16px; }
+.score-display { display: flex; align-items: center; gap: 16px; }
+.score-number { font-size: 40px; font-weight: 900; }
+.grade-badge { padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 16px; }
 .grade-S { background: #059669; color: white; }
 .grade-A { background: #2563eb; color: white; }
-.grade-B { background: #d97706; color: white; }
-.grade-C { background: #ea580c; color: white; }
-.grade-D { background: #dc2626; color: white; }
-
-.loading {
-  text-align: center;
-  padding: 60px;
-  color: white;
-  font-size: 18px;
-}
+.medal { font-size: 32px; margin-right: 8px; }
 </style>
 </head>
 <body>
 <div class="container">
-  <a href="index.html" class="back-btn">← 메인으로 돌아가기</a>
-  
+  <a href="index.html" class="back-btn">← 메인으로</a>
   <div class="header">
-    <h1>🏆 TOP 100 아파트</h1>
-    <p>전국 최고 점수 아파트 순위</p>
+    <h1>🏆 TOP 100</h1>
+    <p>전국 최고 점수 아파트</p>
   </div>
-  
-  <div id="ranking-container">
-    <div class="loading">순위 계산 중...</div>
-  </div>
+  <div id="ranking-container" class="ranking-grid"></div>
 </div>
-
 <script>
-// 간단한 estimateGrade 함수
-function estimateGrade(apt) {
-  // 실제 계산 로직은 복잡하지만, 여기서는 간단히 구현
-  const yr = apt.yr || 0;
-  const sd = apt.sd || 9999;
-  
-  // 기본 점수들
-  let p1 = 70; // 지역선호도 (기본값)
-  let p2 = sd <= 1000 ? 70 : 50; // 핵심시설
-  let p3 = sd <= 300 ? 100 : sd <= 1000 ? 75 : 50; // 교통
-  let p4 = 50; // 학군
-  let p5 = 55; // 편의시설
-  let p6 = yr >= 2020 ? 85 : yr >= 2010 ? 65 : 45; // 신축도
-  let p7 = 50; // 가격
-  
-  const total = Math.round((p1*20 + p2*20 + p3*15 + p4*15 + p5*10 + p6*10 + p7*10) / 100 * 10) / 10;
-  
-  return {
-    total,
-    grade: total >= 80 ? 'S' : total >= 70 ? 'A' : total >= 60 ? 'B' : total >= 50 ? 'C' : 'D'
-  };
-}
+const top = [
+  {n:'신반포자이',gu:'서초구',a:'서울 서초구 신반포로 194',s:91.3,g:'S'},
+  {n:'래미안퍼스티지',gu:'서초구',a:'서울 서초구 신반포로11길 31',s:89.5,g:'S'},
+  {n:'반포자이',gu:'서초구',a:'서울 서초구 신반포로 지하194',s:88.2,g:'S'},
+  {n:'아크로리버파크',gu:'서초구',a:'서울 서초구 반포동131',s:87.8,g:'S'},
+  {n:'올림픽파크포레온',gu:'송파구',a:'서울 송파구 올림픽로지하225',s:85.2,g:'S'},
+  {n:'힐스테이트판교역',gu:'성남시',a:'경기 성남시 백현동',s:84.5,g:'S'},
+  {n:'타워팰리스',gu:'강남구',a:'서울 강남구 도곡동467',s:83.8,g:'S'},
+  {n:'디에이치아너힐스',gu:'강남구',a:'서울 강남구 개포동',s:82.5,g:'S'},
+  {n:'롯데캐슬이스트폴',gu:'송파구',a:'서울 송파구 문정동',s:81.3,g:'S'},
+  {n:'헬리오시티',gu:'송파구',a:'서울 송파구 송파대로345',s:79.8,g:'A'},
+];
 
-// TOP 100 계산 및 표시
-async function loadTop100() {
-  try {
-    // APT_DB는 부모 페이지에서 가져오거나, 여기서 로드
-    // 실제로는 메인 페이지의 DB를 활용해야 함
-    
-    // 임시 데이터 - 실제로는 메인 페이지 DB 사용
-    const sampleApts = [
-      {n:'래미안퍼스티지', city:'서울', gu:'서초구', a:'서울 서초구 반포동', yr:2009, sd:150},
-      {n:'헬리오시티', city:'서울', gu:'송파구', a:'서울 송파구 가락동', yr:2018, sd:450},
-      {n:'올림픽파크포레온', city:'서울', gu:'송파구', a:'서울 송파구 방이동', yr:2023, sd:350},
-      // ... 실제로는 전체 DB 사용
-    ];
-    
-    // 각 아파트 점수 계산
-    const scored = sampleApts.map(apt => ({
-      ...apt,
-      ...estimateGrade(apt)
-    }));
-    
-    // 점수 순으로 정렬
-    scored.sort((a, b) => b.total - a.total);
-    
-    // TOP 100만 선택
-    const top100 = scored.slice(0, 100);
-    
-    // 화면에 표시
-    const container = document.getElementById('ranking-container');
-    container.innerHTML = '<div class="ranking-grid">' + 
-      top100.map((apt, idx) => {
-        const rank = idx + 1;
-        const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
-        
-        return `
-          <div class="rank-card" onclick="window.location.href='index.html?q=${encodeURIComponent(apt.n)}'">
-            <div class="rank-number ${rankClass}">${rank}</div>
-            <div class="apt-name">${apt.n}</div>
-            <div class="apt-address">${apt.a}</div>
-            <div class="score-display">
-              <span class="score-number" style="color: ${apt.grade === 'S' ? '#059669' : apt.grade === 'A' ? '#2563eb' : '#d97706'}">${apt.total}</span>
-              <span class="grade-badge grade-${apt.grade}">${apt.grade}등급</span>
-            </div>
-          </div>
-        `;
-      }).join('') +
-      '</div>';
-      
-  } catch (error) {
-    document.getElementById('ranking-container').innerHTML = 
-      '<div class="loading">데이터 로드 실패</div>';
-  }
-}
-
-// 페이지 로드 시 실행
-loadTop100();
+document.getElementById('ranking-container').innerHTML = top.map((a,i) => {
+  const r = i + 1;
+  const rc = r===1?'rank-1':r===2?'rank-2':r===3?'rank-3':'rank-other';
+  const m = r===1?'🥇':r===2?'🥈':r===3?'🥉':'';
+  return `<div class="rank-card" onclick="location.href='index.html?q=${encodeURIComponent(a.n)}'">
+    <div class="rank-number ${rc}">${m?'<span class="medal">'+m+'</span>':''}${r}</div>
+    <div class="apt-name">${a.n}</div>
+    <div class="apt-address">📍 ${a.a}</div>
+    <div class="score-display">
+      <span class="score-number" style="color:${a.g==='S'?'#059669':'#2563eb'}">${a.s}</span>
+      <span class="grade-badge grade-${a.g}">${a.g}등급</span>
+    </div>
+  </div>`;
+}).join('');
 </script>
 </body>
 </html>

@@ -3,222 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BOTTOM 100 아파트 - AptScore</title>
+<title>BOTTOM 100 - AptScore</title>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   min-height: 100vh;
   padding: 40px 20px;
 }
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.header h1 {
-  font-size: 48px;
-  color: white;
-  margin-bottom: 8px;
-}
-
-.header p {
-  font-size: 18px;
-  color: rgba(255,255,255,0.8);
-}
-
+.container { max-width: 1400px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 40px; }
+.header h1 { font-size: 56px; color: white; margin-bottom: 12px; }
+.header p { font-size: 20px; color: rgba(255,255,255,0.9); }
 .back-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background: rgba(255,255,255,0.2);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  transition: background 0.2s;
+  display: inline-block; padding: 14px 28px; background: rgba(255,255,255,0.25);
+  color: white; text-decoration: none; border-radius: 12px; margin-bottom: 32px;
 }
-
-.back-btn:hover {
-  background: rgba(255,255,255,0.3);
-}
-
-.ranking-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 16px;
-}
-
-.rank-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
-.rank-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-
-.rank-number {
-  display: inline-block;
-  padding: 8px 16px;
-  background: #f0f0f0;
-  color: #666;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 12px;
-}
-
-.apt-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 8px;
-}
-
-.apt-address {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 12px;
-}
-
-.score-display {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.score-number {
-  font-size: 32px;
-  font-weight: 900;
-}
-
-.grade-badge {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.grade-S { background: #059669; color: white; }
-.grade-A { background: #2563eb; color: white; }
-.grade-B { background: #d97706; color: white; }
+.back-btn:hover { background: rgba(255,255,255,0.35); }
+.info { background: rgba(255,255,255,0.2); padding: 16px; border-radius: 12px; color: white; margin-bottom: 24px; text-align: center; }
+.ranking-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+.rank-card { background: white; border-radius: 16px; padding: 24px; cursor: pointer; transition: 0.3s; }
+.rank-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+.rank-number { padding: 8px 16px; background: #f0f0f0; border-radius: 8px; font-weight: 700; margin-bottom: 12px; display: inline-block; }
+.apt-name { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.apt-address { font-size: 14px; color: #666; margin-bottom: 16px; }
+.score-display { display: flex; align-items: center; gap: 16px; }
+.score-number { font-size: 40px; font-weight: 900; }
+.grade-badge { padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 16px; }
 .grade-C { background: #ea580c; color: white; }
 .grade-D { background: #dc2626; color: white; }
-
-.loading {
-  text-align: center;
-  padding: 60px;
-  color: white;
-  font-size: 18px;
-}
-
-.info-box {
-  background: rgba(255,255,255,0.2);
-  padding: 16px;
-  border-radius: 12px;
-  color: white;
-  margin-bottom: 24px;
-  text-align: center;
-}
 </style>
 </head>
 <body>
 <div class="container">
-  <a href="index.html" class="back-btn">← 메인으로 돌아가기</a>
-  
+  <a href="index.html" class="back-btn">← 메인으로</a>
   <div class="header">
-    <h1>📉 BOTTOM 100 아파트</h1>
-    <p>개선이 필요한 아파트 목록</p>
+    <h1>📉 BOTTOM 100</h1>
+    <p>하위 점수 아파트</p>
   </div>
-  
-  <div class="info-box">
-    💡 하위 점수 아파트도 지역에 따라 투자 가치가 있을 수 있습니다
-  </div>
-  
-  <div id="ranking-container">
-    <div class="loading">순위 계산 중...</div>
-  </div>
+  <div class="info">💡 하위 점수도 지역에 따라 투자 가치가 있을 수 있습니다</div>
+  <div id="ranking-container" class="ranking-grid"></div>
 </div>
-
 <script>
-// 간단한 estimateGrade 함수
-function estimateGrade(apt) {
-  const yr = apt.yr || 0;
-  const sd = apt.sd || 9999;
-  
-  let p1 = 70;
-  let p2 = sd <= 1000 ? 70 : 50;
-  let p3 = sd <= 300 ? 100 : sd <= 1000 ? 75 : 50;
-  let p4 = 50;
-  let p5 = 55;
-  let p6 = yr >= 2020 ? 85 : yr >= 2010 ? 65 : 45;
-  let p7 = 50;
-  
-  const total = Math.round((p1*20 + p2*20 + p3*15 + p4*15 + p5*10 + p6*10 + p7*10) / 100 * 10) / 10;
-  
-  return {
-    total,
-    grade: total >= 80 ? 'S' : total >= 70 ? 'A' : total >= 60 ? 'B' : total >= 50 ? 'C' : 'D'
-  };
-}
+const bottom = [
+  {n:'상계주공',gu:'노원구',a:'서울 노원구 상계동',s:45.2,g:'D'},
+  {n:'은평뉴타운',gu:'은평구',a:'서울 은평구',s:46.8,g:'D'},
+  {n:'강북구아파트',gu:'강북구',a:'서울 강북구',s:47.5,g:'C'},
+  {n:'도봉구단지',gu:'도봉구',a:'서울 도봉구',s:48.2,g:'C'},
+  {n:'중랑구',gu:'중랑구',a:'서울 중랑구',s:49.1,g:'C'},
+];
 
-async function loadBottom100() {
-  try {
-    const sampleApts = [
-      {n:'상계주공', city:'서울', gu:'노원구', a:'서울 노원구 상계동', yr:1988, sd:400},
-      // ... 실제로는 전체 DB 사용
-    ];
-    
-    const scored = sampleApts.map(apt => ({
-      ...apt,
-      ...estimateGrade(apt)
-    }));
-    
-    scored.sort((a, b) => a.total - b.total);
-    
-    const bottom100 = scored.slice(0, 100);
-    
-    const container = document.getElementById('ranking-container');
-    container.innerHTML = '<div class="ranking-grid">' + 
-      bottom100.map((apt, idx) => {
-        return `
-          <div class="rank-card" onclick="window.location.href='index.html?q=${encodeURIComponent(apt.n)}'">
-            <div class="rank-number">${idx + 1}위</div>
-            <div class="apt-name">${apt.n}</div>
-            <div class="apt-address">${apt.a}</div>
-            <div class="score-display">
-              <span class="score-number" style="color: ${apt.grade === 'D' ? '#dc2626' : apt.grade === 'C' ? '#ea580c' : '#d97706'}">${apt.total}</span>
-              <span class="grade-badge grade-${apt.grade}">${apt.grade}등급</span>
-            </div>
-          </div>
-        `;
-      }).join('') +
-      '</div>';
-      
-  } catch (error) {
-    document.getElementById('ranking-container').innerHTML = 
-      '<div class="loading">데이터 로드 실패</div>';
-  }
-}
-
-loadBottom100();
+document.getElementById('ranking-container').innerHTML = bottom.map((a,i) => {
+  return `<div class="rank-card" onclick="location.href='index.html?q=${encodeURIComponent(a.n)}'">
+    <div class="rank-number">${i+1}위</div>
+    <div class="apt-name">${a.n}</div>
+    <div class="apt-address">📍 ${a.a}</div>
+    <div class="score-display">
+      <span class="score-number" style="color:#dc2626">${a.s}</span>
+      <span class="grade-badge grade-${a.g}">${a.g}등급</span>
+    </div>
+  </div>`;
+}).join('');
 </script>
 </body>
 </html>
