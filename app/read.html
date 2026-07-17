@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>읽기 | 강그린 웹소설 아카이브</title>
+  <meta name="description" content="강그린 웹소설을 편하게 읽어보세요.">
+  <meta name="theme-color" content="#5b4bff">
+  <link rel="icon" href="/app/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+</head>
+<body>
+  <div class="reader-topbar">
+    <div class="container">
+      <a class="icon-btn" id="btn-list" title="목록으로" aria-label="목록으로">≡</a>
+      <div class="r-title" id="top-title">불러오는 중…</div>
+      <button class="icon-btn" data-theme-toggle aria-label="다크모드 전환"><span data-theme-icon>🌙</span></button>
+    </div>
+  </div>
+
+  <main>
+    <article class="reader" id="reader">
+      <div class="ep-head">
+        <div class="skeleton" style="height:14px;width:120px;margin:0 auto 10px"></div>
+        <div class="skeleton" style="height:24px;width:70%;margin:0 auto"></div>
+      </div>
+      <div class="reader-body" id="reader-body">
+        <div class="skeleton" style="height:16px;margin:12px 0"></div>
+        <div class="skeleton" style="height:16px;margin:12px 0;width:92%"></div>
+        <div class="skeleton" style="height:16px;margin:12px 0;width:96%"></div>
+      </div>
+    </article>
+
+    <nav class="reader-nav" id="reader-nav"></nav>
+  </main>
+
+  <!-- 하단 고정 컨트롤 -->
+  <div class="reader-fab" id="reader-fab" hidden>
+    <button id="fab-prev" title="이전화">‹</button>
+    <div class="divider"></div>
+    <button id="fab-font-down" title="글자 작게">가−</button>
+    <button id="fab-font-up" title="글자 크게">가＋</button>
+    <button data-theme-toggle title="다크모드"><span data-theme-icon>🌙</span></button>
+    <div class="divider"></div>
+    <button id="fab-next" title="다음화">›</button>
+  </div>
+
+  <script src="/app/assets/js/common.js"></script>
+  <script src="/app/assets/js/read.js"></script>
+</body>
+</html>
