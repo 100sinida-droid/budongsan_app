@@ -102,22 +102,67 @@
           <span class="mn-ep-title">${KG.escapeHtml(e.title || '')} <span style="color:var(--text-faint)">(${KG.escapeHtml(e.file || '')})</span></span>
           <button data-del-ep="${KG.escapeHtml(n.slug)}|${KG.escapeHtml(e.file || '')}">삭제</button>
         </div>`).join('') || '<div class="mn-ep" style="color:var(--text-faint)">회차 정보 없음 (인덱싱 전일 수 있음)</div>';
+      const st = n.status || '연재중';
+      const statusOpt = ['연재중', '완결', '휴재'].map(s => `<option ${s === st ? 'selected' : ''}>${s}</option>`).join('');
+      const av = s => KG.escapeHtml(s == null ? '' : String(s));
       return `
         <div class="manage-novel" data-slug="${KG.escapeHtml(n.slug)}">
           <div class="mn-head">
             <span class="mn-title">${KG.escapeHtml(n.title || n.slug)}</span>
+            ${n.featured ? '<span class="badge" style="margin-right:6px">⭐대표</span>' : ''}
             <span class="mn-count">${n.episodeCount != null ? n.episodeCount + '화' : ''}</span>
             <span class="chev">▾</span>
           </div>
           <div class="mn-body">
+            <div class="mn-edit">
+              <div class="mn-edit-title">✏️ 작품 정보 수정</div>
+              <div class="field"><label>제목</label><input class="e-title" value="${av(n.title)}"></div>
+              <div class="field-row">
+                <div class="field"><label>장르</label><input class="e-genre" value="${av(n.genre)}"></div>
+                <div class="field" style="max-width:130px"><label>상태</label><select class="e-status">${statusOpt}</select></div>
+              </div>
+              <div class="field"><label>작품 소개</label><textarea class="e-desc">${av(n.description)}</textarea></div>
+              <div class="field-row" style="align-items:flex-end">
+                <label class="check"><input type="checkbox" class="e-featured" ${n.featured ? 'checked' : ''}> 메인 대표 작품</label>
+                <div class="field" style="max-width:150px"><label>인기도 (클수록 상단)</label><input type="number" class="e-pop" value="${av(n.popularity || 0)}"></div>
+                <div class="field" style="max-width:110px"><label>정렬 순서</label><input type="number" class="e-order" value="${av(n.order != null ? n.order : 999)}"></div>
+              </div>
+              <button class="btn btn-primary btn-sm e-save" data-slug="${KG.escapeHtml(n.slug)}">정보 저장</button>
+              <p class="hint" style="margin-top:8px">대표 작품 = 메인 상단 "⭐대표 작품"에 노출 · 인기도 1 이상 = 메인 "🔥인기 작품"에 노출(숫자 클수록 위)</p>
+            </div>
+            <div class="mn-edit-title" style="margin-top:16px">📄 회차 목록</div>
             ${rows}
             <button class="mn-del-novel" data-del-novel="${KG.escapeHtml(n.slug)}">이 작품 전체 삭제</button>
           </div>
         </div>`;
     }).join('');
     box.querySelectorAll('.mn-head').forEach(h => h.addEventListener('click', () => h.parentElement.classList.toggle('open')));
+    box.querySelectorAll('.mn-edit').forEach(f => f.addEventListener('click', ev => ev.stopPropagation()));
     box.querySelectorAll('[data-del-ep]').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); delEpisode(b.dataset.delEp); }));
     box.querySelectorAll('[data-del-novel]').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); delNovel(b.dataset.delNovel); }));
+    box.querySelectorAll('.e-save').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); saveNovelInfo(b); }));
+  }
+
+  async function saveNovelInfo(btn) {
+    const card = btn.closest('.manage-novel');
+    const slug = btn.dataset.slug;
+    const meta = {
+      title: card.querySelector('.e-title').value.trim(),
+      genre: card.querySelector('.e-genre').value.trim(),
+      status: card.querySelector('.e-status').value,
+      description: card.querySelector('.e-desc').value.trim(),
+      featured: card.querySelector('.e-featured').checked,
+      popularity: parseInt(card.querySelector('.e-pop').value, 10) || 0,
+      order: parseInt(card.querySelector('.e-order').value, 10) || 999
+    };
+    btn.classList.add('locked');
+    try {
+      log(`'${meta.title || slug}' 정보 저장 중…`, 'info');
+      await api('update', { method: 'POST', body: { slug, meta } });
+      log(`✔ 정보 저장 완료. 30초~1분 뒤 사이트에 반영됩니다.`, 'ok');
+      setTimeout(refresh, 1400);
+    } catch (e) { log('✖ ' + e.message, 'err'); }
+    finally { btn.classList.remove('locked'); }
   }
 
   // ---------- 원고 파일 ----------

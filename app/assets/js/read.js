@@ -69,8 +69,11 @@
       <h1>${KG.escapeHtml(ep.title)}</h1>
       <div class="ep-info">${epNum} · ${KG.formatDate(ep.date)} · ${ep.words.toLocaleString()}자</div>
     </div>
+    <div class="ad-slot"></div>
     <div class="reader-body" id="reader-body">${KG.renderMarkdown(bodyMd)}</div>
+    <div class="ad-slot"></div>
   `;
+  if (KG.renderAds) KG.renderAds();
 
   // 상/하단 내비게이션
   const navHtml = `

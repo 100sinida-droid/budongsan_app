@@ -81,6 +81,51 @@
   };
 
   // ---------- 헤더 / 푸터 ----------
+  // ---------- 프로모션 배너 (site.config.json 의 promoBanner) ----------
+  KG.renderPromoBanner = async function () {
+    const cfg = await KG.getConfig();
+    const pb = cfg.promoBanner;
+    if (!pb || !pb.enabled || !pb.url) return;
+    if (document.querySelector('.promo-bar')) return;
+    const bar = document.createElement('a');
+    bar.className = 'promo-bar';
+    bar.href = pb.url; bar.target = '_blank'; bar.rel = 'noopener';
+    bar.innerHTML = `<span class="promo-text">${KG.escapeHtml(pb.text || '바로가기')}</span><span class="promo-arrow">›</span>`;
+    document.body.insertBefore(bar, document.body.firstChild);
+  };
+
+  // ---------- 구글 애드센스 ----------
+  KG.initAds = async function () {
+    const cfg = await KG.getConfig();
+    const ad = cfg.adsense;
+    if (!ad || !ad.enabled || !ad.client) return null;
+    if (!document.querySelector('script[data-kg-adsense]')) {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(ad.client);
+      s.crossOrigin = 'anonymous';
+      s.setAttribute('data-kg-adsense', '1');
+      document.head.appendChild(s);
+    }
+    return ad;
+  };
+  // 페이지의 <div class="ad-slot"></div> 자리에 광고를 채웁니다.
+  KG.renderAds = async function () {
+    const ad = await KG.initAds();
+    if (!ad) return;
+    document.querySelectorAll('.ad-slot:not([data-filled])').forEach(slot => {
+      slot.setAttribute('data-filled', '1');
+      const ins = document.createElement('ins');
+      ins.className = 'adsbygoogle';
+      ins.style.display = 'block';
+      ins.setAttribute('data-ad-format', slot.getAttribute('data-ad-format') || 'autorelaxed');
+      ins.setAttribute('data-ad-client', ad.client);
+      ins.setAttribute('data-ad-slot', slot.getAttribute('data-ad-slot') || ad.slot);
+      slot.appendChild(ins);
+      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+    });
+  };
+
   KG.renderChrome = async function (active) {
     const cfg = await KG.getConfig();
     const header = document.querySelector('[data-site-header]');
@@ -212,6 +257,8 @@
   // ---------- 공통 부트스트랩 ----------
   KG.boot = async function (active) {
     KG.initTheme();
+    await KG.renderPromoBanner();
     await KG.renderChrome(active);
+    KG.renderAds();
   };
 })();

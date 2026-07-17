@@ -65,7 +65,9 @@
       <button class="sort-btn" id="sort-btn">↓ 최신순</button>
     </div>
     <div class="list" id="ep-list"></div>
+    <div class="ad-slot"></div>
   `;
+  if (KG.renderAds) KG.renderAds();
 
   let desc = false; // false=오름차순(1화부터)
   const listEl = document.getElementById('ep-list');

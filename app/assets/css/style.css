@@ -430,3 +430,28 @@ html[data-theme="dark"] .admin-top .logo .mark { background: linear-gradient(135
 
 /* hidden 속성이 .btn 등 display 규칙에 덮이지 않도록 */
 [hidden] { display: none !important; }
+
+/* ---------- 프로모션 배너 (문피아 등 외부 링크) ---------- */
+.promo-bar {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px; text-align: center;
+  background: linear-gradient(90deg, var(--brand), #8b6bff);
+  color: #fff; font-size: 14px; font-weight: 700; letter-spacing: -.01em;
+  transition: filter .15s;
+}
+.promo-bar:hover { filter: brightness(1.07); }
+.promo-bar .promo-arrow { font-size: 17px; transition: transform .15s; }
+.promo-bar:hover .promo-arrow { transform: translateX(3px); }
+@media (max-width: 480px) { .promo-bar { font-size: 12.5px; padding: 9px 12px; } }
+
+/* ---------- 광고 자리 (구글 애드센스) ---------- */
+.ad-slot { margin: 22px auto; max-width: 100%; min-height: 1px; overflow: hidden; }
+.ad-slot:empty { display: none; }
+.reader .ad-slot { margin: 26px auto; }
+
+/* ---------- 관리자: 작품 정보 수정 폼 ---------- */
+.mn-edit { padding: 4px 2px 10px; border-bottom: 1px dashed var(--border); margin-bottom: 8px; }
+.mn-edit-title { font-size: 13px; font-weight: 800; color: var(--text-soft); margin-bottom: 8px; }
+.mn-edit .field { margin-bottom: 10px; }
+.mn-edit .field label { font-size: 12px; }
+.mn-edit textarea { min-height: 56px; }

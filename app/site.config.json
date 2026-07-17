@@ -8,8 +8,18 @@
     "bio": "상상하는 모든 세계를 글로 옮기는 웹소설 작가. SF, 로맨스판타지, 현대판타지를 넘나들며 독자의 마음을 사로잡는 이야기를 씁니다.",
     "intro": "안녕하세요, 웹소설 작가 강그린입니다. 이곳은 제가 쓴 작품들을 독자분들과 함께 나누는 공간입니다. 편하게 둘러보시고, 마음에 드는 이야기를 만나셨다면 끝까지 함께해 주세요."
   },
-  "baseUrl": "https://example.pages.dev",
+  "baseUrl": "https://stock-predictor-dx2.pages.dev",
   "ogImage": "/app/assets/og-default.svg",
   "locale": "ko_KR",
-  "themeColor": "#5b4bff"
+  "themeColor": "#5b4bff",
+  "promoBanner": {
+    "enabled": true,
+    "text": "📚 문피아 작가의 유료/신규 소설 보러가기",
+    "url": "https://library.munpia.com/qSt1yXLc50O4VMCv0hqi"
+  },
+  "adsense": {
+    "enabled": true,
+    "client": "ca-pub-7938956361770773",
+    "slot": "5368010468"
+  }
 }

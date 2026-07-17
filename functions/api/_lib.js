@@ -49,6 +49,11 @@ export async function onDelete(request, env) {
   const g = await guard(request, env); if (g.res) return g.res;
   return del(request, g.CFG);
 }
+export async function onUpdate(request, env) {
+  if (request.method !== 'POST') return json({ error: 'method' }, 405);
+  const g = await guard(request, env); if (g.res) return g.res;
+  return updateNovel(request, g.CFG);
+}
 async function guard(request, env) {
   const CFG = getCFG(env);
   const token = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
@@ -241,6 +246,55 @@ async function del(request, CFG) {
   entries.push({ path: SITEMAP, mode: '100644', _blob: { content: buildSitemap(index, nowIso.slice(0, 10)), encoding: 'utf-8' } });
 
   const commit = await commitTree(CFG, entries, file ? `admin: ${file} 삭제` : `admin: ${slug} 작품 삭제`);
+  return json({ ok: true, commit });
+}
+
+/* ---------- 작품 정보 수정 (제목·장르·상태·소개·대표·인기·정렬) ---------- */
+async function updateNovel(request, CFG) {
+  const body = await request.json();
+  const slug = sanitizeSlug(body.slug);
+  if (!slug) return json({ error: '작품이 지정되지 않았습니다.' }, 400);
+  const m = body.meta || {};
+  const base = `${CONTENT_BASE}/${slug}`;
+  const nowIso = new Date().toISOString();
+
+  const index = (await ghGetJson(CFG, DATA_INDEX)) || { novels: [] }; if (!index.novels) index.novels = [];
+  const search = (await ghGetJson(CFG, DATA_SEARCH)) || { docs: [] }; if (!search.docs) search.docs = [];
+  const config = (await ghGetJson(CFG, CONFIG_PATH)) || {};
+  const existMeta = (await ghGetJson(CFG, `${base}/meta.json`)) || {};
+
+  let novel = index.novels.find(n => n.slug === slug);
+  if (!novel) { novel = { slug, episodes: [], episodeCount: 0, cover: existMeta.cover || '', lastUpdated: nowIso, firstEpisodeId: null }; index.novels.push(novel); }
+
+  if (m.title !== undefined) novel.title = m.title || slug;
+  if (m.genre !== undefined) novel.genre = m.genre || '미분류';
+  if (m.status !== undefined) novel.status = m.status || '연재중';
+  if (m.description !== undefined) novel.description = m.description || '';
+  if (m.featured !== undefined) novel.featured = !!m.featured;
+  if (m.popularity !== undefined) novel.popularity = parseInt(m.popularity, 10) || 0;
+  if (m.order !== undefined) novel.order = parseInt(m.order, 10) || 999;
+  if (!novel.cover) novel.cover = existMeta.cover || '';
+
+  const meta = {
+    title: novel.title || slug, genre: novel.genre || '미분류', status: novel.status || '연재중',
+    description: novel.description || '', cover: novel.cover || '', featured: !!novel.featured,
+    popularity: novel.popularity || 0, order: novel.order != null ? novel.order : 999
+  };
+
+  search.docs = search.docs.filter(d => !(d.type === 'novel' && d.slug === slug));
+  search.docs.push({ type: 'novel', slug, title: novel.title, genre: novel.genre, description: novel.description });
+  for (const d of search.docs) if (d.type === 'episode' && d.slug === slug) d.novelTitle = novel.title;
+
+  index.generatedAt = nowIso;
+  recomputeIndexMeta(index, config);
+
+  const entries = [
+    { path: `${base}/meta.json`, mode: '100644', _blob: { content: JSON.stringify(meta, null, 2) + '\n', encoding: 'utf-8' } },
+    { path: DATA_INDEX, mode: '100644', _blob: { content: JSON.stringify(stripPlain(index)), encoding: 'utf-8' } },
+    { path: DATA_SEARCH, mode: '100644', _blob: { content: JSON.stringify({ docs: search.docs }), encoding: 'utf-8' } },
+    { path: SITEMAP, mode: '100644', _blob: { content: buildSitemap(index, nowIso.slice(0, 10)), encoding: 'utf-8' } }
+  ];
+  const commit = await commitTree(CFG, entries, `admin: ${slug} 정보 수정`);
   return json({ ok: true, commit });
 }
 
