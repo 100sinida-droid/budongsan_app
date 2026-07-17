@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>관리자 · 강그린 웹소설 아카이브</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#5b4bff">
+  <link rel="icon" href="/app/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+</head>
+<body>
+  <header class="admin-top">
+    <div class="container">
+      <span class="logo"><span class="mark">⚙</span><span>관리자</span></span>
+      <div class="spacer"></div>
+      <div class="right">
+        <a href="/" class="btn btn-ghost btn-sm">사이트 보기</a>
+        <button class="btn btn-ghost btn-sm" id="btn-logout" hidden>로그아웃</button>
+        <button class="icon-btn" data-theme-toggle aria-label="다크모드"><span data-theme-icon>🌙</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 로그인 화면 -->
+  <div id="login-view">
+    <div class="login-wrap">
+      <form class="login-card" id="login-form">
+        <div class="brand">
+          <div class="mark">강</div>
+          <h1>관리자 로그인</h1>
+          <p>강그린 웹소설 아카이브</p>
+        </div>
+        <div class="field">
+          <label>아이디</label>
+          <input id="login-user" autocomplete="username" placeholder="아이디" required>
+        </div>
+        <div class="field">
+          <label>비밀번호</label>
+          <input id="login-pass" type="password" autocomplete="current-password" placeholder="비밀번호" required>
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-login" type="submit">로그인</button>
+        <div class="login-error" id="login-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 관리 화면 -->
+  <main class="admin-main" id="app-view" hidden>
+    <div class="container" style="max-width:860px">
+
+      <!-- 업로드 -->
+      <section class="admin-card">
+        <h2>회차 업로드</h2>
+        <p class="sub">작품을 고르고 원고 파일(.md / .txt)을 한꺼번에 올리세요. 파일명의 숫자로 회차 번호가 자동 인식됩니다. (예: <code>012.md</code> → 12화)</p>
+
+        <div class="field">
+          <label>작품 선택</label>
+          <select id="novel-select"><option value="">불러오는 중…</option></select>
+        </div>
+
+        <div id="new-novel-fields" hidden>
+          <div class="field-row">
+            <div class="field">
+              <label>폴더명 (영문·숫자·하이픈)</label>
+              <input id="nn-slug" placeholder="예: dragon-king">
+            </div>
+            <div class="field">
+              <label>작품 제목</label>
+              <input id="nn-title" placeholder="예: 용왕의 딸">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>장르</label>
+              <input id="nn-genre" placeholder="예: 동양판타지">
+            </div>
+            <div class="field" style="max-width:150px">
+              <label>연재 상태</label>
+              <select id="nn-status"><option>연재중</option><option>완결</option><option>휴재</option></select>
+            </div>
+            <div class="field" style="max-width:110px">
+              <label>정렬 순서</label>
+              <input id="nn-order" type="number" value="10">
+            </div>
+          </div>
+          <div class="field">
+            <label>작품 소개</label>
+            <textarea id="nn-desc" placeholder="작품 소개를 입력하세요."></textarea>
+          </div>
+          <label class="check" style="margin-bottom:14px"><input type="checkbox" id="nn-featured"> 메인 페이지 대표 작품으로 표시</label>
+        </div>
+
+        <!-- 표지 업로드 -->
+        <div class="field">
+          <label>표지 이미지 (선택)</label>
+          <div class="cover-uploader">
+            <div class="cover-preview" id="cover-preview">표지<br>미리보기</div>
+            <div class="cover-side">
+              <button type="button" class="btn btn-ghost btn-sm" id="btn-cover">이미지 선택</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btn-cover-clear" hidden>제거</button>
+              <input type="file" id="cover-input" accept="image/*" hidden>
+              <p class="hint">jpg / png / webp 권장. 세로형(3:4) 이미지가 가장 예쁩니다. 새 작품이면 등록과 함께, 기존 작품이면 표지만 교체됩니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 원고 파일 -->
+        <div class="field">
+          <label>원고 파일</label>
+          <div class="dropzone" id="dropzone" tabindex="0">
+            <div class="big">📁</div>
+            <div><b>파일을 여기로 드래그</b>하거나 클릭해서 선택</div>
+            <div class="hint">.md, .txt 여러 개 동시 선택 가능</div>
+          </div>
+          <input type="file" id="file-input" multiple accept=".md,.txt,text/markdown,text/plain" hidden>
+          <div id="file-list"></div>
+        </div>
+
+        <div class="admin-actions" style="margin-top:8px">
+          <button class="btn btn-primary" id="btn-upload">업로드 실행</button>
+          <button class="btn btn-ghost" id="btn-clear-files">파일 비우기</button>
+        </div>
+      </section>
+
+      <!-- 관리 -->
+      <section class="admin-card">
+        <h2>작품 · 회차 관리</h2>
+        <p class="sub">등록된 작품과 회차를 확인하고 삭제할 수 있습니다.</p>
+        <div class="admin-actions" style="margin-bottom:14px">
+          <button class="btn btn-ghost btn-sm" id="btn-refresh">목록 새로고침</button>
+        </div>
+        <div id="manage-list"></div>
+      </section>
+
+      <!-- 로그 -->
+      <section class="admin-card">
+        <h2>실행 기록</h2>
+        <div class="log" id="log"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="/app/assets/js/common.js"></script>
+  <script src="/app/assets/js/admin.js"></script>
+</body>
+</html>

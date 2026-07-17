@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# 사이트맵 (배포 후 site.config.json 의 baseUrl 로 자동 생성됩니다)
+Sitemap: https://example.pages.dev/app/sitemap.xml
