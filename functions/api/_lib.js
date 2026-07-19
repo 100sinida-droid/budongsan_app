@@ -54,6 +54,61 @@ export async function onUpdate(request, env) {
   const g = await guard(request, env); if (g.res) return g.res;
   return updateNovel(request, g.CFG);
 }
+/* ---------- 방문자 카운터 ---------- */
+export async function onVisit(request, env) {
+  const kv = env.KG_KV;
+  const kstDay = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  if (!kv) return json({ configured: false, today: 0, total: 0, date: kstDay });
+  const dayKey = 'counter:day:' + kstDay;
+  const readNum = async k => parseInt((await kv.get(k)) || '0', 10) || 0;
+  if (request.method === 'POST') {
+    const total = (await readNum('counter:total')) + 1;
+    const day = (await readNum(dayKey)) + 1;
+    await kv.put('counter:total', String(total));
+    await kv.put(dayKey, String(day), { expirationTtl: 60 * 60 * 24 * 7 });
+    return json({ configured: true, today: day, total, date: kstDay });
+  }
+  return json({ configured: true, today: await readNum(dayKey), total: await readNum('counter:total'), date: kstDay });
+}
+
+/* ---------- 방명록 ---------- */
+export async function onGuestbook(request, env) {
+  const kv = env.KG_KV;
+  if (!kv) return json({ configured: false, entries: [] });
+  const readAll = async () => { try { return JSON.parse((await kv.get('guestbook')) || '[]'); } catch (e) { return []; } };
+  if (request.method === 'GET') return json({ configured: true, entries: (await readAll()).slice(0, 100) });
+  if (request.method === 'POST') {
+    let body = {}; try { body = await request.json(); } catch (e) {}
+    if (body.action === 'delete') {
+      if (!(await isAdmin(request, env))) return json({ error: '인증이 필요합니다.' }, 401);
+      const arr = (await readAll()).filter(e => e.id !== body.id);
+      await kv.put('guestbook', JSON.stringify(arr));
+      return json({ ok: true });
+    }
+    if (body.hp) return json({ ok: true });
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const rlKey = 'gb:rl:' + ip;
+    if (await kv.get(rlKey)) return json({ error: '잠시 후 다시 남겨주세요.' }, 429);
+    const name = (String(body.name || '').trim().slice(0, 20)) || '익명';
+    const message = String(body.message || '').trim().slice(0, 500);
+    if (message.length < 1) return json({ error: '내용을 입력해 주세요.' }, 400);
+    const arr = await readAll();
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    const entry = { id, name, message, date: new Date().toISOString() };
+    arr.unshift(entry);
+    if (arr.length > 300) arr.length = 300;
+    await kv.put('guestbook', JSON.stringify(arr));
+    await kv.put(rlKey, '1', { expirationTtl: 30 });
+    return json({ ok: true, entry });
+  }
+  return json({ error: 'method' }, 405);
+}
+
+export async function isAdmin(request, env) {
+  const CFG = getCFG(env);
+  const token = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+  return verifyToken(token, CFG.secret);
+}
 async function guard(request, env) {
   const CFG = getCFG(env);
   const token = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
