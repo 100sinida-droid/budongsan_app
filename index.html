@@ -83,6 +83,30 @@
         <div class="list" id="recent-list"></div>
       </section>
 
+      <!-- 방명록 & 방문자 -->
+      <section class="section" id="community">
+        <div class="section-head">
+          <h2>💬 방명록</h2>
+          <span class="visitor-count" data-visit-wrap hidden>👀 오늘 <b data-visit-today>-</b> · 누적 <b data-visit-total>-</b></span>
+        </div>
+
+        <div class="guestbook card">
+          <form id="gb-form" class="gb-form">
+            <div class="gb-row">
+              <input id="gb-name" placeholder="이름 (선택, 미입력 시 익명)" maxlength="20" autocomplete="off">
+              <a class="gb-email" href="mailto:shinnamho@naver.com">✉️ 작가에게 쪽지: shinnamho@naver.com</a>
+            </div>
+            <input type="text" id="gb-hp" class="gb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <textarea id="gb-message" placeholder="작가에게 남기고 싶은 말을 적어주세요. (최대 500자)" maxlength="500" required></textarea>
+            <div class="gb-actions">
+              <span class="gb-hint" id="gb-hint"></span>
+              <button class="btn btn-primary btn-sm" type="submit" id="gb-submit">남기기</button>
+            </div>
+          </form>
+          <div id="gb-list" class="gb-list"></div>
+        </div>
+      </section>
+
       <!-- 광고 (하단) -->
       <div class="ad-slot"></div>
     </div>

@@ -98,4 +98,58 @@
 
   function emptyBox(t, s) { return `<div class="empty" style="grid-column:1/-1"><div class="big">📚</div><p>${t}</p><p style="font-size:13px">${s}</p></div>`; }
   function errorBox() { return `<div class="empty" style="grid-column:1/-1"><div class="big">⚠️</div><p>데이터를 불러오지 못했습니다.</p><p style="font-size:13px">data/index.json 이 생성되었는지 확인해 주세요.</p></div>`; }
+
+  // ---------- 방명록 ----------
+  initGuestbook();
+  async function initGuestbook() {
+    const listEl = document.getElementById('gb-list');
+    const form = document.getElementById('gb-form');
+    const hint = document.getElementById('gb-hint');
+    if (!form) return;
+
+    async function load() {
+      try {
+        const res = await fetch('/api/guestbook', { cache: 'no-store' });
+        const data = await res.json();
+        if (!data.configured) {
+          listEl.innerHTML = `<div class="gb-note">방명록 저장소(Cloudflare KV)가 아직 연결되지 않았습니다. 설정 후 방명록이 활성화됩니다. 그동안 위 이메일로 남겨주세요.</div>`;
+          return;
+        }
+        renderList(data.entries || []);
+      } catch (e) {
+        listEl.innerHTML = `<div class="gb-note">방명록을 불러오지 못했습니다.</div>`;
+      }
+    }
+    function renderList(entries) {
+      if (!entries.length) { listEl.innerHTML = `<div class="gb-note">첫 방명록을 남겨보세요! 🌱</div>`; return; }
+      listEl.innerHTML = entries.map(e => `
+        <div class="gb-item">
+          <div class="gb-item-top"><span class="gb-name">${KG.escapeHtml(e.name || '익명')}</span><span class="gb-date">${KG.formatRelative(e.date)}</span></div>
+          <div class="gb-msg">${KG.escapeHtml(e.message)}</div>
+        </div>`).join('');
+    }
+
+    form.addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const name = document.getElementById('gb-name').value;
+      const message = document.getElementById('gb-message').value.trim();
+      const hp = document.getElementById('gb-hp').value;
+      if (!message) { hint.textContent = '내용을 입력해 주세요.'; return; }
+      const btn = document.getElementById('gb-submit');
+      btn.classList.add('locked'); hint.textContent = '';
+      try {
+        const res = await fetch('/api/guestbook', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, message, hp }) });
+        const data = await res.json();
+        if (!res.ok) { hint.textContent = data.error || '등록에 실패했습니다.'; }
+        else {
+          document.getElementById('gb-message').value = '';
+          hint.textContent = '남겨주셔서 감사합니다! 💜';
+          load();
+        }
+      } catch (e) { hint.textContent = '오류가 발생했습니다.'; }
+      finally { btn.classList.remove('locked'); }
+    });
+
+    load();
+  }
 })();

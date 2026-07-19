@@ -1,6 +1,7 @@
 /* 소설 읽기 페이지 */
 (async function () {
   KG.initTheme();
+  if (KG.trackVisit) KG.trackVisit();
   // 테마 토글 버튼들 연결
   document.querySelectorAll('[data-theme-toggle]').forEach(b => b.addEventListener('click', KG.toggleTheme));
   syncThemeIcon();

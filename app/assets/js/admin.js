@@ -89,6 +89,31 @@
       sel.innerHTML = opts.join('');
       renderManage();
     } catch (e) { log('목록 불러오기 실패: ' + e.message, 'err'); }
+    loadGuestbook();
+  }
+
+  async function loadGuestbook() {
+    const box = $('gb-admin-list'); if (!box) return;
+    try {
+      const data = await api('guestbook', { auth: false });
+      if (!data.configured) { box.innerHTML = '<p class="sub">방명록 저장소(Cloudflare KV)가 아직 연결되지 않았습니다. README의 KV 설정을 마치면 활성화됩니다.</p>'; return; }
+      const entries = data.entries || [];
+      if (!entries.length) { box.innerHTML = '<p class="sub">아직 방명록이 없습니다.</p>'; return; }
+      box.innerHTML = entries.map(e => `
+        <div class="gb-admin-item">
+          <div class="ga-main">
+            <div><span class="ga-name">${KG.escapeHtml(e.name || '익명')}</span><span class="ga-date">${KG.formatDate(e.date)}</span></div>
+            <div class="ga-msg">${KG.escapeHtml(e.message)}</div>
+          </div>
+          <button class="ga-del" data-gid="${KG.escapeHtml(e.id)}">삭제</button>
+        </div>`).join('');
+      box.querySelectorAll('.ga-del').forEach(b => b.addEventListener('click', () => delGuestbook(b.dataset.gid)));
+    } catch (e) { box.innerHTML = '<p class="sub">방명록을 불러오지 못했습니다.</p>'; }
+  }
+  async function delGuestbook(id) {
+    if (!confirm('이 방명록을 삭제할까요?')) return;
+    try { await api('guestbook', { method: 'POST', body: { action: 'delete', id } }); log('✔ 방명록 삭제 완료', 'ok'); loadGuestbook(); }
+    catch (e) { log('✖ ' + e.message, 'err'); }
   }
 
   function renderManage() {
@@ -278,6 +303,7 @@
   $('btn-upload').addEventListener('click', doUpload);
   $('btn-clear-files').addEventListener('click', () => { files = []; renderFiles(); });
   $('btn-refresh').addEventListener('click', () => { log('목록 새로고침…', 'info'); refresh(); });
+  { const g = $('btn-gb-refresh'); if (g) g.addEventListener('click', loadGuestbook); }
 
   // ---------- 시작: 세션 있으면 자동 진입 ----------
   (async function init() {

@@ -147,6 +147,19 @@ npm run dev      # 목록 생성 + 로컬 서버 실행 (사이트 루트 기준
 >
 > 아이디/비밀번호를 바꾸고 싶으면 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 변수로 덮어쓰면 됩니다. (보안을 위해 `ADMIN_PASSWORD` 는 꼭 바꾸시길 권합니다.)
 
+### 방문자 카운터 · 방명록 켜기 (Cloudflare KV — 한 번만)
+
+메인 페이지의 **방문자 수(오늘/누적)** 와 **방명록** 은 저장 공간이 필요해서 Cloudflare 무료 저장소(KV)를 연결합니다. (연결 전에도 사이트는 정상 동작하고, 그 자리만 "준비 중"으로 표시됩니다. 이메일 링크는 설정 없이 바로 됩니다.)
+
+1. Cloudflare 대시보드 → 왼쪽 **Storage & Databases** → **KV** → **Create namespace** → 이름 예: `kg-data` → 생성
+2. Pages 프로젝트(**stock-predictor-dx2**) → **Settings** → **Functions** 또는 **Bindings** → **KV namespace bindings** → **Add** :
+   - **Variable name** : `KG_KV` (정확히 이 이름)
+   - **KV namespace** : 방금 만든 `kg-data` 선택
+3. **Save** → **Deployments** 탭에서 **Retry deployment**
+4. 사이트를 새로고침하면 방문자 수와 방명록이 활성화됩니다.
+
+> 방명록 스팸은 자동으로 어느 정도 막습니다(봇 차단 + 같은 사람 30초 간격 제한). 부적절한 글은 **관리자 페이지 → 방명록 관리**에서 삭제할 수 있습니다.
+
 ### 배포 후 딱 한 번 — 실제 주소 설정 (SEO)
 
 1. `app/site.config.json` 의 `"baseUrl"` 을 실제 주소로 변경

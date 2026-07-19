@@ -455,3 +455,37 @@ html[data-theme="dark"] .admin-top .logo .mark { background: linear-gradient(135
 .mn-edit .field { margin-bottom: 10px; }
 .mn-edit .field label { font-size: 12px; }
 .mn-edit textarea { min-height: 56px; }
+
+/* ---------- 방문자 카운터 & 방명록 ---------- */
+.visitor-count { font-size: 13px; color: var(--text-faint); font-weight: 700; }
+.visitor-count b { color: var(--brand); font-weight: 800; }
+
+.guestbook { padding: 18px 18px 20px; }
+.gb-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.gb-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.gb-row #gb-name { flex: 0 0 220px; max-width: 220px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); font-family: inherit; font-size: 14px; outline: none; }
+.gb-row #gb-name:focus { border-color: var(--brand); }
+.gb-email { font-size: 12.5px; color: var(--brand); font-weight: 700; }
+.gb-email:hover { text-decoration: underline; }
+.gb-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.gb-form textarea { min-height: 74px; padding: 12px 13px; border-radius: 10px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); font-family: inherit; font-size: 14px; line-height: 1.6; resize: vertical; outline: none; }
+.gb-form textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); background: var(--bg-card); }
+.gb-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.gb-hint { font-size: 12.5px; color: var(--text-faint); font-weight: 600; }
+
+.gb-list { display: flex; flex-direction: column; gap: 10px; }
+.gb-note { text-align: center; color: var(--text-faint); font-size: 13.5px; padding: 18px; }
+.gb-item { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--bg); }
+.gb-item-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+.gb-item .gb-name { font-weight: 800; font-size: 13.5px; color: var(--text); }
+.gb-item .gb-date { font-size: 11.5px; color: var(--text-faint); font-weight: 600; }
+.gb-item .gb-msg { font-size: 14px; color: var(--text-soft); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+@media (max-width: 480px) { .gb-row #gb-name { flex: 1 1 100%; max-width: none; } }
+
+/* 관리자 방명록 관리 */
+.gb-admin-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--bg); }
+.gb-admin-item .ga-main { flex: 1; min-width: 0; }
+.gb-admin-item .ga-name { font-weight: 800; font-size: 13px; }
+.gb-admin-item .ga-date { font-size: 11px; color: var(--text-faint); margin-left: 6px; }
+.gb-admin-item .ga-msg { font-size: 13px; color: var(--text-soft); margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
+.gb-admin-item .ga-del { border: 1px solid var(--border-strong); background: var(--bg-card); color: var(--danger); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 700; cursor: pointer; flex: 0 0 auto; }
