@@ -99,12 +99,11 @@
     const cfg = await KG.getConfig();
     const ad = cfg.adsense;
     if (!ad || !ad.enabled || !ad.client) return null;
-    if (!document.querySelector('script[data-kg-adsense]')) {
+    if (!document.querySelector('script[src*="adsbygoogle.js"]')) {
       const s = document.createElement('script');
       s.async = true;
       s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(ad.client);
       s.crossOrigin = 'anonymous';
-      s.setAttribute('data-kg-adsense', '1');
       document.head.appendChild(s);
     }
     return ad;
@@ -257,21 +256,25 @@
   // ---------- 공통 부트스트랩 ----------
   // ---------- 방문자 카운터 ----------
   KG._visit = null;
+  // 저장된 방문 데이터를 화면의 [data-visit-*] 자리에 반영 (여러 번 호출 가능)
+  KG.showVisit = function () {
+    const data = KG._visit;
+    if (!data || !data.configured) return;
+    document.querySelectorAll('[data-visit-today]').forEach(el => el.textContent = Number(data.today || 0).toLocaleString());
+    document.querySelectorAll('[data-visit-total]').forEach(el => el.textContent = Number(data.total || 0).toLocaleString());
+    document.querySelectorAll('[data-visit-wrap]').forEach(el => el.hidden = false);
+  };
   KG.trackVisit = async function () {
     try {
       const today = new Date().toISOString().slice(0, 10);
-      const flag = 'kg-visit-' + today;
+      const flag = 'kg-vc2-' + today;   // 집계 성공 시에만 기록하는 새 키
       let counted = false;
       try { counted = !!localStorage.getItem(flag); } catch (e) {}
       const res = await fetch('/api/visit', { method: counted ? 'GET' : 'POST', cache: 'no-store' });
       const data = await res.json();
-      if (!counted) { try { localStorage.setItem(flag, '1'); } catch (e) {} }
       KG._visit = data;
-      if (data && data.configured) {
-        document.querySelectorAll('[data-visit-today]').forEach(el => el.textContent = Number(data.today || 0).toLocaleString());
-        document.querySelectorAll('[data-visit-total]').forEach(el => el.textContent = Number(data.total || 0).toLocaleString());
-        document.querySelectorAll('[data-visit-wrap]').forEach(el => el.hidden = false);
-      }
+      if (data && data.configured && !counted) { try { localStorage.setItem(flag, '1'); } catch (e) {} }
+      KG.showVisit();
       return data;
     } catch (e) { return null; }
   };

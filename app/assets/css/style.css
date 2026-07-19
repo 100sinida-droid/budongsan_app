@@ -489,3 +489,14 @@ html[data-theme="dark"] .admin-top .logo .mark { background: linear-gradient(135
 .gb-admin-item .ga-date { font-size: 11px; color: var(--text-faint); margin-left: 6px; }
 .gb-admin-item .ga-msg { font-size: 13px; color: var(--text-soft); margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
 .gb-admin-item .ga-del { border: 1px solid var(--border-strong); background: var(--bg-card); color: var(--danger); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 700; cursor: pointer; flex: 0 0 auto; }
+
+/* ---------- 방문자 카운터 바 (홈 최상단) ---------- */
+.visit-bar {
+  text-align: center; margin: 16px auto 2px; padding: 8px 16px;
+  font-size: 13px; font-weight: 700; color: var(--text-soft);
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 999px;
+  display: inline-block; box-shadow: var(--shadow-sm);
+}
+.visit-bar b { color: var(--brand); font-weight: 800; }
+/* 가운데 정렬용 래퍼 역할 */
+.container > .visit-bar { display: block; width: fit-content; }

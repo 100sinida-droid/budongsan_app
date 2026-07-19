@@ -18,12 +18,10 @@
     return;
   }
 
-  // 통계 (작품/회차 + 방문자: 방문자는 KV 연결 시 자동 표시)
+  // 통계
   document.getElementById('hero-stats').innerHTML = `
     <div><div class="num">${data.counts.novels}</div><div class="lbl">작품</div></div>
-    <div><div class="num">${data.counts.episodes}</div><div class="lbl">회차</div></div>
-    <div data-visit-wrap hidden><div class="num" data-visit-today>-</div><div class="lbl">오늘 방문</div></div>
-    <div data-visit-wrap hidden><div class="num" data-visit-total>-</div><div class="lbl">누적 방문</div></div>`;
+    <div><div class="num">${data.counts.episodes}</div><div class="lbl">회차</div></div>`;
 
   // JSON-LD (조직/사이트)
   KG.setJsonLd({
