@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://stock-predictor-dx2.pages.dev/</loc><lastmod>2026-07-19</lastmod><priority>1.0</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/novels.html</loc><lastmod>2026-07-19</lastmod><priority>0.9</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/search.html</loc><lastmod>2026-07-19</lastmod><priority>0.3</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/</loc><lastmod>2026-07-22</lastmod><priority>1.0</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/novels.html</loc><lastmod>2026-07-22</lastmod><priority>0.9</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/search.html</loc><lastmod>2026-07-22</lastmod><priority>0.3</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/novel.html?slug=mirae-ai</loc><lastmod>2026-07-16</lastmod><priority>0.8</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=mirae-ai&amp;ep=001</loc><lastmod>2026-07-16</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=mirae-ai&amp;ep=002</loc><lastmod>2026-07-16</lastmod><priority>0.6</priority></url>
@@ -179,4 +179,54 @@
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_78%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_79%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_80%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/novel.html?slug=dungeon</loc><lastmod>2026-07-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=001%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=002%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=003%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=004%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=005%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=006%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=007%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=008%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=009%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=010%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=011%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=012%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=013%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=014%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=015%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=016%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=017%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=018%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=019%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=020%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=021%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=022%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=023%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=024%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=025%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=026%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=027%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=028%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=029%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=030%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=031%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=032%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=033%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=034%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=035%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=036%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=037%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=038%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=039%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=040%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=041%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=042%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=043%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=044%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=045%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=046%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=047%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=048%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=049%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
 </urlset>
