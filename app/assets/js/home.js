@@ -3,7 +3,7 @@
   await KG.boot('home');
   const cfg = await KG.getConfig();
 
-  KG.setMeta({ path: '/', type: 'website' });
+  KG.setMeta({ title: cfg.seo?.homeTitle, fullTitle: true, description: cfg.seo?.homeDescription, path: '/', type: 'website' });
 
   // 히어로 & 작가 소개 텍스트
   document.getElementById('hero-tagline').textContent = cfg.tagline || '';
@@ -67,7 +67,7 @@
       ? `<img src="${KG.escapeHtml(n.cover)}" alt="${KG.escapeHtml(n.title)} 표지" loading="lazy">`
       : `<div class="cover-title">${KG.escapeHtml(n.title)}</div>`;
     return `
-      <a class="card" href="/app/novel.html?slug=${encodeURIComponent(n.slug)}">
+      <a class="card" href="/novel/${encodeURIComponent(n.slug)}">
         <div class="novel-cover">
           <span class="cover-badge badge status-${KG.escapeHtml(n.status)}">${KG.escapeHtml(n.status)}</span>
           ${cover}

@@ -500,3 +500,10 @@ html[data-theme="dark"] .admin-top .logo .mark { background: linear-gradient(135
 .visit-bar b { color: var(--brand); font-weight: 800; }
 /* 가운데 정렬용 래퍼 역할 */
 .container > .visit-bar { display: block; width: fit-content; }
+
+/* ---------- SEO 랜딩 페이지 회차 목록 ---------- */
+.seo-eplist { list-style: none; padding: 0; margin: 10px 0 40px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-card); }
+.seo-eplist li { border-bottom: 1px solid var(--border); }
+.seo-eplist li:last-child { border-bottom: none; }
+.seo-eplist a { display: block; padding: 13px 16px; font-size: 14.5px; font-weight: 600; color: var(--text); transition: .12s; }
+.seo-eplist a:hover { background: var(--brand-soft); color: var(--brand); }

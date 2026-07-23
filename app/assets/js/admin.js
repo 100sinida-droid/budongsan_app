@@ -304,6 +304,12 @@
   $('btn-clear-files').addEventListener('click', () => { files = []; renderFiles(); });
   $('btn-refresh').addEventListener('click', () => { log('목록 새로고침…', 'info'); refresh(); });
   { const g = $('btn-gb-refresh'); if (g) g.addEventListener('click', loadGuestbook); }
+  { const s = $('btn-seo'); if (s) s.addEventListener('click', async () => {
+      s.classList.add('locked');
+      try { log('SEO 랜딩페이지 생성 중…', 'info'); const d = await api('seo', { method: 'POST', body: {} }); log(`✔ ${d.count}개 작품의 SEO 페이지 생성 완료. 1분 뒤 반영됩니다.`, 'ok'); }
+      catch (e) { log('✖ ' + e.message, 'err'); }
+      finally { s.classList.remove('locked'); }
+    }); }
 
   // ---------- 시작: 세션 있으면 자동 진입 ----------
   (async function init() {

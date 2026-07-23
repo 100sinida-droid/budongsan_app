@@ -66,7 +66,7 @@
   function row(doc, terms) {
     if (doc.type === 'novel') {
       return `
-        <a class="search-result" href="/app/novel.html?slug=${encodeURIComponent(doc.slug)}">
+        <a class="search-result" href="/novel/${encodeURIComponent(doc.slug)}">
           <div class="sr-top"><span class="badge">작품</span> <span>${KG.escapeHtml(doc.genre || '')}</span></div>
           <div class="sr-title">${hl(doc.title, terms)}</div>
           <div class="sr-body">${hl(doc.description || '', terms)}</div>

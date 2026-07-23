@@ -178,15 +178,100 @@ function recomputeIndexMeta(index, config) {
   index.recentEpisodes = recent.slice(0, 30);
 }
 function xmlEscape(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;'); }
+function htmlEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 function buildSitemap(index, today) {
   const base = (index.site.baseUrl || '').replace(/\/$/, ''); const urls = [];
   const add = (loc, lastmod, pr) => urls.push(`  <url><loc>${xmlEscape(base + loc)}</loc>${lastmod ? `<lastmod>${String(lastmod).slice(0, 10)}</lastmod>` : ''}<priority>${pr}</priority></url>`);
   add('/', today, '1.0'); add('/app/novels.html', today, '0.9'); add('/app/search.html', today, '0.3');
-  for (const n of index.novels) { add(`/app/novel.html?slug=${encodeURIComponent(n.slug)}`, n.lastUpdated, '0.8'); for (const e of (n.episodes || [])) add(`/app/read.html?novel=${encodeURIComponent(n.slug)}&ep=${encodeURIComponent(e.id)}`, e.modified || e.date, '0.6'); }
+  for (const n of index.novels) { add(`/novel/${encodeURIComponent(n.slug)}`, n.lastUpdated, '0.9'); for (const e of (n.episodes || [])) add(`/app/read.html?novel=${encodeURIComponent(n.slug)}&ep=${encodeURIComponent(e.id)}`, e.modified || e.date, '0.6'); }
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }
 function stripPlain(index) {
   return { site: index.site, generatedAt: index.generatedAt, counts: index.counts, recentEpisodes: index.recentEpisodes, novels: index.novels.map(n => ({ ...n, episodes: (n.episodes || []).map(e => { const { plain, ...rest } = e; return rest; }) })) };
+}
+
+/* ---------- 작품별 정적 SEO 랜딩 페이지 ---------- */
+export function novelLandingHtml(n, config) {
+  const siteName = config.siteName || '강그린 웹소설';
+  const brand = (config.seo && config.seo.brand) || '강그린 웹소설';
+  const base = (config.baseUrl || '').replace(/\/$/, '');
+  const url = base + '/novel/' + n.slug;
+  const title = `${n.title} - ${brand}`;
+  const descRaw = (n.description || `${n.title} · ${n.genre || ''} 웹소설. 총 ${n.episodeCount || 0}화 ${n.status || ''}.`).replace(/\s+/g, ' ').trim();
+  const desc = descRaw.slice(0, 160);
+  const coverAbs = n.cover ? (/^https?:/.test(n.cover) ? n.cover : base + n.cover) : (base + ((config.ogImage) || '/app/assets/og-default.svg'));
+  const eps = n.episodes || [];
+  const firstEp = n.firstEpisodeId || (eps[0] && eps[0].id);
+  const epLinks = eps.map(e => `        <li><a href="/app/read.html?novel=${encodeURIComponent(n.slug)}&amp;ep=${encodeURIComponent(e.id)}">${htmlEsc(e.num != null ? e.num + '화' : (e.order || '') + '화')} ${htmlEsc(e.title || '')}</a></li>`).join('\n');
+  const adClient = (config.adsense && config.adsense.enabled && config.adsense.client) ? config.adsense.client : '';
+  const adHead = adClient ? `\n  <meta name="google-adsense-account" content="${htmlEsc(adClient)}">\n  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${htmlEsc(adClient)}" crossorigin="anonymous"></script>` : '';
+  const jsonld = JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'Book', name: n.title, genre: n.genre,
+    author: { '@type': 'Person', name: (config.author && config.author.name) || brand },
+    numberOfPages: n.episodeCount, bookFormat: 'https://schema.org/EBook', inLanguage: 'ko',
+    description: descRaw, url, ...(n.cover ? { image: coverAbs } : {})
+  });
+  const cover = n.cover ? `<img src="${htmlEsc(n.cover)}" alt="${htmlEsc(n.title)} 표지">` : `<div class="cover-title">${htmlEsc(n.title)}</div>`;
+  return `<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>${htmlEsc(title)}</title>
+  <meta name="description" content="${htmlEsc(desc)}">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="${htmlEsc(url)}">
+  <meta property="og:type" content="book">
+  <meta property="og:title" content="${htmlEsc(title)}">
+  <meta property="og:description" content="${htmlEsc(desc)}">
+  <meta property="og:url" content="${htmlEsc(url)}">
+  <meta property="og:image" content="${htmlEsc(coverAbs)}">
+  <meta property="og:site_name" content="${htmlEsc(siteName)}">
+  <meta name="theme-color" content="#5b4bff">
+  <link rel="icon" href="/app/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="/app/assets/css/style.css">${adHead}
+  <script type="application/ld+json">${jsonld}</script>
+</head>
+<body>
+  <header class="site-header" data-site-header></header>
+  <main>
+    <div class="container" style="max-width:840px">
+      <nav style="margin:18px 0 4px;font-size:13.5px;color:var(--text-faint);font-weight:600">
+        <a href="/app/novels.html" style="color:var(--text-faint)">작품 목록</a> › <span>${htmlEsc(n.title)}</span>
+      </nav>
+      <article class="novel-hero" style="margin-top:14px">
+        <div class="cover-lg">${cover}</div>
+        <div class="info">
+          <span class="badge status-${htmlEsc(n.status)}">${htmlEsc(n.status)}</span>
+          <h1>${htmlEsc(n.title)}</h1>
+          <div class="meta-row"><span>📚 ${htmlEsc(n.genre)}</span><span>📄 총 ${n.episodeCount}화</span></div>
+          <div class="desc">${htmlEsc(n.description || '')}</div>
+          <div class="actions">
+            ${firstEp ? `<a class="btn btn-primary" href="/app/read.html?novel=${encodeURIComponent(n.slug)}&amp;ep=${encodeURIComponent(firstEp)}">무료 1화 보기</a>` : ''}
+          </div>
+        </div>
+      </article>
+      <div class="ad-slot"></div>
+      <h2 style="margin-top:34px;font-size:18px">회차 목록 <span style="color:var(--text-faint);font-weight:600;font-size:14px">(${eps.length})</span></h2>
+      <ul class="seo-eplist">
+${epLinks}
+      </ul>
+    </div>
+  </main>
+  <footer class="site-footer" data-site-footer></footer>
+  <script src="/app/assets/js/common.js"></script>
+  <script>KG.boot('novels');</script>
+</body>
+</html>
+`;
+}
+/* 현재 모든 작품의 랜딩페이지 커밋 엔트리 (+ 삭제된 slug 제거) */
+function landingEntries(index, config, removedSlugs) {
+  const entries = [];
+  for (const n of index.novels) entries.push({ path: `novel/${n.slug}.html`, mode: '100644', _blob: { content: novelLandingHtml(n, config), encoding: 'utf-8' } });
+  for (const s of (removedSlugs || [])) entries.push({ path: `novel/${s}.html`, mode: '100644', sha: null });
+  return entries;
 }
 
 /* ---------- 업로드 ---------- */
@@ -257,7 +342,8 @@ async function upload(request, CFG) {
   blobs.push({ path: DATA_SEARCH, content: JSON.stringify({ docs: search.docs }), encoding: 'utf-8' });
   blobs.push({ path: SITEMAP, content: buildSitemap(index, nowIso.slice(0, 10)), encoding: 'utf-8' });
 
-  const commit = await commitTree(CFG, blobs.map(b => ({ path: b.path, mode: '100644', _blob: b })), `admin: ${slug} 업로드 (원고 ${uploaded.length}개)`);
+  const entries = blobs.map(b => ({ path: b.path, mode: '100644', _blob: b })).concat(landingEntries(index, config));
+  const commit = await commitTree(CFG, entries, `admin: ${slug} 업로드 (원고 ${uploaded.length}개)`);
   return json({ ok: true, committed: uploaded.length, commit });
 }
 
@@ -273,6 +359,7 @@ async function del(request, CFG) {
   const config = (await ghGetJson(CFG, CONFIG_PATH)) || {};
 
   const entries = [];
+  const removedSlugs = [];
   if (file) {
     const name = String(file).replace(/[\/\\]/g, '_');
     entries.push({ path: `${base}/${name}`, mode: '100644', sha: null });
@@ -292,6 +379,7 @@ async function del(request, CFG) {
     if (!entries.length) return json({ error: '삭제할 파일이 없습니다.' }, 400);
     index.novels = index.novels.filter(n => n.slug !== slug);
     search.docs = search.docs.filter(d => d.slug !== slug);
+    removedSlugs.push(slug);
   }
 
   index.generatedAt = nowIso;
@@ -299,6 +387,7 @@ async function del(request, CFG) {
   entries.push({ path: DATA_INDEX, mode: '100644', _blob: { content: JSON.stringify(stripPlain(index)), encoding: 'utf-8' } });
   entries.push({ path: DATA_SEARCH, mode: '100644', _blob: { content: JSON.stringify({ docs: search.docs }), encoding: 'utf-8' } });
   entries.push({ path: SITEMAP, mode: '100644', _blob: { content: buildSitemap(index, nowIso.slice(0, 10)), encoding: 'utf-8' } });
+  for (const e of landingEntries(index, config, removedSlugs)) entries.push(e);
 
   const commit = await commitTree(CFG, entries, file ? `admin: ${file} 삭제` : `admin: ${slug} 작품 삭제`);
   return json({ ok: true, commit });
@@ -348,9 +437,26 @@ async function updateNovel(request, CFG) {
     { path: DATA_INDEX, mode: '100644', _blob: { content: JSON.stringify(stripPlain(index)), encoding: 'utf-8' } },
     { path: DATA_SEARCH, mode: '100644', _blob: { content: JSON.stringify({ docs: search.docs }), encoding: 'utf-8' } },
     { path: SITEMAP, mode: '100644', _blob: { content: buildSitemap(index, nowIso.slice(0, 10)), encoding: 'utf-8' } }
-  ];
+  ].concat(landingEntries(index, config));
   const commit = await commitTree(CFG, entries, `admin: ${slug} 정보 수정`);
   return json({ ok: true, commit });
+}
+
+/* ---------- SEO 랜딩페이지 전체 재생성 (관리자) ---------- */
+export async function onRebuildSeo(request, env) {
+  if (request.method !== 'POST') return json({ error: 'method' }, 405);
+  const g = await guard(request, env); if (g.res) return g.res;
+  const CFG = g.CFG;
+  const nowIso = new Date().toISOString();
+  const index = (await ghGetJson(CFG, DATA_INDEX)) || { novels: [] }; if (!index.novels) index.novels = [];
+  const config = (await ghGetJson(CFG, CONFIG_PATH)) || {};
+  index.generatedAt = nowIso;
+  recomputeIndexMeta(index, config);
+  const entries = [
+    { path: SITEMAP, mode: '100644', _blob: { content: buildSitemap(index, nowIso.slice(0, 10)), encoding: 'utf-8' } }
+  ].concat(landingEntries(index, config));
+  const commit = await commitTree(CFG, entries, `admin: SEO 랜딩페이지 재생성 (${index.novels.length}개)`);
+  return json({ ok: true, count: index.novels.length, commit });
 }
 
 /* ---------- Git Data API: 한 커밋으로 ---------- */

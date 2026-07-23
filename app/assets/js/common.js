@@ -164,7 +164,7 @@
   KG.setMeta = async function (opts) {
     const cfg = await KG.getConfig();
     const base = (cfg.baseUrl || '').replace(/\/$/, '');
-    const title = opts.title ? `${opts.title} | ${cfg.siteName}` : cfg.siteName;
+    const title = opts.fullTitle && opts.title ? opts.title : (opts.title ? `${opts.title} | ${cfg.siteName}` : cfg.siteName);
     const desc = opts.description || cfg.description || '';
     const url = base + (opts.path || location.pathname + location.search);
     const image = base + (opts.image || cfg.ogImage || '');

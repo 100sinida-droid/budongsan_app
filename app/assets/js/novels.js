@@ -50,7 +50,7 @@
       ? `<img src="${KG.escapeHtml(n.cover)}" alt="${KG.escapeHtml(n.title)} 표지" loading="lazy">`
       : `<div class="cover-title">${KG.escapeHtml(n.title)}</div>`;
     return `
-      <a class="card" href="/app/novel.html?slug=${encodeURIComponent(n.slug)}">
+      <a class="card" href="/novel/${encodeURIComponent(n.slug)}">
         <div class="novel-cover">
           <span class="cover-badge badge status-${KG.escapeHtml(n.status)}">${KG.escapeHtml(n.status)}</span>
           ${cover}
