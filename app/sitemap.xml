@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://stock-predictor-dx2.pages.dev/</loc><lastmod>2026-07-22</lastmod><priority>1.0</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/novels.html</loc><lastmod>2026-07-22</lastmod><priority>0.9</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/search.html</loc><lastmod>2026-07-22</lastmod><priority>0.3</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/novel.html?slug=f-sss-ai</loc><lastmod>2026-07-17</lastmod><priority>0.8</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/</loc><lastmod>2026-07-24</lastmod><priority>1.0</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/novels.html</loc><lastmod>2026-07-24</lastmod><priority>0.9</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/app/search.html</loc><lastmod>2026-07-24</lastmod><priority>0.3</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/novel/f-sss-ai</loc><lastmod>2026-07-17</lastmod><priority>0.9</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=f-sss-ai&amp;ep=1%ED%99%94</loc><lastmod>2026-07-17</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=f-sss-ai&amp;ep=2%ED%99%94</loc><lastmod>2026-07-17</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=f-sss-ai&amp;ep=3%ED%99%94</loc><lastmod>2026-07-17</lastmod><priority>0.6</priority></url>
@@ -94,7 +94,7 @@
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=f-sss-ai&amp;ep=88%ED%99%94</loc><lastmod>2026-07-17</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=f-sss-ai&amp;ep=89%ED%99%94</loc><lastmod>2026-07-17</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=f-sss-ai&amp;ep=90%ED%99%94</loc><lastmod>2026-07-17</lastmod><priority>0.6</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/novel.html?slug=jaebul</loc><lastmod>2026-07-19</lastmod><priority>0.8</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/novel/jaebul</loc><lastmod>2026-07-19</lastmod><priority>0.9</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_1%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_2%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_3%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
@@ -175,7 +175,7 @@
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_78%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_79%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=jaebul&amp;ep=%ED%9D%89%EA%B0%80%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4_80%ED%99%94</loc><lastmod>2026-07-19</lastmod><priority>0.6</priority></url>
-  <url><loc>https://stock-predictor-dx2.pages.dev/app/novel.html?slug=dungeon</loc><lastmod>2026-07-22</lastmod><priority>0.8</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/novel/dungeon</loc><lastmod>2026-07-22</lastmod><priority>0.9</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=001%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=002%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=003%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
@@ -225,4 +225,5 @@
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=047%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=048%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
   <url><loc>https://stock-predictor-dx2.pages.dev/app/read.html?novel=dungeon&amp;ep=049%ED%99%94</loc><lastmod>2026-07-22</lastmod><priority>0.6</priority></url>
+  <url><loc>https://stock-predictor-dx2.pages.dev/novel/refund100</loc><lastmod>2026-07-24</lastmod><priority>0.9</priority></url>
 </urlset>
