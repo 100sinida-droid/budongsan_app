@@ -155,7 +155,16 @@ function stripFrontmatter(raw) { return String(raw).replace(/^﻿/, '').replace(
 function frontmatterTitle(raw) { const m = String(raw).match(/^﻿?---\s*\r?\n([\s\S]*?)\r?\n---/); if (!m) return null; const t = m[1].match(/^\s*title\s*:\s*(.+)\s*$/m); return t ? t[1].trim().replace(/^["']|["']$/g, '') : null; }
 function toPlainText(md) { return String(md).replace(/^#{1,6}\s+/gm, '').replace(/[*_~`>#]/g, '').replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\r/g, '').replace(/\n{2,}/g, ' ').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim(); }
 function countWords(p) { return p ? p.replace(/\s/g, '').length : 0; }
-function epNumber(filename) { const stem = filename.replace(/\.(md|txt)$/i, ''); const m = stem.match(/(\d+)/); return m ? parseInt(m[1], 10) : null; }
+function epNumber(filename) {
+  const stem = String(filename).replace(/\.(md|txt)$/i, '');
+  // 1) 'N화' 패턴 우선 (여러 개면 마지막 것) → 제목 속 숫자(예: '환불100배')를 회차로 오인 방지
+  const hwa = [...stem.matchAll(/(\d+)\s*화/g)];
+  if (hwa.length) return parseInt(hwa[hwa.length - 1][1], 10);
+  // 2) '화' 표기가 없으면 파일명의 마지막 숫자 (예: 001, 012)
+  const nums = stem.match(/\d+/g);
+  if (nums && nums.length) return parseInt(nums[nums.length - 1], 10);
+  return null;
+}
 function analyzeEpisode(name, text, existingDate, nowIso) {
   const body = stripFrontmatter(text);
   let title = frontmatterTitle(text);

@@ -191,9 +191,15 @@
   }
 
   // ---------- 원고 파일 ----------
+  function epNum(stem) {
+    const hwa = [...stem.matchAll(/(\d+)\s*화/g)];
+    if (hwa.length) return parseInt(hwa[hwa.length - 1][1], 10);
+    const nums = stem.match(/\d+/g);
+    return (nums && nums.length) ? parseInt(nums[nums.length - 1], 10) : null;
+  }
   function parseMeta(name, text) {
     const stem = name.replace(/\.(md|txt)$/i, '');
-    const m = stem.match(/(\d+)/); const num = m ? parseInt(m[1], 10) : null;
+    const num = epNum(stem);
     let title = null;
     const fm = text.match(/^﻿?---\s*[\r\n]([\s\S]*?)[\r\n]---/);
     if (fm) { const t = fm[1].match(/title\s*:\s*(.+)/); if (t) title = t[1].trim().replace(/^["']|["']$/g, ''); }

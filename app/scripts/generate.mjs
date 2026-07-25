@@ -94,11 +94,14 @@ function fileDates(absPath) {
   return { added: added || null, modified: modified || null };
 }
 
-/** 파일명에서 회차 번호 추출: 001.md, 001화.md, 12화.md -> 숫자 */
+/** 파일명에서 회차 번호 추출: 001.md, 001화.md, 12화.md, 제목속숫자_1화.txt -> 숫자
+ *  'N화' 패턴을 우선 인식해 제목 속 숫자(예: '환불100배')를 회차로 오인하지 않음 */
 function parseEpisodeNumber(filename) {
   const stem = filename.replace(/\.(md|txt)$/i, '');
-  const m = stem.match(/(\d+)/);
-  return m ? parseInt(m[1], 10) : null;
+  const hwa = [...stem.matchAll(/(\d+)\s*화/g)];
+  if (hwa.length) return parseInt(hwa[hwa.length - 1][1], 10);
+  const nums = stem.match(/\d+/g);
+  return (nums && nums.length) ? parseInt(nums[nums.length - 1], 10) : null;
 }
 
 function slugFromFilename(filename) {
