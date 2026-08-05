@@ -158,7 +158,11 @@ function scanNovels() {
         if (h) title = h[1].trim();
       }
       const num = parseEpisodeNumber(file);
-      if (!title) title = num != null ? `${num}화` : slugFromFilename(file);
+      if (!title) {
+        const stem = slugFromFilename(file);
+        // 순수 숫자/'N화' 파일은 'N화', 그 외(외전 등)는 파일명을 제목으로
+        title = (/^\d+\s*화?$/.test(stem.trim()) && num != null) ? `${num}화` : stem;
+      }
 
       const dates = fileDates(abs);
       const date = data.date || dates.added;

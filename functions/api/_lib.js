@@ -170,7 +170,11 @@ function analyzeEpisode(name, text, existingDate, nowIso) {
   let title = frontmatterTitle(text);
   if (!title) { const h = body.match(/^﻿?#\s+(.+)$/m); if (h) title = h[1].trim(); }
   const num = epNumber(name);
-  if (!title) title = num != null ? `${num}화` : name.replace(/\.(md|txt)$/i, '');
+  if (!title) {
+    const stem = name.replace(/\.(md|txt)$/i, '');
+    // 파일명이 순수 숫자/‘N화’ 형태면 'N화'로, 그 외(외전 등 이름 있는 파일)는 파일명을 제목으로
+    title = (/^\d+\s*화?$/.test(stem.trim()) && num != null) ? `${num}화` : stem;
+  }
   const plain = toPlainText(body);
   return { id: name.replace(/\.(md|txt)$/i, ''), file: name, num, title, date: existingDate || nowIso, modified: nowIso, words: countWords(plain), snippet: plain.slice(0, SNIPPET_LIMIT), plain };
 }

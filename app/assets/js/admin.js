@@ -204,7 +204,7 @@
     const fm = text.match(/^﻿?---\s*[\r\n]([\s\S]*?)[\r\n]---/);
     if (fm) { const t = fm[1].match(/title\s*:\s*(.+)/); if (t) title = t[1].trim().replace(/^["']|["']$/g, ''); }
     if (!title) { const h = text.match(/^﻿?#\s+(.+)$/m); if (h) title = h[1].trim(); }
-    if (!title) title = num != null ? `${num}화` : stem;
+    if (!title) title = (/^\d+\s*화?$/.test(stem.trim()) && num != null) ? `${num}화` : stem;
     return { num, title };
   }
   function addFiles(fileList) {

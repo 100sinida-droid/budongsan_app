@@ -18,7 +18,7 @@
     "url": "https://library.munpia.com/qSt1yXLc50O4VMCv0hqi"
   },
   "adsense": {
-    "enabled": true,
+    "enabled": false,
     "client": "ca-pub-7938956361770773",
     "slot": "5368010468"
   },
