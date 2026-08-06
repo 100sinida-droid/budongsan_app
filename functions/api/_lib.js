@@ -327,7 +327,8 @@ async function upload(request, CFG) {
 
   const uploaded = [];
   for (const f of (body.files || [])) {
-    const name = String(f.name || '').replace(/[\/\\]/g, '_');
+    // 파일명 정리: 경로문자 제거 + 중복 공백을 하나로 + 앞뒤 공백 제거 (이름 불일치로 인한 삭제/열람 오류 방지)
+    const name = String(f.name || '').replace(/[\/\\]/g, '_').replace(/\s+/g, ' ').trim();
     if (!/\.(md|txt)$/i.test(name)) continue;
     const existing = novel.episodes.find(e => e.file === name);
     const ep = analyzeEpisode(name, String(f.text || ''), existing ? existing.date : null, nowIso);
@@ -373,18 +374,29 @@ async function del(request, CFG) {
 
   const entries = [];
   const removedSlugs = [];
+  const norm = s => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
   if (file) {
     const name = String(file).replace(/[\/\\]/g, '_');
-    entries.push({ path: `${base}/${name}`, mode: '100644', sha: null });
+    const id = name.replace(/\.(md|txt)$/i, '');
+    // 실제 폴더에서 파일을 찾아 정확한 이름으로 삭제 (이름 공백 차이/누락 대비 → 500 방지)
+    let actualName = null;
+    try {
+      const lr = await gh(CFG, `${R}/contents/${base}?ref=${encodeURIComponent(CFG.branch)}`);
+      if (lr.status === 200) {
+        const names = (await lr.json()).filter(x => x.type === 'file').map(x => x.name);
+        actualName = names.find(f => f === name) || names.find(f => norm(f) === norm(name)) || null;
+      }
+    } catch (e) {}
+    if (actualName) entries.push({ path: `${base}/${actualName}`, mode: '100644', sha: null });
+    // 목록/검색에서는 파일 존재 여부와 무관하게 제거 (이름 정규화 비교)
     const novel = index.novels.find(n => n.slug === slug);
     if (novel && novel.episodes) {
-      const id = name.replace(/\.(md|txt)$/i, '');
-      novel.episodes = novel.episodes.filter(e => e.id !== id && e.file !== name);
+      novel.episodes = novel.episodes.filter(e => norm(e.id) !== norm(id) && norm(e.file) !== norm(name));
       sortEpisodes(novel.episodes); novel.episodeCount = novel.episodes.length;
       const dates = novel.episodes.map(e => e.date).filter(Boolean).sort();
       novel.lastUpdated = dates.length ? dates[dates.length - 1] : nowIso;
       novel.firstEpisodeId = novel.episodes[0] ? novel.episodes[0].id : null;
-      search.docs = search.docs.filter(d => !(d.type === 'episode' && d.slug === slug && d.id === id));
+      search.docs = search.docs.filter(d => !(d.type === 'episode' && d.slug === slug && norm(d.id) === norm(id)));
     }
   } else {
     const lr = await gh(CFG, `${R}/contents/${base}?ref=${encodeURIComponent(CFG.branch)}`);
