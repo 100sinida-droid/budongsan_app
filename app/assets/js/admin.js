@@ -223,12 +223,28 @@
   }
   function renderFiles() {
     files.sort((a, b) => (a.num ?? 1e9) - (b.num ?? 1e9) || a.name.localeCompare(b.name));
-    $('file-list').innerHTML = files.map((f, i) => `
+    // 기존 작품을 선택한 경우, 실제 저장될 회차 번호(마지막 회차 뒤로 이어붙임)를 미리보기에 반영
+    const norm = s => String(s == null ? '' : s).replace(/[\/\\]/g, '_').replace(/\s+/g, ' ').trim();
+    const selSlug = $('novel-select').value;
+    const sel = (selSlug && selSlug !== '__new__') ? novels.find(n => n.slug === selSlug) : null;
+    const existingEps = sel && sel.episodes ? sel.episodes : [];
+    const existingByFile = {}; existingEps.forEach(e => existingByFile[norm(e.file)] = e);
+    const appendMode = existingEps.length > 0;
+    let maxNum = existingEps.reduce((m, e) => Math.max(m, (e.num || 0)), 0);
+    $('file-list').innerHTML = files.map((f, i) => {
+      let no = f.num, title = f.title;
+      const key = norm(f.name);
+      const autoNumTitle = f.num != null && title === f.num + '화';
+      const ex = existingByFile[key];
+      if (ex) { if (ex.num != null) { no = ex.num; if (autoNumTitle) title = ex.num + '화'; } }
+      else if (appendMode) { maxNum += 1; no = maxNum; if (autoNumTitle) title = maxNum + '화'; }
+      return `
       <div class="file-item">
-        <span class="fi-no">${f.num != null ? f.num + '화' : '?'}</span>
-        <span class="fi-main"><div class="fi-title">${KG.escapeHtml(f.title)}</div><div class="fi-name">${KG.escapeHtml(f.name)}</div></span>
+        <span class="fi-no">${no != null ? no + '화' : '?'}</span>
+        <span class="fi-main"><div class="fi-title">${KG.escapeHtml(title)}</div><div class="fi-name">${KG.escapeHtml(f.name)}</div></span>
         <button class="fi-del" data-i="${i}" title="빼기">✕</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     $('file-list').querySelectorAll('.fi-del').forEach(b => b.addEventListener('click', () => { files.splice(+b.dataset.i, 1); renderFiles(); }));
   }
 
@@ -292,7 +308,7 @@
   }
 
   // ---------- 이벤트 ----------
-  $('novel-select').addEventListener('change', e => { $('new-novel-fields').hidden = e.target.value !== '__new__'; });
+  $('novel-select').addEventListener('change', e => { $('new-novel-fields').hidden = e.target.value !== '__new__'; renderFiles(); });
 
   const dz = $('dropzone'), fi = $('file-input');
   dz.addEventListener('click', () => fi.click());

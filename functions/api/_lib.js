@@ -325,13 +325,31 @@ async function upload(request, CFG) {
   }
   if (meta) blobs.push({ path: `${base}/meta.json`, content: JSON.stringify(meta, null, 2) + '\n', encoding: 'utf-8' });
 
+  // 기존 작품에 추가 업로드 시: 새 회차는 마지막 회차 번호 뒤에 이어붙인다.
+  // (새 작품의 첫 업로드는 파일명 숫자를 그대로 사용 — 기존 동작 유지)
+  const appendMode = novel.episodes.length > 0;
+  let maxNum = novel.episodes.reduce((m, e) => Math.max(m, (e.num || 0)), 0);
+
   const uploaded = [];
-  for (const f of (body.files || [])) {
+  // 새로 추가되는 파일은 파일명 숫자 순으로 정렬해 순서대로 이어붙인다.
+  const incoming = (body.files || [])
     // 파일명 정리: 경로문자 제거 + 중복 공백을 하나로 + 앞뒤 공백 제거 (이름 불일치로 인한 삭제/열람 오류 방지)
-    const name = String(f.name || '').replace(/[\/\\]/g, '_').replace(/\s+/g, ' ').trim();
-    if (!/\.(md|txt)$/i.test(name)) continue;
+    .map(f => ({ f, name: String(f.name || '').replace(/[\/\\]/g, '_').replace(/\s+/g, ' ').trim() }))
+    .filter(x => /\.(md|txt)$/i.test(x.name));
+  incoming.sort((a, b) => (epNumber(a.name) ?? 1e9) - (epNumber(b.name) ?? 1e9) || a.name.localeCompare(b.name));
+
+  for (const { f, name } of incoming) {
     const existing = novel.episodes.find(e => e.file === name);
     const ep = analyzeEpisode(name, String(f.text || ''), existing ? existing.date : null, nowIso);
+    // 파일명이 '숫자'/'N화' 형태라 제목이 번호로 자동 생성된 경우인지 판별 (외전 등 이름 있는 제목은 보존)
+    const autoNumTitle = ep.num != null && ep.title === ep.num + '화';
+    if (existing) {
+      // 이미 있던 파일 재업로드 → 기존 회차 번호 유지 (교체)
+      if (existing.num != null) { ep.num = existing.num; if (autoNumTitle) ep.title = existing.num + '화'; }
+    } else if (appendMode) {
+      // 기존 작품에 새 파일 추가 → 마지막 회차 뒤 번호로 이어붙임
+      maxNum += 1; ep.num = maxNum; if (autoNumTitle) ep.title = maxNum + '화';
+    }
     const i = novel.episodes.findIndex(e => e.id === ep.id);
     if (i >= 0) novel.episodes[i] = ep; else novel.episodes.push(ep);
     uploaded.push(ep);
