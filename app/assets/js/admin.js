@@ -147,6 +147,7 @@
                 <div class="field" style="max-width:130px"><label>상태</label><select class="e-status">${statusOpt}</select></div>
               </div>
               <div class="field"><label>작품 소개</label><textarea class="e-desc">${av(n.description)}</textarea></div>
+              <div class="field"><label>완결편 구매 페이지 링크 (선택)</label><input class="e-purchase" type="url" placeholder="https://... 입력 시 '완결편 보러 가기' 버튼 표시" value="${av(n.purchaseUrl)}"></div>
               <div class="field-row" style="align-items:flex-end">
                 <label class="check"><input type="checkbox" class="e-featured" ${n.featured ? 'checked' : ''}> 메인 대표 작품</label>
                 <div class="field" style="max-width:150px"><label>인기도 (클수록 상단)</label><input type="number" class="e-pop" value="${av(n.popularity || 0)}"></div>
@@ -176,6 +177,7 @@
       genre: card.querySelector('.e-genre').value.trim(),
       status: card.querySelector('.e-status').value,
       description: card.querySelector('.e-desc').value.trim(),
+      purchaseUrl: card.querySelector('.e-purchase').value.trim(),
       featured: card.querySelector('.e-featured').checked,
       popularity: parseInt(card.querySelector('.e-pop').value, 10) || 0,
       order: parseInt(card.querySelector('.e-order').value, 10) || 999
@@ -276,7 +278,7 @@
     if (isNew) {
       slug = $('nn-slug').value.trim().toLowerCase().replace(/[^a-z0-9\-_]/g, '-').replace(/^-+|-+$/g, '');
       if (!slug) { log('새 작품의 폴더명을 입력하세요 (영문).', 'err'); return; }
-      meta = { title: $('nn-title').value.trim() || slug, genre: $('nn-genre').value.trim(), status: $('nn-status').value, description: $('nn-desc').value.trim(), featured: $('nn-featured').checked, order: parseInt($('nn-order').value, 10) || 10 };
+      meta = { title: $('nn-title').value.trim() || slug, genre: $('nn-genre').value.trim(), status: $('nn-status').value, description: $('nn-desc').value.trim(), purchaseUrl: $('nn-purchase').value.trim(), featured: $('nn-featured').checked, order: parseInt($('nn-order').value, 10) || 10 };
     }
     if (!files.length && !cover) { log('업로드할 원고나 표지를 추가하세요.', 'err'); return; }
 

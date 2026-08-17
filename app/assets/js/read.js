@@ -64,14 +64,20 @@
   bodyMd = bodyMd.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');   // 프론트매터 제거
   bodyMd = bodyMd.replace(/^\s*#{1,6}\s+.*(?:\n|$)/, '');        // 맨 앞 제목 줄 제거
   const epNum = ep.num != null ? `${ep.num}화` : `${ep.order}화`;
+  const buyUrl = n.purchaseUrl || '';
+  const buyBtn = buyUrl ? `<a class="btn btn-buy" href="${KG.escapeHtml(buyUrl)}" target="_blank" rel="noopener nofollow">완결편 보러 가기 →</a>` : '';
+  const buyTop = buyUrl ? `<div class="buy-cta"><p class="buy-lead">이 작품의 완결편은 아래 페이지에서 보실 수 있습니다.</p>${buyBtn}</div>` : '';
+  const buyBottom = buyUrl ? `<div class="buy-cta"><p class="buy-lead">여기까지 읽어주셔서 감사합니다. 뒷이야기가 궁금하다면 완결편으로 이어보세요.</p>${buyBtn}</div>` : '';
   reader.innerHTML = `
     <div class="ep-head">
       <a class="novel-name" href="/app/novel.html?slug=${encodeURIComponent(slug)}">${KG.escapeHtml(n.title)}</a>
       <h1>${KG.escapeHtml(ep.title)}</h1>
       <div class="ep-info">${epNum} · ${KG.formatDate(ep.date)} · ${ep.words.toLocaleString()}자</div>
     </div>
+    ${buyTop}
     <div class="ad-slot"></div>
     <div class="reader-body" id="reader-body">${KG.renderMarkdown(bodyMd)}</div>
+    ${buyBottom}
     <div class="ad-slot"></div>
   `;
   if (KG.renderAds) KG.renderAds();

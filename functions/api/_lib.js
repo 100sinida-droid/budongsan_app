@@ -216,6 +216,9 @@ export function novelLandingHtml(n, config) {
   const eps = n.episodes || [];
   const firstEp = n.firstEpisodeId || (eps[0] && eps[0].id);
   const epLinks = eps.map(e => `        <li><a href="/app/read.html?novel=${encodeURIComponent(n.slug)}&amp;ep=${encodeURIComponent(e.id)}">${htmlEsc(e.num != null ? e.num + '화' : (e.order || '') + '화')} ${htmlEsc(e.title || '')}</a></li>`).join('\n');
+  const buyUrl = n.purchaseUrl || '';
+  const buyBtn = buyUrl ? `<a class="btn btn-buy" href="${htmlEsc(buyUrl)}" target="_blank" rel="noopener nofollow">완결편 보러 가기 →</a>` : '';
+  const buyBanner = buyUrl ? `      <div class="buy-cta"><p class="buy-lead">뒷이야기가 궁금하다면? 완결편은 아래에서 만나보실 수 있습니다.</p>${buyBtn}</div>\n` : '';
   const adClient = (config.adsense && config.adsense.enabled && config.adsense.client) ? config.adsense.client : '';
   const adHead = adClient ? `\n  <meta name="google-adsense-account" content="${htmlEsc(adClient)}">\n  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${htmlEsc(adClient)}" crossorigin="anonymous"></script>` : '';
   const jsonld = JSON.stringify({
@@ -262,6 +265,7 @@ export function novelLandingHtml(n, config) {
           <div class="desc">${htmlEsc(n.description || '')}</div>
           <div class="actions">
             ${firstEp ? `<a class="btn btn-primary" href="/app/read.html?novel=${encodeURIComponent(n.slug)}&amp;ep=${encodeURIComponent(firstEp)}">무료 1화 보기</a>` : ''}
+            ${buyBtn}
           </div>
         </div>
       </article>
@@ -270,7 +274,7 @@ export function novelLandingHtml(n, config) {
       <ul class="seo-eplist">
 ${epLinks}
       </ul>
-    </div>
+${buyBanner}    </div>
   </main>
   <footer class="site-footer" data-site-footer></footer>
   <script src="/app/assets/js/common.js"></script>
@@ -316,8 +320,9 @@ async function upload(request, CFG) {
     const m = body.meta || {};
     novel.title = m.title || slug; novel.genre = m.genre || '미분류'; novel.status = m.status || '연재중';
     novel.description = m.description || ''; novel.featured = !!m.featured; novel.order = parseInt(m.order, 10) || 10;
+    novel.purchaseUrl = m.purchaseUrl || '';
     if (coverPath) novel.cover = '/' + coverPath;
-    meta = { title: novel.title, genre: novel.genre, status: novel.status, description: novel.description, cover: novel.cover || '', featured: novel.featured, popularity: novel.popularity || 0, order: novel.order };
+    meta = { title: novel.title, genre: novel.genre, status: novel.status, description: novel.description, purchaseUrl: novel.purchaseUrl, cover: novel.cover || '', featured: novel.featured, popularity: novel.popularity || 0, order: novel.order };
   } else if (coverPath) {
     novel.cover = '/' + coverPath;
     let existMeta = await ghGetJson(CFG, `${base}/meta.json`) || {};
@@ -457,14 +462,16 @@ async function updateNovel(request, CFG) {
   if (m.genre !== undefined) novel.genre = m.genre || '미분류';
   if (m.status !== undefined) novel.status = m.status || '연재중';
   if (m.description !== undefined) novel.description = m.description || '';
+  if (m.purchaseUrl !== undefined) novel.purchaseUrl = m.purchaseUrl || '';
   if (m.featured !== undefined) novel.featured = !!m.featured;
   if (m.popularity !== undefined) novel.popularity = parseInt(m.popularity, 10) || 0;
   if (m.order !== undefined) novel.order = parseInt(m.order, 10) || 999;
   if (!novel.cover) novel.cover = existMeta.cover || '';
+  if (novel.purchaseUrl == null) novel.purchaseUrl = existMeta.purchaseUrl || '';
 
   const meta = {
     title: novel.title || slug, genre: novel.genre || '미분류', status: novel.status || '연재중',
-    description: novel.description || '', cover: novel.cover || '', featured: !!novel.featured,
+    description: novel.description || '', purchaseUrl: novel.purchaseUrl || '', cover: novel.cover || '', featured: !!novel.featured,
     popularity: novel.popularity || 0, order: novel.order != null ? novel.order : 999
   };
 

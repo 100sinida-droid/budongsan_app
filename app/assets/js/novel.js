@@ -38,6 +38,10 @@
     ? `<img src="${KG.escapeHtml(n.cover)}" alt="${KG.escapeHtml(n.title)} 표지">`
     : `<div class="cover-title">${KG.escapeHtml(n.title)}</div>`;
 
+  const buyUrl = n.purchaseUrl || '';
+  const buyBtn = buyUrl ? `<a class="btn btn-buy" href="${KG.escapeHtml(buyUrl)}" target="_blank" rel="noopener nofollow">완결편 보러 가기 →</a>` : '';
+  const buyBanner = buyUrl ? `<div class="buy-cta"><p class="buy-lead">뒷이야기가 궁금하다면? 완결편은 아래에서 만나보실 수 있습니다.</p>${buyBtn}</div>` : '';
+
   root.innerHTML = `
     <nav style="margin:18px 0 4px;font-size:13.5px;color:var(--text-faint);font-weight:600">
       <a href="/app/novels.html" style="color:var(--text-faint)">작품 목록</a> › <span>${KG.escapeHtml(n.title)}</span>
@@ -56,6 +60,7 @@
         <div class="actions">
           ${firstId ? `<a class="btn btn-primary" href="/app/read.html?novel=${encodeURIComponent(slug)}&ep=${encodeURIComponent(firstId)}">1화 보기</a>` : ''}
           ${resumeId ? `<a class="btn btn-ghost" href="/app/read.html?novel=${encodeURIComponent(slug)}&ep=${encodeURIComponent(resumeId)}">이어보기</a>` : ''}
+          ${buyBtn}
         </div>
       </div>
     </div>
@@ -65,6 +70,7 @@
       <button class="sort-btn" id="sort-btn">↓ 최신순</button>
     </div>
     <div class="list" id="ep-list"></div>
+    ${buyBanner}
     <div class="ad-slot"></div>
   `;
   if (KG.renderAds) KG.renderAds();
